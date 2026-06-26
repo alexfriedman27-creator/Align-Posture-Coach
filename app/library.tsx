@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextInput
+  View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, TextInput,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,21 +19,28 @@ type CategoryFilter = ExerciseCategory | null;
 
 const SLOT_FILTERS: { label: string; value: ExerciseSlot }[] = [
   ...DAILY_SLOTS.map((s) => ({ label: SLOT_NAME[s], value: s })),
-  { label: 'Integration', value: 'integration' as ExerciseSlot },
-];
+  { label: 'Full Body', value: 'integration' as ExerciseSlot },
+].sort((a, b) => a.label.localeCompare(b.label));
 
-const CATEGORY_FILTERS: { label: string; value: ExerciseCategory }[] = [
-  { label: 'Stretch',    value: 'stretch'    },
-  { label: 'Strengthen', value: 'strengthen' },
-  { label: 'Mobility',   value: 'mobility'   },
-  { label: 'Awareness',  value: 'awareness'  },
-];
+const CATEGORY_FILTERS: { label: string; value: ExerciseCategory }[] = ([
+  { label: 'Stretch',    value: 'stretch'    as ExerciseCategory },
+  { label: 'Strengthen', value: 'strengthen' as ExerciseCategory },
+  { label: 'Mobility',   value: 'mobility'   as ExerciseCategory },
+  { label: 'Practice',   value: 'awareness'  as ExerciseCategory },
+] as { label: string; value: ExerciseCategory }[]).sort((a, b) => a.label.localeCompare(b.label));
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
   stretch: '#4EA8FF',
   strengthen: '#FF7A33',
   mobility: '#4EC97B',
   awareness: '#B57BFF',
+};
+
+const CATEGORY_LABEL: Record<ExerciseCategory, string> = {
+  stretch: 'Stretch',
+  strengthen: 'Strengthen',
+  mobility: 'Mobility',
+  awareness: 'Practice',
 };
 
 type DisplayExercise =
@@ -49,7 +56,7 @@ function SlotBadge({ slot }: { slot: ExerciseSlot }) {
   );
 }
 
-function ExerciseRow({ item, onPress }: { item: DisplayExercise; onPress: () => void }) {
+function ExerciseRow({ item, onPress, isPro }: { item: DisplayExercise; onPress: () => void; isPro: boolean }) {
   const isCustom = item.kind === 'custom';
   const name = item.data.name;
   const slot = item.data.slot;
@@ -65,7 +72,7 @@ function ExerciseRow({ item, onPress }: { item: DisplayExercise; onPress: () => 
           {category && (
             <>
               <Text style={[styles.rowCategory, { color: CATEGORY_COLOR[category] }]}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+                {CATEGORY_LABEL[category]}
               </Text>
               <Text style={styles.rowDot}> · </Text>
             </>
@@ -75,7 +82,14 @@ function ExerciseRow({ item, onPress }: { item: DisplayExercise; onPress: () => 
           <Text style={styles.rowMetaText}>{duration}s hold</Text>
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={16} color={Colors.tertiaryText} />
+      {isPro ? (
+        <Ionicons name="chevron-forward" size={16} color={Colors.tertiaryText} />
+      ) : (
+        <View style={styles.lockBadge}>
+          <Ionicons name="lock-closed" size={10} color={Colors.white} style={{ marginRight: 4 }} />
+          <Text style={styles.lockBadgeText} allowFontScaling={false}>Upgrade to unlock</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -92,9 +106,9 @@ export default function LibraryScreen() {
     getCustomExercises().then(setCustomExercises);
   }, []));
 
-  const allBuiltin: DisplayExercise[] = exerciseRepository.allExercises.map((e) => ({ kind: 'builtin', data: e }));
+  const allBuiltin: DisplayExercise[] = (exerciseRepository.allExercises.map((e) => ({ kind: 'builtin' as const, data: e }))).sort((a, b) => a.data.name.localeCompare(b.data.name));
   const allCustom: DisplayExercise[] = customExercises.map((e) => ({ kind: 'custom', data: e }));
-  const all: DisplayExercise[] = [...allBuiltin, ...allCustom];
+  const all: DisplayExercise[] = [...allBuiltin, ...allCustom].sort((a, b) => a.data.name.localeCompare(b.data.name));
 
   const filtered = all.filter((item) => {
     const name = item.data.name.toLowerCase();
@@ -206,10 +220,11 @@ export default function LibraryScreen() {
         renderItem={({ item }) => (
           <ExerciseRow
             item={item}
-            onPress={() => router.push({
-              pathname: '/exercise-detail',
-              params: { id: item.data.id, kind: item.kind },
-            })}
+            isPro={profile?.isPro ?? false}
+            onPress={() => profile?.isPro
+              ? router.push({ pathname: '/exercise-detail', params: { id: item.data.id, kind: item.kind } })
+              : router.push({ pathname: '/(onboarding)/paywall', params: { directToPlan: '1' } })
+            }
           />
         )}
         ListEmptyComponent={
@@ -303,7 +318,7 @@ const styles = StyleSheet.create({
   },
   filterChipText: { ...Typography.label, color: Colors.secondaryText },
   filterChipTextActive: { color: Colors.white },
-  list: { paddingBottom: 40 },
+  list: { paddingBottom: Spacing.card },
   separator: { height: 1, backgroundColor: Colors.cardElevated, marginLeft: 72 },
   row: {
     flexDirection: 'row',
@@ -334,5 +349,14 @@ const styles = StyleSheet.create({
   rowCategory: { ...Typography.caption, fontFamily: 'Outfit-Bold' },
   rowDot: { ...Typography.caption, color: Colors.tertiaryText },
   rowMetaText: { ...Typography.caption, color: Colors.secondaryText },
+  lockBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.accent,
+    borderRadius: Radii.chip,
+    paddingHorizontal: Spacing.tight,
+    paddingVertical: 4,
+  },
+  lockBadgeText: { ...Typography.caption, color: Colors.white, fontFamily: 'Outfit-Bold' },
   empty: { alignItems: 'center', paddingTop: 60 },
 });

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -98,6 +98,10 @@ export default function ModulesTab() {
   }, []));
 
   function openDetail(moduleId: string) {
+    if (!isPro) {
+      router.push({ pathname: '/(onboarding)/paywall', params: { directToPlan: '1' } });
+      return;
+    }
     router.push({ pathname: '/program-detail', params: { moduleId } });
   }
 
@@ -157,7 +161,7 @@ export default function ModulesTab() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: 120, gap: Spacing.gap },
+  content: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: Spacing.card, gap: Spacing.gap },
   heading: { ...Typography.title },
   sub: { ...Typography.body, color: Colors.secondaryText, marginTop: 4 },
   browseRow: {

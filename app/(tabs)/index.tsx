@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TouchableOpacity, FlatList, Animated
+  TouchableOpacity, FlatList, Animated,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,26 +10,89 @@ import { Typography } from '../../lib/design/fonts';
 import { Spacing } from '../../lib/design/spacing';
 import { Radii } from '../../lib/design/radii';
 import { Card } from '../../components/shared/Card';
-import { SlotBadge } from '../../components/shared/SlotBadge';
-import { Button } from '../../components/shared/Button';
 import { useUserStore } from '../../lib/store/useUserStore';
 import { useProgressStore } from '../../lib/store/useProgressStore';
 import { usePlanStore } from '../../lib/store/usePlanStore';
 import { moduleRepository } from '../../lib/data/ModuleRepository';
 import { exerciseRepository } from '../../lib/data/ExerciseRepository';
-import { ExerciseSlot, DAILY_SLOTS } from '../../types/Exercise';
-import { xpProgress, xpForNextLevel } from '../../types/UserProgress';
+import { ExerciseCategory } from '../../types/Exercise';
+import { xpProgress, xpForLevel, xpForNextLevel } from '../../types/UserProgress';
 import { Badge, CATEGORY_COLORS, getBadgeDefinition } from '../../types/Badge';
+import { getBadges, getFavoriteModuleIds } from '../../lib/db/queries';
+import { PostureModule, ModuleIntensity, MODULE_ICON } from '../../types/Module';
+
+const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
+  easy: '#4EC97B',
+  moderate: '#4EA8FF',
+  hard: '#FF7A33',
+};
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
-import { getBadges, getFavoriteModuleIds } from '../../lib/db/queries';
-import { PostureModule } from '../../types/Module';
+type FavItem = PostureModule | { type: 'add' };
+
+const _MS = 0.44;
+const _WIDTHS = [38, 31, 24, 18];
+const _HEAD_R = 13;
+const _SEG_H = 15;
+const _SEG_GAP = 6;
+const _SEG_RX = 6.5;
+const _NECK_GAP = 7;
+const _stackH = _WIDTHS.length * _SEG_H + (_WIDTHS.length - 1) * _SEG_GAP;
+const _totalH = _HEAD_R * 2 + _NECK_GAP + _stackH;
+const _topOff = (140 - _totalH) / 2;
+const _headCy = _topOff + _HEAD_R;
+const _firstCy = _topOff + _HEAD_R * 2 + _NECK_GAP + _SEG_H / 2;
+
+function AlignMark() {
+  return (
+    <View style={{ width: 100 * _MS, height: 140 * _MS }}>
+      <View style={{
+        position: 'absolute',
+        left: (50 - _HEAD_R) * _MS,
+        top: (_headCy - _HEAD_R) * _MS,
+        width: _HEAD_R * 2 * _MS,
+        height: _HEAD_R * 2 * _MS,
+        borderRadius: _HEAD_R * _MS,
+        backgroundColor: '#A7CBFF',
+      }} />
+      {_WIDTHS.map((w, i) => {
+        const cy = _firstCy + i * (_SEG_H + _SEG_GAP);
+        return (
+          <View key={i} style={{
+            position: 'absolute',
+            left: (50 - w / 2) * _MS,
+            top: (cy - _SEG_H / 2) * _MS,
+            width: w * _MS,
+            height: _SEG_H * _MS,
+            borderRadius: _SEG_RX * _MS,
+            backgroundColor: Colors.accent,
+          }} />
+        );
+      })}
+    </View>
+  );
+}
+
+const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
+  stretch:    '#4EA8FF',
+  strengthen: '#FF7A33',
+  mobility:   '#4EC97B',
+  awareness:  '#B57BFF',
+};
 
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return 'Good morning';
   if (h < 17) return 'Good afternoon';
   return 'Good evening';
+}
+
+function getStreakLine(streakDays: number): string {
+  if (streakDays === 0) return 'Start your streak today';
+  if (streakDays === 1) return '1 day in · keep it going';
+  if (streakDays < 7) return `${streakDays} days in a row`;
+  if (streakDays < 30) return `${streakDays}-day streak`;
+  return `${streakDays} days strong`;
 }
 
 export default function TodayTab() {
@@ -41,10 +104,11 @@ export default function TodayTab() {
   const [favoriteModules, setFavoriteModules] = useState<PostureModule[]>([]);
 
   const isPro = profile?.isPro ?? false;
+  const streakDays = progress?.streakDays ?? 0;
+  const xpProg = progress ? xpProgress(progress) : 0;
+  const isFirstSession = !profile?.onboardingCompleted;
 
-  useEffect(() => {
-    loadOrGeneratePlan();
-  }, []);
+  useEffect(() => { loadOrGeneratePlan(); }, []);
 
   useFocusEffect(useCallback(() => {
     getBadges().then(setEarnedBadges);
@@ -59,43 +123,47 @@ export default function TodayTab() {
   }, [isPro]));
 
   const exercises = plan ? exerciseRepository.exercises(plan.exerciseIds) : [];
-  const exerciseSlotSet = new Set(exercises.map((e) => e.slot));
-  const slots = DAILY_SLOTS.filter((s) => exerciseSlotSet.has(s));
   const isCompleted = !!plan?.completedAt;
   const estMinutes = exercises.reduce((sum, e) => sum + Math.ceil(e.duration_seconds / 60), 0);
 
-  const xpProg = progress ? xpProgress(progress) : 0;
-  const isFirstSession = !profile?.onboardingCompleted;
+  const now = new Date();
+  const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+  const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
   const pulseAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    if (!isFirstSession) return;
+    if (isCompleted) return;
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1, duration: 650, useNativeDriver: false }),
-        Animated.timing(pulseAnim, { toValue: 0, duration: 650, useNativeDriver: false }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: false }),
+        Animated.timing(pulseAnim, { toValue: 0, duration: 800, useNativeDriver: false }),
       ])
     );
     loop.start();
     return () => loop.stop();
-  }, [isFirstSession]);
+  }, [isCompleted]);
+
+  const favItems: FavItem[] = [
+    ...favoriteModules,
+    { type: 'add' },
+    { type: 'add' },
+    { type: 'add' },
+  ];
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Greeting row */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Greeting */}
         <View style={styles.greetingRow}>
           <View>
             <Text style={styles.greetingSub}>{getGreeting()},</Text>
             <Text style={styles.greetingName}>{profile?.name ?? 'there'}</Text>
           </View>
           <View style={styles.greetingRight}>
-            <View style={styles.levelSection}>
-              <Text style={styles.levelText}>LVL {progress?.level ?? 1}</Text>
-              <View style={styles.xpBarSmall}>
-                <View style={[styles.xpFillSmall, { width: `${Math.round(xpProg * 100)}%` }]} />
-              </View>
-            </View>
             <View style={styles.badgeSlotsRow}>
               {([1, 2, 3] as const).map((slot) => {
                 const badge = earnedBadges.find((b) => b.isPinned === slot);
@@ -103,169 +171,209 @@ export default function TodayTab() {
                 const color = def ? CATEGORY_COLORS[def.category] : Colors.accent;
                 return badge ? (
                   <View key={slot} style={[styles.badgeSlotFilled, { backgroundColor: color + '22', borderColor: color }]}>
-                    <Ionicons name={badge.iconName as IoniconsName} size={15} color={color} />
+                    <Ionicons name={badge.iconName as IoniconsName} size={19} color={color} />
                   </View>
                 ) : (
                   <View key={slot} style={styles.badgeSlotEmpty} />
                 );
               })}
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/profile')}
+                activeOpacity={0.6}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                style={styles.settingsBtn}
+              >
+                <Ionicons name="settings-outline" size={20} color={Colors.tertiaryText} />
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
-        {/* Daily reset card */}
-        <Animated.View style={[
-          styles.tutorialGlow,
-          isFirstSession && {
-            borderColor: pulseAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['transparent', Colors.accent],
-            }),
-            transform: [{
-              scale: pulseAnim.interpolate({
-                inputRange: [0, 0.5, 1],
-                outputRange: [1, 1.018, 1],
+        {/* Hero daily program card */}
+        <TouchableOpacity activeOpacity={0.95} onPress={() => router.push('/daily-plan')}>
+          <Animated.View style={[
+            styles.heroWrap,
+            !isCompleted && {
+              borderColor: pulseAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['transparent', Colors.accent],
               }),
-            }],
-          },
-        ]}>
-          <Card style={styles.resetCard}>
-            <Text style={styles.resetLabel}>TODAY'S RESET</Text>
-            <View style={styles.resetHeader}>
-              <View style={styles.progressRingSmall}>
-                <Text style={styles.progressPct}>{isCompleted ? '100%' : '0%'}</Text>
+            },
+          ]}>
+            <View style={styles.heroCard}>
+
+              {/* Top row: label + date */}
+              <View style={styles.heroTopRow}>
+                <Text style={styles.heroLabel}>DAILY PROGRAM</Text>
+                <Text style={styles.heroDateStr}>{dateStr}</Text>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.resetTitle}>{estMinutes}-Minute Plan</Text>
-                <Text style={styles.resetMeta}>{exercises.length} exercises · about {estMinutes} min</Text>
+
+              {/* Day name + streak */}
+              <View style={styles.heroDateBlock}>
+                <Text style={styles.heroDayName}>{dayName}</Text>
+                <View style={styles.streakRow}>
+                  <Ionicons
+                    name={streakDays > 0 ? 'flame' : 'flame-outline'}
+                    size={13}
+                    color={streakDays > 0 ? Colors.orange : Colors.tertiaryText}
+                  />
+                  <Text style={[
+                    styles.streakLine,
+                    { color: streakDays > 0 ? Colors.orange : Colors.tertiaryText },
+                  ]}>
+                    {getStreakLine(streakDays)}
+                  </Text>
+                </View>
               </View>
+
+              {/* Vertical exercise list */}
+              <View style={styles.exerciseList}>
+                {exercises.map((ex, i) => {
+                  const c = CATEGORY_COLOR[ex.category];
+                  const dur = ex.reps
+                    ? (ex.sets && ex.sets > 1 ? `${ex.sets} × ${ex.reps} reps` : `${ex.reps} reps`)
+                    : (ex.sets && ex.sets > 1 ? `${ex.sets} × ${ex.duration_seconds}s` : `${ex.duration_seconds}s`);
+                  return (
+                    <View key={i}>
+                      {i > 0 && <View style={styles.exerciseDivider} />}
+                      <View style={styles.exerciseRow}>
+                        <View style={[styles.exerciseDot, { backgroundColor: c }]} />
+                        <View style={styles.exerciseText}>
+                          <Text style={styles.exerciseName} numberOfLines={1}>{ex.name}</Text>
+                        </View>
+                        <Text style={styles.exerciseDur} allowFontScaling={false}>{dur}</Text>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+
+              {/* Footer: meta + CTA */}
+              <View style={styles.heroFooter}>
+                <Text style={styles.heroMeta}>
+                  {exercises.length} exercises · ~{estMinutes} min
+                </Text>
+
+                {isCompleted ? (
+                  <View style={styles.completedBadge}>
+                    <Ionicons name="checkmark-circle" size={16} color="#4EC97B" />
+                    <Text style={styles.completedText}>Done for today</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.sessionBtn}
+                    onPress={() => router.push({ pathname: '/session', params: { source: 'dailyPlan' } })}
+                    activeOpacity={0.82}
+                  >
+                    <Ionicons name="play" size={14} color={Colors.white} />
+                    <Text style={styles.sessionBtnText}>Start</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {isFirstSession && !isCompleted && (
+                <Text style={styles.tutorialHint}>Tap to preview what's in store</Text>
+              )}
             </View>
-
-            <View style={styles.slotsRow}>
-              {slots.slice(0, 5).map((slot, i) => (
-                <SlotBadge key={i} slot={slot} filled={isCompleted} />
-              ))}
-            </View>
-
-            {isFirstSession && !isCompleted && (
-              <Text style={styles.tutorialHint}>Start here — complete your first session</Text>
-            )}
-
-            <Button
-              label={isCompleted ? 'Completed' : 'Start session'}
-              icon={isCompleted ? 'checkmark' : 'play'}
-              onPress={() => {
-                if (!isCompleted && plan) {
-                  router.push({ pathname: '/session', params: { source: 'dailyPlan' } });
-                }
-              }}
-              disabled={isCompleted}
-              style={styles.startBtn}
-            />
-          </Card>
-        </Animated.View>
+          </Animated.View>
+        </TouchableOpacity>
 
         {/* Stats row */}
         <View style={styles.statsRow}>
           <Card style={styles.statCard}>
-            <View style={styles.statRow}>
-              <Ionicons name="flame" size={18} color={Colors.orange} />
+            <View style={styles.statLabelRow}>
+              <Ionicons name="flame" size={14} color={Colors.orange} />
               <Text style={styles.statLabel}> STREAK</Text>
             </View>
-            <Text style={styles.statValue}>{progress?.streakDays ?? 0}</Text>
+            <Text style={styles.statValue}>{streakDays}</Text>
             <Text style={styles.statSub}>days in a row</Text>
+            <Text style={styles.statRecord}>Best: {progress?.longestStreak ?? 0} days</Text>
           </Card>
 
           <Card style={styles.statCard}>
-            <View style={styles.statRow}>
+            <View style={styles.statLabelRow}>
               <Text style={styles.statLabel}>LEVEL {progress?.level ?? 1}</Text>
               <Text style={[styles.statLabel, { color: Colors.accent, marginLeft: 4 }]}>
                 {Math.round(xpProg * 100)}%
               </Text>
             </View>
-            <Text style={styles.statValue}>{progress?.totalXP ?? 0}</Text>
+            <Text style={styles.statValue}>{progress ? progress.totalXP - xpForLevel(progress.level) : 0}</Text>
             <View style={styles.xpBar}>
               <View style={[styles.xpFill, { width: `${Math.round(xpProg * 100)}%` }]} />
             </View>
-            <Text style={styles.statSub}>/ {xpForNextLevel(progress?.level ?? 1)} XP</Text>
+            <Text style={styles.statSub}>/ {progress ? xpForNextLevel(progress.level) - xpForLevel(progress.level) : 200} XP</Text>
           </Card>
         </View>
 
+        {/* Favorites / upgrade */}
         {isPro ? (
           <>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Your Favorite Programs</Text>
+              <Text style={styles.sectionTitle}>Favorite Programs</Text>
             </View>
-            {favoriteModules.length > 0 ? (
-              <FlatList
-                horizontal
-                data={favoriteModules}
-                keyExtractor={(m) => m.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: Spacing.tight, paddingRight: Spacing.card }}
-                renderItem={({ item }) => (
+            <FlatList
+              horizontal
+              data={favItems}
+              keyExtractor={(item, i) => ('id' in item ? item.id : `add-${i}`)}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: Spacing.tight, paddingRight: Spacing.card }}
+              renderItem={({ item }) => {
+                if ('type' in item) {
+                  return (
+                    <TouchableOpacity
+                      style={styles.programCardAdd}
+                      activeOpacity={0.7}
+                      onPress={() => router.push('/(tabs)/modules')}
+                    >
+                      <Ionicons name="add" size={22} color={Colors.tertiaryText} />
+                    </TouchableOpacity>
+                  );
+                }
+                return (
                   <TouchableOpacity
                     style={styles.programCard}
                     activeOpacity={0.8}
                     onPress={() => router.push({ pathname: '/session', params: { source: 'module', moduleId: item.id } })}
                   >
                     <View style={styles.programStripe} />
-                    <Text style={styles.programCat}>{item.category.replace(/_/g, ' ').toUpperCase()}</Text>
-                    <Text style={styles.programName}>{item.name}</Text>
+                    <View style={[styles.programIconCircle, { backgroundColor: INTENSITY_COLOR[item.intensity] + '22' }]}>
+                      <Ionicons name={(MODULE_ICON[item.id] ?? 'layers-outline') as any} size={16} color={INTENSITY_COLOR[item.intensity]} />
+                    </View>
+                    <View>
+                      <Text style={styles.programCat}>{item.category.replace(/_/g, ' ').toUpperCase()}</Text>
+                      <Text style={styles.programName}>{item.name}</Text>
+                    </View>
                   </TouchableOpacity>
-                )}
-              />
-            ) : (
-              <View style={styles.favEmptyCard}>
-                <Ionicons name="star-outline" size={22} color={Colors.tertiaryText} />
-                <Text style={styles.favEmptyText}>
-                  Tap the star on any program in the Programs tab to save it here
-                </Text>
-              </View>
-            )}
+                );
+              }}
+            />
           </>
         ) : (
           <TouchableOpacity
-            style={styles.paywallCard}
+            style={styles.upgradeCard}
             activeOpacity={0.92}
             onPress={() => router.push({ pathname: '/(onboarding)/paywall', params: { directToPlan: '1' } })}
           >
-            {/* Header row */}
-            <View style={styles.paywallHeader}>
-              <View style={styles.paywallIconWrap}>
-                <Ionicons name="star" size={18} color="#F5C518" />
+            {/* Top: logo + PRO left, headline right */}
+            <View style={styles.upgradeHeader}>
+              <View style={styles.upgradeLogoCol}>
+                <AlignMark />
+                <View style={styles.proBadge}>
+                  <Text style={styles.proBadgeText}>PRO</Text>
+                </View>
               </View>
-              <View style={styles.paywallProBadge}>
-                <Text style={styles.paywallProBadgeText}>PRO</Text>
-              </View>
+              <Text style={styles.upgradeHeadline}>{'Fix your posture,\nfor good.'}</Text>
             </View>
 
-            {/* Headline */}
-            <Text style={styles.paywallHeadline}>Fix your posture,{'\n'}for good.</Text>
-            <Text style={styles.paywallBody}>
-              Unlock all 20 expert programs — from gentle beginner routines to advanced strength work — designed to address the exact patterns behind your neck pain, back tension, and fatigue.
+            <Text style={styles.upgradeBody}>
+              Your posture says a lot about you before you ever open your mouth. Fix it.
             </Text>
 
-            {/* Feature list */}
-            {[
-              '20 targeted programs, beginner to advanced',
-              'Save favorites for your daily routine',
-              'Build your own custom exercises',
-              'Detailed progress tracking & streaks',
-            ].map((f) => (
-              <View key={f} style={styles.paywallFeatureRow}>
-                <Ionicons name="checkmark-circle" size={16} color={Colors.accent} />
-                <Text style={styles.paywallFeatureText}>{f}</Text>
-              </View>
-            ))}
-
-            {/* CTA */}
-            <View style={styles.paywallCta}>
-              <Text style={styles.paywallCtaText}>Upgrade to Pro</Text>
+            <View style={styles.upgradeCta}>
+              <Text style={styles.upgradeCtaText}>Unlock Align Pro</Text>
               <Ionicons name="arrow-forward" size={16} color={Colors.white} />
             </View>
-
-            <Text style={styles.paywallFooter}>Cancel anytime</Text>
+            <Text style={styles.upgradeFooter}>$6.99/mo or $39.99/yr · Cancel anytime</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -276,157 +384,143 @@ export default function TodayTab() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: 120, gap: Spacing.gap, flexGrow: 1 },
+  content: {
+    paddingHorizontal: Spacing.card,
+    paddingTop: Spacing.inner,
+    paddingBottom: Spacing.card,
+    gap: Spacing.gap,
+    flexGrow: 1,
+  },
+
+  // Greeting
   greetingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   greetingSub: { ...Typography.body, color: Colors.secondaryText },
   greetingName: { ...Typography.display },
-  greetingRight: { alignItems: 'flex-end', gap: Spacing.tight, marginTop: 4 },
-  levelSection: { alignItems: 'flex-end', gap: 5 },
-  levelText: { ...Typography.label, color: Colors.accent },
-  xpBarSmall: {
-    width: 72,
-    height: 3,
-    backgroundColor: Colors.cardElevated,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  xpFillSmall: { height: '100%', backgroundColor: Colors.accent, borderRadius: 2 },
-  badgeSlotsRow: { flexDirection: 'row', gap: Spacing.micro },
+  greetingRight: { alignItems: 'flex-end', marginTop: 4 },
+  badgeSlotsRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight },
+  settingsBtn: { paddingLeft: 2 },
   badgeSlotFilled: {
-    width: 34,
-    height: 34,
-    borderRadius: Radii.icon,
-    backgroundColor: Colors.accent + '22',
-    borderColor: Colors.accent,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 44, height: 44, borderRadius: Radii.icon,
+    backgroundColor: Colors.accent + '22', borderWidth: 1,
+    alignItems: 'center', justifyContent: 'center',
   },
   badgeSlotEmpty: {
-    width: 34,
-    height: 34,
-    borderRadius: Radii.icon,
-    backgroundColor: Colors.cardElevated,
-    borderColor: Colors.card,
-    borderWidth: 1,
+    width: 44, height: 44, borderRadius: Radii.icon,
+    backgroundColor: Colors.cardElevated, borderColor: Colors.cardElevated, borderWidth: 1,
   },
-  tutorialGlow: {
-    borderRadius: Radii.card,
-    borderWidth: 1.5,
+
+  // Hero card
+  heroWrap: {
+    borderRadius: Radii.card + 2,
+    borderWidth: 2.5,
     borderColor: 'transparent',
   },
-  tutorialHint: {
-    ...Typography.caption,
-    color: Colors.accent,
-    textAlign: 'center',
+  heroCard: {
+    backgroundColor: Colors.card,
+    borderRadius: Radii.card,
+    padding: Spacing.inner,
+    gap: Spacing.tight + 2,
+    overflow: 'hidden',
+  },
+  heroCardDone: {
+    borderTopWidth: 3,
+    borderTopColor: '#4EC97B',
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  heroLabel: { ...Typography.label, color: Colors.accent, letterSpacing: 1.5 },
+  heroDateStr: { ...Typography.caption, color: Colors.tertiaryText },
+  heroDateBlock: { gap: 6 },
+  heroDayName: {
+    fontFamily: 'Outfit-ExtraBold',
+    fontSize: 40,
+    lineHeight: 46,
+    color: Colors.primaryText,
+  },
+  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  streakLine: { ...Typography.body, fontSize: 14 },
+
+  exerciseList: {},
+  exerciseDivider: { height: StyleSheet.hairlineWidth, backgroundColor: Colors.cardElevated },
+  exerciseRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight, paddingVertical: 5 },
+  exerciseDot: { width: 6, height: 6, borderRadius: 3 },
+  exerciseText: { flex: 1 },
+  exerciseName: { ...Typography.label, fontSize: 13, color: Colors.primaryText },
+  exerciseDur: { ...Typography.caption, color: Colors.tertiaryText },
+
+  heroFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: Spacing.micro,
   },
-  resetCard: { gap: Spacing.inner },
-  resetLabel: { ...Typography.label, color: Colors.accent, letterSpacing: 1, textTransform: 'uppercase' },
-  resetHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.inner },
-  progressRingSmall: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    borderWidth: 3,
-    borderColor: Colors.cardElevated,
+  heroMeta: { ...Typography.body, color: Colors.secondaryText },
+  sessionBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: Colors.accent,
+    borderRadius: Radii.button,
+    paddingHorizontal: Spacing.inner,
+    paddingVertical: 10,
   },
-  progressPct: { ...Typography.label, color: Colors.primaryText },
-  resetTitle: { ...Typography.subheadline },
-  resetMeta: { ...Typography.caption, color: Colors.secondaryText, marginTop: 2 },
-  slotsRow: { flexDirection: 'row', gap: Spacing.tight },
-  startBtn: { marginTop: Spacing.micro },
+  sessionBtnText: { ...Typography.bodyMedium, color: Colors.white },
+  completedBadge: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  completedText: { ...Typography.bodyMedium, color: '#4EC97B' },
+  tutorialHint: { ...Typography.caption, color: Colors.accent, textAlign: 'center', marginTop: -4 },
+
+  // Stats
   statsRow: { flexDirection: 'row', gap: Spacing.tight },
   statCard: { flex: 1, gap: 4 },
-  statRow: { flexDirection: 'row', alignItems: 'center' },
+  statLabelRow: { flexDirection: 'row', alignItems: 'center' },
   statLabel: { ...Typography.caption, color: Colors.secondaryText, textTransform: 'uppercase', letterSpacing: 0.8 },
   statValue: { ...Typography.title },
   statSub: { ...Typography.caption, color: Colors.secondaryText },
+  statRecord: { ...Typography.caption, color: Colors.tertiaryText, marginTop: 2 },
   xpBar: { height: 4, backgroundColor: Colors.cardElevated, borderRadius: 2, overflow: 'hidden', marginTop: 4 },
   xpFill: { height: '100%', backgroundColor: Colors.accent, borderRadius: 2 },
+
+  // Favorites
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   sectionTitle: { ...Typography.subheadline },
   programCard: {
-    width: 140,
-    height: 140,
-    backgroundColor: Colors.card,
-    borderRadius: Radii.card,
-    overflow: 'hidden',
-    padding: Spacing.inner,
-    justifyContent: 'flex-end',
+    width: 134, height: 112, backgroundColor: Colors.card,
+    borderRadius: Radii.card, overflow: 'hidden',
+    padding: Spacing.inner, justifyContent: 'space-between',
   },
-  programStripe: {
-    ...StyleSheet.absoluteFill,
-    opacity: 0.15,
-    backgroundColor: Colors.cardElevated,
+  programCardAdd: {
+    width: 134, height: 112, borderRadius: Radii.card,
+    borderWidth: 1.5, borderColor: Colors.cardElevated,
+    borderStyle: 'dashed',
+    alignItems: 'center', justifyContent: 'center',
   },
-  programCat: { ...Typography.caption, color: Colors.accent, textTransform: 'uppercase', letterSpacing: 1 },
+  programStripe: { ...StyleSheet.absoluteFill, opacity: 0.15, backgroundColor: Colors.cardElevated },
+  programIconCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  programCat: { ...Typography.caption, color: Colors.accent, textTransform: 'uppercase', letterSpacing: 0.8 },
   programName: { ...Typography.label, color: Colors.primaryText, marginTop: 2 },
-  favEmptyCard: {
-    backgroundColor: Colors.card,
-    borderRadius: Radii.card,
-    padding: Spacing.card,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.inner,
+  // Upgrade card
+  upgradeCard: {
+    backgroundColor: Colors.card, borderRadius: Radii.card,
+    padding: Spacing.card, gap: Spacing.inner,
+    borderWidth: 1, borderColor: Colors.cardElevated,
   },
-  favEmptyText: {
-    ...Typography.body,
-    color: Colors.tertiaryText,
-    flex: 1,
-    lineHeight: 20,
+  upgradeHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.inner },
+  upgradeLogoCol: { alignItems: 'flex-start', gap: Spacing.tight },
+  proBadge: {
+    backgroundColor: Colors.accent, borderRadius: Radii.chip,
+    paddingHorizontal: Spacing.inner, paddingVertical: 5,
   },
-  paywallCard: {
-    flex: 1,
-    backgroundColor: Colors.card,
-    borderRadius: Radii.card,
-    padding: Spacing.card,
-    gap: Spacing.inner,
-    borderWidth: 1,
-    borderColor: Colors.cardElevated,
+  proBadgeText: { ...Typography.bodyMedium, color: Colors.white, fontFamily: 'Outfit-Bold', letterSpacing: 1 },
+  upgradeHeadline: { ...Typography.title, lineHeight: 32, flex: 1 },
+  upgradeBody: { ...Typography.body, color: Colors.secondaryText, lineHeight: 22 },
+  upgradeCta: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: Spacing.tight, backgroundColor: Colors.accent,
+    borderRadius: Radii.card, paddingVertical: 14, marginTop: Spacing.micro,
   },
-  paywallHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.tight,
-  },
-  paywallIconWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: Radii.icon,
-    backgroundColor: '#F5C51815',
-    borderWidth: 1,
-    borderColor: '#F5C51840',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  paywallProBadge: {
-    backgroundColor: Colors.accent,
-    borderRadius: Radii.chip,
-    paddingHorizontal: Spacing.tight,
-    paddingVertical: 3,
-  },
-  paywallProBadgeText: { ...Typography.caption, color: Colors.white, fontFamily: 'Outfit-Bold', letterSpacing: 1 },
-  paywallHeadline: { ...Typography.title, lineHeight: 34 },
-  paywallBody: { ...Typography.body, color: Colors.secondaryText, lineHeight: 22 },
-  paywallFeatureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.tight,
-  },
-  paywallFeatureText: { ...Typography.body, color: Colors.primaryText, flex: 1 },
-  paywallCta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.tight,
-    backgroundColor: Colors.accent,
-    borderRadius: Radii.card,
-    paddingVertical: 14,
-    marginTop: Spacing.micro,
-  },
-  paywallCtaText: { ...Typography.bodyMedium, color: Colors.white },
-  paywallFooter: { ...Typography.caption, color: Colors.tertiaryText, textAlign: 'center' },
+  upgradeCtaText: { ...Typography.bodyMedium, color: Colors.white },
+  upgradeFooter: { ...Typography.caption, color: Colors.tertiaryText, textAlign: 'center' },
 });

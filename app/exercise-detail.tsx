@@ -20,6 +20,13 @@ const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
   awareness: '#B57BFF',
 };
 
+const CATEGORY_LABEL: Record<ExerciseCategory, string> = {
+  stretch: 'Stretch',
+  strengthen: 'Strengthen',
+  mobility: 'Mobility',
+  awareness: 'Practice',
+};
+
 function formatLabel(str: string): string {
   return str.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -87,7 +94,7 @@ export default function ExerciseDetailScreen() {
             {category && (
               <View style={[styles.chip, { backgroundColor: catColor + '22', borderColor: catColor + '55' }]}>
                 <Text style={[styles.chipText, { color: catColor }]}>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                  {CATEGORY_LABEL[category]}
                 </Text>
               </View>
             )}

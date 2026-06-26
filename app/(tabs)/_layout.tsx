@@ -7,7 +7,7 @@ import { Typography } from '../../lib/design/fonts';
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 function TabIcon({ name, focused }: { name: IoniconsName; focused: boolean }) {
-  return <Ionicons name={name} size={22} color={focused ? Colors.accent : Colors.tertiaryText} />;
+  return <Ionicons name={name} size={24} color={focused ? Colors.accent : Colors.tertiaryText} />;
 }
 
 export default function TabsLayout() {
@@ -16,33 +16,40 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.card,
-          borderTopColor: Colors.cardElevated,
+          backgroundColor: '#1C2336',
+          borderTopColor: '#2E3A52',
           borderTopWidth: 1,
           height: 80,
-          paddingBottom: 20,
-          paddingTop: 8,
+          paddingBottom: 18,
+          paddingTop: 10,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: -3 },
+          shadowOpacity: 0.4,
+          shadowRadius: 10,
+          elevation: 20,
         },
         tabBarActiveTintColor: Colors.accent,
         tabBarInactiveTintColor: Colors.tertiaryText,
         tabBarLabelStyle: {
           ...Typography.caption,
-          fontSize: 11,
+          fontSize: 12,
         },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Today',
-          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />,
-        }}
-      />
       <Tabs.Screen
         name="modules"
         options={{
           title: 'Programs',
           tabBarIcon: ({ focused }) => <TabIcon name="grid-outline" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Today',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name="home" size={28} color={focused ? Colors.accent : Colors.tertiaryText} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -55,8 +62,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ focused }) => <TabIcon name="person-outline" focused={focused} />,
+          href: null,
         }}
       />
     </Tabs>

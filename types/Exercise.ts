@@ -20,10 +20,10 @@ export const SLOT_BADGE: Record<ExerciseSlot, string> = {
 export const SLOT_NAME: Record<ExerciseSlot, string> = {
   neck: 'Neck',
   shoulder_scapula: 'Shoulders',
-  thoracic_spine: 'Thoracic',
+  thoracic_spine: 'Upper Back',
   core_pelvis: 'Core',
   hip: 'Hips',
-  integration: 'Integration',
+  integration: 'Full Body',
 };
 
 export const DAILY_SLOTS: ExerciseSlot[] = [

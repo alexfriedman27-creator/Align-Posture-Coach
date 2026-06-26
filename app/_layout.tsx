@@ -133,6 +133,7 @@ export default function RootLayout() {
         <Stack.Screen name="set-reminder" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="exercise-detail" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="program-detail" options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="daily-plan" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
     </>
   );

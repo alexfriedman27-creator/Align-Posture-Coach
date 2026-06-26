@@ -6,7 +6,7 @@ export const Colors = {
   primaryText: '#F4F6FB',
   secondaryText: '#8A93A6',
   tertiaryText: '#6B7488',
-  orange: '#FF7A33',
+  orange: '#FF3B30',
   danger: '#FF4444',
   white: '#FFFFFF',
   transparent: 'transparent',

@@ -18,7 +18,7 @@ import { useProgressStore } from '../lib/store/useProgressStore';
 import { usePlanStore } from '../lib/store/usePlanStore';
 import { persistSessionCompletion, SessionSource } from '../lib/services/SessionManager';
 import { Exercise, SLOT_NAME } from '../types/Exercise';
-import { xpProgress, xpForNextLevel, UserProgress } from '../types/UserProgress';
+import { xpProgress, xpForLevel, xpForNextLevel, UserProgress } from '../types/UserProgress';
 import { Badge } from '../types/Badge';
 
 type SessionState = 'preview' | 'exercise' | 'complete';
@@ -28,6 +28,13 @@ const CATEGORY_COLOR: Record<string, string> = {
   strengthen: '#FF7A33',
   mobility: '#4EC97B',
   awareness: '#B57BFF',
+};
+
+const CATEGORY_LABEL: Record<string, string> = {
+  stretch: 'Stretch',
+  strengthen: 'Strengthen',
+  mobility: 'Mobility',
+  awareness: 'Practice',
 };
 
 function formatLabel(str: string): string {
@@ -144,6 +151,7 @@ export default function SessionScreen() {
   const progressAnim = useRef(new Animated.Value(0)).current;
   const animRef = useRef<Animated.CompositeAnimation | null>(null);
   const xpBarAnim = useRef(new Animated.Value(0)).current;
+  const levelPopAnim = useRef(new Animated.Value(1)).current;
   const preSessionProgressRef = useRef<UserProgress | null>(null);
 
   useEffect(() => {
@@ -175,6 +183,21 @@ export default function SessionScreen() {
         Animated.timing(xpBarAnim, { toValue: 0, duration: 0, useNativeDriver: false }),
         Animated.timing(xpBarAnim, { toValue: newProg, duration: 700, useNativeDriver: false }),
       ]).start();
+      setTimeout(() => {
+        Animated.spring(levelPopAnim, {
+          toValue: 1.6,
+          useNativeDriver: true,
+          speed: 20,
+          bounciness: 18,
+        }).start(() => {
+          Animated.spring(levelPopAnim, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 14,
+            bounciness: 6,
+          }).start();
+        });
+      }, 1050);
     } else {
       Animated.timing(xpBarAnim, { toValue: newProg, duration: 1200, useNativeDriver: false }).start();
     }
@@ -287,10 +310,11 @@ export default function SessionScreen() {
 
   function handleDone() {
     if (!profile?.onboardingCompleted) {
-      // Goal + name already collected pre-session; paywall is next
       router.replace('/(onboarding)/paywall');
     } else if (!profile?.reminderSet) {
       router.push('/set-reminder');
+    } else if (params.source === 'module') {
+      router.replace('/(tabs)/');
     } else {
       router.back();
     }
@@ -335,7 +359,10 @@ export default function SessionScreen() {
 
   if (state === 'complete') {
     const displayProgress = completedProgress ?? progress;
-    const nextXP = xpForNextLevel(displayProgress?.level ?? 1);
+    const currentLevelXP = xpForLevel(displayProgress?.level ?? 1);
+    const nextLevelXP = xpForNextLevel(displayProgress?.level ?? 1);
+    const xpIntoLevel = (displayProgress?.totalXP ?? 0) - currentLevelXP;
+    const xpNeededForLevel = nextLevelXP - currentLevelXP;
     return (
       <>
       <SafeAreaView style={styles.safe}>
@@ -351,7 +378,13 @@ export default function SessionScreen() {
 
           <View style={styles.xpProgressWrap}>
             <View style={styles.xpProgressRow}>
-              <Text style={Typography.label}>LEVEL {displayProgress?.level ?? 1}</Text>
+              <Animated.Text style={[
+                Typography.label,
+                leveledUp && { color: Colors.accent, fontWeight: 'bold' },
+                { transform: [{ scale: levelPopAnim }], transformOrigin: 'left center' },
+              ]}>
+                LEVEL {displayProgress?.level ?? 1}
+              </Animated.Text>
               <Text style={[Typography.label, { color: Colors.accent }]}>+{xpEarned} XP</Text>
             </View>
             <View style={styles.xpBar}>
@@ -360,7 +393,7 @@ export default function SessionScreen() {
               }]} />
             </View>
             <Text style={[Typography.caption, { color: Colors.secondaryText }]}>
-              {displayProgress?.totalXP ?? 0} / {nextXP} XP
+              {xpIntoLevel} / {xpNeededForLevel} XP
             </Text>
             {leveledUp && (
               <View style={styles.levelUpBadge}>
@@ -444,7 +477,7 @@ export default function SessionScreen() {
             <View style={styles.previewChipsRow}>
               <View style={[styles.previewChip, { backgroundColor: CATEGORY_COLOR[currentExercise.category] + '22', borderColor: CATEGORY_COLOR[currentExercise.category] + '55' }]}>
                 <Text style={[styles.previewChipText, { color: CATEGORY_COLOR[currentExercise.category] }]}>
-                  {currentExercise.category.charAt(0).toUpperCase() + currentExercise.category.slice(1)}
+                  {CATEGORY_LABEL[currentExercise.category]}
                 </Text>
               </View>
               <View style={styles.previewChip}>

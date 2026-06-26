@@ -82,7 +82,7 @@ export default function PaywallScreen() {
   const { profile, saveProfile } = useUserStore();
   const { directToPlan } = useLocalSearchParams<{ directToPlan?: string }>();
 
-  const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual');
+  const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('monthly');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -134,7 +134,7 @@ export default function PaywallScreen() {
           <AlignMark />
           <Text style={styles.heading}>Unlock Align Pro</Text>
           <Text style={styles.sub}>
-            All {EXERCISE_DISPLAY}+ exercises, every tailored program, and custom exercise creation.
+            All {EXERCISE_COUNT} exercises, every tailored program, and custom exercise creation.
           </Text>
         </View>
 
@@ -154,30 +154,6 @@ export default function PaywallScreen() {
 
         <View style={styles.plans}>
           <TouchableOpacity
-            style={[styles.planCard, selectedPlan === 'annual' && styles.planCardSelected]}
-            onPress={() => setSelectedPlan('annual')}
-            activeOpacity={0.8}
-          >
-            {selectedPlan === 'annual' && (
-              <View style={styles.bestValue}>
-                <Text style={styles.bestValueText}>BEST VALUE</Text>
-              </View>
-            )}
-            <View style={styles.planRow}>
-              <View>
-                <Text style={styles.planName}>Annual</Text>
-                <Text style={styles.planSub}>$3.33 / mo — billed yearly</Text>
-              </View>
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text style={styles.planPrice}>$39.99</Text>
-                {selectedPlan === 'annual' && (
-                  <Text style={styles.savingsBadge}>Save 52%</Text>
-                )}
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
             style={[styles.planCard, selectedPlan === 'monthly' && styles.planCardSelected]}
             onPress={() => setSelectedPlan('monthly')}
             activeOpacity={0.8}
@@ -190,13 +166,33 @@ export default function PaywallScreen() {
               <Text style={styles.planPrice}>$6.99</Text>
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.planCard, selectedPlan === 'annual' && styles.planCardSelected]}
+            onPress={() => setSelectedPlan('annual')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.bestValue}>
+              <Text style={styles.bestValueText}>BEST VALUE</Text>
+            </View>
+            <View style={styles.planRow}>
+              <View>
+                <Text style={styles.planName}>Annual</Text>
+                <Text style={styles.planSub}>$3.33/mo, billed annually</Text>
+              </View>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={styles.planPrice}>$39.99</Text>
+                <Text style={styles.savingsBadge}>Save 52%</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
         </View>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <View style={styles.footer}>
           <Button
-            label={selectedPlan === 'annual' ? 'Subscribe — $39.99/yr' : 'Subscribe — $6.99/mo'}
+            label={selectedPlan === 'annual' ? 'Subscribe for $39.99/yr' : 'Subscribe for $6.99/mo'}
             onPress={handleSubscribe}
             loading={loading}
           />
@@ -247,7 +243,7 @@ const styles = StyleSheet.create({
   planCardSelected: { borderColor: Colors.accent },
   bestValue: {
     position: 'absolute',
-    top: -12,
+    top: 0,
     alignSelf: 'center',
     backgroundColor: Colors.accent,
     paddingHorizontal: Spacing.inner,

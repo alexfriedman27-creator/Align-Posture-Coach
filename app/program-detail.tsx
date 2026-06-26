@@ -25,6 +25,12 @@ const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
   hard:     '#FF7A33',
 };
 
+const INTENSITY_XP: Record<ModuleIntensity, number> = {
+  easy:     200,
+  moderate: 300,
+  hard:     400,
+};
+
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
   stretch:    '#4EA8FF',
   strengthen: '#FF7A33',
@@ -33,9 +39,10 @@ const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
 };
 
 function formatDuration(ex: Exercise): string {
-  if (ex.reps) return `${ex.reps} reps`;
-  if (ex.sets && ex.sets > 1) return `${ex.sets} × ${ex.duration_seconds}s`;
-  return `${ex.duration_seconds}s`;
+  if (ex.reps) {
+    return ex.sets && ex.sets > 1 ? `${ex.sets} × ${ex.reps} reps` : `${ex.reps} reps`;
+  }
+  return ex.sets && ex.sets > 1 ? `${ex.sets} × ${ex.duration_seconds}s` : `${ex.duration_seconds}s`;
 }
 
 export default function ProgramDetailScreen() {
@@ -149,6 +156,21 @@ export default function ProgramDetailScreen() {
             ))}
           </View>
         </View>
+
+        {/* XP preview */}
+        {isPro && (
+          <View style={styles.xpCard}>
+            <View style={styles.xpLeft}>
+              <View style={[styles.xpIconWrap, { backgroundColor: color + '18', borderColor: color + '30' }]}>
+                <Ionicons name="flash" size={18} color={color} />
+              </View>
+              <View>
+                <Text style={styles.xpAmount}>{INTENSITY_XP[module.intensity]} XP</Text>
+                <Text style={styles.xpSub}>earned on completion</Text>
+              </View>
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       {/* Start button */}
@@ -217,6 +239,24 @@ const styles = StyleSheet.create({
   exerciseSlot: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
   exerciseRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
   exerciseDuration: { ...Typography.caption, color: Colors.secondaryText },
+
+  xpCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.card,
+    borderRadius: Radii.card,
+    padding: Spacing.inner,
+    borderWidth: 1,
+    borderColor: Colors.cardElevated,
+  },
+  xpLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.inner },
+  xpIconWrap: {
+    width: 38, height: 38, borderRadius: 19,
+    borderWidth: 1,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  xpAmount: { ...Typography.subheadline, color: Colors.primaryText },
+  xpSub: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
 
   footer: {
     paddingHorizontal: Spacing.card,

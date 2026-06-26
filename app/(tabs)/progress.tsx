@@ -62,7 +62,7 @@ function ProGate() {
         <Text style={styles.gateChip}>PRO FEATURE</Text>
         <Text style={styles.gateTitle}>Track Your Progress</Text>
         <Text style={styles.gateSub}>
-          See your streaks, XP level, session history, and before/after progress photos — all in one place.
+          See your streaks, XP level, session history, and before/after progress photos, all in one place.
         </Text>
         <TouchableOpacity
           style={styles.gateBtn}

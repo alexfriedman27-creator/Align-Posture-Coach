@@ -28,7 +28,7 @@ const FEATURES: { icon: IoniconsName; iconColor: string; title: string; descript
     icon: 'layers',
     iconColor: '#4EC97B',
     title: 'Targeted Programs',
-    description: 'Follow expert programs designed for your specific problem areas — neck, shoulders, core, and more',
+    description: 'Follow programs built around your specific problem areas, like neck, shoulders, and core',
   },
   {
     icon: 'notifications',

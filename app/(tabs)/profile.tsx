@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
   Switch, TouchableOpacity, Modal
@@ -12,7 +12,7 @@ import { Card } from '../../components/shared/Card';
 import { BadgePicker } from '../../components/shared/BadgePicker';
 import { DrumrollPicker } from '../../components/onboarding/DrumrollPicker';
 import { Button } from '../../components/shared/Button';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { purchasesService } from '../../lib/services/purchases';
 import { useUserStore } from '../../lib/store/useUserStore';
 import { useProgressStore } from '../../lib/store/useProgressStore';
@@ -111,9 +111,9 @@ export default function ProfileTab() {
   const [pickerMinute, setPickerMinute] = useState(0);
   const [pickerIsPM, setPickerIsPM] = useState(false);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     getBadges().then(setBadges);
-  }, []);
+  }, []));
 
   const slotBadge = badges.find((b) => b.isPinned === pickerSlot);
   const initials = (profile?.name ?? 'U').split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
@@ -266,7 +266,7 @@ export default function ProfileTab() {
                     {badge ? (
                       <>
                         <View style={[styles.badgeSlotIcon, { backgroundColor: color + '22' }]}>
-                          <Ionicons name={badgeIconName(badge.iconName)} size={26} color={color} />
+                          <Ionicons name={badge.iconName as IoniconsName} size={26} color={color} />
                         </View>
                         <Text style={styles.badgeSlotName} numberOfLines={2}>{badge.name}</Text>
                       </>

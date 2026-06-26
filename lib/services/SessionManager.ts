@@ -232,7 +232,8 @@ export async function persistSessionCompletion(
   const today = todayDateString();
   const sessionHour = new Date().getHours();
   const prevLastSessionDate = progress.lastSessionDate;
-  const newStreak = updateStreak(progress, today);
+  const isDailyPlan = source.type === 'dailyPlan';
+  const newStreak = isDailyPlan ? updateStreak(progress, today) : progress.streakDays;
   const xpEarned = await computeXP(source, newStreak);
 
   const updatedProgress: UserProgress = {
@@ -240,10 +241,10 @@ export async function persistSessionCompletion(
     totalXP: progress.totalXP + xpEarned,
     level: levelFromXP(progress.totalXP + xpEarned),
     streakDays: newStreak,
-    longestStreak: Math.max(progress.longestStreak, newStreak),
+    longestStreak: isDailyPlan ? Math.max(progress.longestStreak, newStreak) : progress.longestStreak,
     totalSessions: progress.totalSessions + 1,
     totalMinutes: progress.totalMinutes + Math.round(durationSeconds / 60),
-    lastSessionDate: today,
+    lastSessionDate: isDailyPlan ? today : progress.lastSessionDate,
     thirtyDaySessionDates: updateThirtyDayDates(progress.thirtyDaySessionDates, today),
   };
 
