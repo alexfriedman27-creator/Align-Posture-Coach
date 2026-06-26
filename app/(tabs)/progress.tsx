@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle } from 'react-native-svg';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Colors } from '../../lib/design/colors';
-import { Typography } from '../../lib/design/fonts';
+import { Typography, FontFamily } from '../../lib/design/fonts';
 import { Spacing } from '../../lib/design/spacing';
 import { Radii } from '../../lib/design/radii';
 import { Card } from '../../components/shared/Card';
@@ -396,8 +396,6 @@ export default function ProgressTab() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>Progress</Text>
-
         {/* Stats */}
         <View style={styles.statsRow}>
           <StatBlock value={progress?.streakDays ?? 0} label="Day Streak" />
@@ -638,7 +636,7 @@ const styles = StyleSheet.create({
   dateChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: Colors.cardElevated },
   dateChipSelected: { backgroundColor: Colors.accent },
   dateChipText: { ...Typography.caption, color: Colors.secondaryText },
-  dateChipTextSelected: { color: Colors.white, fontFamily: 'DMSans-Medium' },
+  dateChipTextSelected: { color: Colors.white, fontFamily: FontFamily.poppinsMedium },
   sheetSaveBtn: {
     backgroundColor: Colors.accent, borderRadius: Radii.button,
     margin: Spacing.card, marginTop: Spacing.inner, paddingVertical: 14, alignItems: 'center',

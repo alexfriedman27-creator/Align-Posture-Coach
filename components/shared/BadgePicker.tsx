@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, TouchableW
 import { Ionicons } from '@expo/vector-icons';
 import {
   Badge, BadgeCategory,
-  BADGE_CATEGORY_ORDER, CATEGORY_COLORS, CATEGORY_LABELS,
+  BADGE_CATEGORY_ORDER, BADGE_DEFINITIONS, CATEGORY_COLORS, CATEGORY_LABELS,
   getBadgeDefinition,
 } from '../../types/Badge';
 import { Colors } from '../../lib/design/colors';
@@ -30,6 +30,9 @@ const ICON_MAP: Record<string, IoniconsName> = {
   'pencil': 'pencil', 'hammer': 'hammer', 'camera': 'camera', 'images': 'images',
   'sunny': 'sunny', 'moon': 'moon', 'refresh': 'refresh', 'hourglass': 'hourglass',
   'play-circle': 'play-circle',
+  'shield-checkmark': 'shield-checkmark', 'infinite': 'infinite', 'barbell': 'barbell',
+  'trending-up': 'trending-up', 'create': 'create', 'construct': 'construct',
+  'bookmarks': 'bookmarks', 'flash': 'flash', 'book': 'book',
 };
 
 function badgeIconName(iconName: string): IoniconsName {
@@ -38,12 +41,20 @@ function badgeIconName(iconName: string): IoniconsName {
 
 function badgeCategoryColor(badge: Badge): string {
   const def = getBadgeDefinition(badge.id);
-  return def ? CATEGORY_COLORS[def.category] : CATEGORY_COLORS.special;
+  if (!def) return CATEGORY_COLORS.special;
+  return def.color ?? CATEGORY_COLORS[def.category];
 }
+
+const DEFINITION_ORDER = BADGE_DEFINITIONS.reduce<Record<string, number>>((acc, d, i) => {
+  acc[d.id] = i;
+  return acc;
+}, {});
 
 export function BadgePicker({ visible, badges, pinnedId, onPin, onClose }: Props) {
   const grouped = BADGE_CATEGORY_ORDER.reduce<Record<BadgeCategory, Badge[]>>((acc, cat) => {
-    acc[cat] = badges.filter((b) => getBadgeDefinition(b.id)?.category === cat);
+    acc[cat] = badges
+      .filter((b) => getBadgeDefinition(b.id)?.category === cat)
+      .sort((a, b) => (DEFINITION_ORDER[a.id] ?? 999) - (DEFINITION_ORDER[b.id] ?? 999));
     return acc;
   }, {} as Record<BadgeCategory, Badge[]>);
 
@@ -76,6 +87,13 @@ export function BadgePicker({ visible, badges, pinnedId, onPin, onClose }: Props
                     >
                       <View style={[styles.iconWrap, { backgroundColor: isPinned ? color : color + '22' }]}>
                         <Ionicons name={badgeIconName(badge.iconName)} size={18} color={isPinned ? Colors.white : color} />
+                        {(getBadgeDefinition(badge.id)?.stars ?? 0) > 0 && (
+                          <View style={{ flexDirection: 'row', gap: 2 }}>
+                            {Array.from({ length: getBadgeDefinition(badge.id)!.stars! }, (_, i) => (
+                              <View key={i} style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: isPinned ? Colors.white : color }} />
+                            ))}
+                          </View>
+                        )}
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.badgeName}>{badge.name}</Text>

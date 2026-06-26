@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../lib/design/colors';
-import { Typography } from '../../lib/design/fonts';
+import { Typography, FontFamily } from '../../lib/design/fonts';
 import { Radii } from '../../lib/design/radii';
 import { Spacing } from '../../lib/design/spacing';
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   value: {
     ...Typography.display,
     color: Colors.primaryText,
-    fontFamily: 'Outfit-ExtraBold',
+    fontFamily: FontFamily.poppinsExtraBold,
   },
   colon: {
     ...Typography.display,

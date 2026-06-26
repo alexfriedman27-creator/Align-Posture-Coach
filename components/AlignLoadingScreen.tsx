@@ -155,14 +155,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontFamily: FontFamily.outfitExtraBold,
+    fontFamily: FontFamily.poppinsExtraBold,
     fontSize: 58,
     color: Colors.primaryText,
     lineHeight: 66,
     letterSpacing: -1.5,
   },
   subtitle: {
-    fontFamily: FontFamily.dmSansRegular,
+    fontFamily: FontFamily.poppinsRegular,
     fontSize: 15,
     color: Colors.secondaryText,
     letterSpacing: 0.2,

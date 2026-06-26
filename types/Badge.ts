@@ -37,7 +37,7 @@ export const CATEGORY_LABELS: Record<BadgeCategory, string> = {
 };
 
 export const BADGE_CATEGORY_ORDER: BadgeCategory[] = [
-  'streak', 'sessions', 'daily', 'modules', 'exercises', 'time', 'level', 'custom', 'photo', 'special',
+  'sessions', 'streak', 'daily', 'time', 'exercises', 'modules', 'level', 'photo', 'custom', 'special',
 ];
 
 export interface BadgeDefinition {
@@ -45,6 +45,8 @@ export interface BadgeDefinition {
   name: string;
   description: string;
   iconName: string;
+  stars?: number; // 1–3 tier dots shown below the badge icon; undefined = no dots
+  color?: string; // overrides CATEGORY_COLORS when set (used for special badges)
   category: BadgeCategory;
 }
 
@@ -58,78 +60,78 @@ export interface Badge {
 }
 
 export const BADGE_DEFINITIONS: BadgeDefinition[] = [
-  // Streak
-  { id: 'streak_3',   name: 'Started Strong',        description: 'Reached a 3-day streak',    iconName: 'flame',   category: 'streak' },
-  { id: 'streak_7',   name: 'One Week Upright',       description: 'Reached a 7-day streak',    iconName: 'flame',   category: 'streak' },
-  { id: 'streak_14',  name: '14 Days Standing Tall',  description: 'Reached a 14-day streak',   iconName: 'flame',   category: 'streak' },
-  { id: 'streak_30',  name: '30 Days Upright',        description: 'Reached a 30-day streak',   iconName: 'flame',   category: 'streak' },
-  { id: 'streak_60',  name: '60-Day Consistency',     description: 'Reached a 60-day streak',   iconName: 'diamond', category: 'streak' },
-  { id: 'streak_90',  name: '90-Day Transformation',  description: 'Reached a 90-day streak',   iconName: 'diamond', category: 'streak' },
-  { id: 'streak_100', name: 'Unbreakable',            description: 'Reached a 100-day streak',  iconName: 'diamond', category: 'streak' },
-  { id: 'streak_180', name: 'Half-Year Hero',         description: 'Reached a 180-day streak',  iconName: 'trophy',  category: 'streak' },
-  { id: 'streak_365', name: 'Posture Master',         description: 'Reached a 365-day streak',  iconName: 'trophy',  category: 'streak' },
+  // Streak — flame (3) → diamond (3) → trophy (3), each tier uses stars 1/2/3
+  { id: 'streak_3',   name: 'First Spark',      description: 'Reached a 3-day streak',    iconName: 'flame',   stars: 1, category: 'streak' },
+  { id: 'streak_7',   name: 'Kindled',           description: 'Reached a 7-day streak',    iconName: 'flame',   stars: 2, category: 'streak' },
+  { id: 'streak_14',  name: 'Burning Bright',    description: 'Reached a 14-day streak',   iconName: 'flame',   stars: 3, category: 'streak' },
+  { id: 'streak_30',  name: 'Diamond Habit',     description: 'Reached a 30-day streak',   iconName: 'diamond', stars: 1, category: 'streak' },
+  { id: 'streak_60',  name: 'Uncut',             description: 'Reached a 60-day streak',   iconName: 'diamond', stars: 2, category: 'streak' },
+  { id: 'streak_90',  name: 'Diamond Days',      description: 'Reached a 90-day streak',   iconName: 'diamond', stars: 3, category: 'streak' },
+  { id: 'streak_100', name: 'The Century',       description: 'Reached a 100-day streak',  iconName: 'trophy',  stars: 1, category: 'streak' },
+  { id: 'streak_180', name: 'Half-Year Hero',    description: 'Reached a 180-day streak',  iconName: 'trophy',  stars: 2, category: 'streak' },
+  { id: 'streak_365', name: 'Year in Motion',    description: 'Reached a 365-day streak',  iconName: 'trophy',  stars: 3, category: 'streak' },
 
   // Sessions
-  { id: 'first_session',  name: 'First Step',    description: 'Completed your first session',  iconName: 'play-circle', category: 'sessions' },
-  { id: 'sessions_10',    name: 'Apprentice',    description: 'Completed 10 sessions',         iconName: 'ribbon',      category: 'sessions' },
-  { id: 'sessions_25',    name: 'Practitioner',  description: 'Completed 25 sessions',         iconName: 'ribbon',      category: 'sessions' },
-  { id: 'sessions_50',    name: 'Dedicated',     description: 'Completed 50 sessions',         iconName: 'medal',       category: 'sessions' },
-  { id: 'sessions_100',   name: 'Advanced',      description: 'Completed 100 sessions',        iconName: 'medal',       category: 'sessions' },
-  { id: 'sessions_250',   name: 'Expert',        description: 'Completed 250 sessions',        iconName: 'trophy',      category: 'sessions' },
-  { id: 'sessions_500',   name: 'Elite',         description: 'Completed 500 sessions',        iconName: 'trophy',      category: 'sessions' },
-  { id: 'sessions_1000',  name: 'Master',        description: 'Completed 1000 sessions',       iconName: 'star',        category: 'sessions' },
+  { id: 'first_session',  name: 'Day One',           description: 'Completed your first session',  iconName: 'play-circle',     category: 'sessions' },
+  { id: 'sessions_10',    name: 'Ten in the Books',  description: 'Completed 10 sessions',         iconName: 'ribbon',          stars: 1, category: 'sessions' },
+  { id: 'sessions_25',    name: 'Quarter Century',   description: 'Completed 25 sessions',         iconName: 'ribbon',          stars: 2, category: 'sessions' },
+  { id: 'sessions_50',    name: 'Half-Century',      description: 'Completed 50 sessions',         iconName: 'medal',           stars: 1, category: 'sessions' },
+  { id: 'sessions_100',   name: 'Triple Digits',     description: 'Completed 100 sessions',        iconName: 'medal',           stars: 2, category: 'sessions' },
+  { id: 'sessions_250',   name: 'The Long Game',     description: 'Completed 250 sessions',        iconName: 'shield-checkmark',             category: 'sessions' },
+  { id: 'sessions_500',   name: 'Five Hundred',      description: 'Completed 500 sessions',        iconName: 'infinite',                     category: 'sessions' },
+  { id: 'sessions_1000',  name: 'Thousand Club',     description: 'Completed 1000 sessions',       iconName: 'star',                         category: 'sessions' },
 
   // Daily plans
-  { id: 'daily_10',   name: 'Routine Starter',  description: 'Completed 10 daily plans',   iconName: 'calendar', category: 'daily' },
-  { id: 'daily_30',   name: 'Habit Formed',      description: 'Completed 30 daily plans',   iconName: 'calendar', category: 'daily' },
-  { id: 'daily_100',  name: 'Daily Devotee',     description: 'Completed 100 daily plans',  iconName: 'calendar', category: 'daily' },
+  { id: 'daily_10',   name: 'Taking Root',     description: 'Completed 10 daily plans',   iconName: 'calendar', stars: 1, category: 'daily' },
+  { id: 'daily_30',   name: 'Habit Formed',    description: 'Completed 30 daily plans',   iconName: 'calendar', stars: 2, category: 'daily' },
+  { id: 'daily_100',  name: 'Daily Devotee',   description: 'Completed 100 daily plans',  iconName: 'calendar', stars: 3, category: 'daily' },
 
-  // Modules
-  { id: 'modules_tried_2',    name: 'First Dive',          description: 'Tried 2 different programs',               iconName: 'library', category: 'modules' },
-  { id: 'modules_tried_3',    name: 'Getting Curious',     description: 'Tried 3 different programs',               iconName: 'library', category: 'modules' },
-  { id: 'modules_tried_5',    name: 'Library Regular',     description: 'Tried 5 different programs',               iconName: 'library', category: 'modules' },
-  { id: 'modules_tried_10',   name: 'Program Hopper',      description: 'Tried 10 different programs',              iconName: 'library', category: 'modules' },
-  { id: 'module_completionist', name: 'Program Completionist', description: 'Completed every built-in program',      iconName: 'checkmark-done-circle', category: 'modules' },
-  { id: 'same_day_2',   name: 'Double Session',  description: 'Completed 2 different programs in one day',   iconName: 'layers',  category: 'modules' },
-  { id: 'same_day_3',   name: 'Triple Threat',   description: 'Completed 3 different programs in one day',   iconName: 'layers',  category: 'modules' },
-  { id: 'same_day_5',   name: 'Five Star Day',   description: 'Completed 5 different programs in one day',   iconName: 'layers',  category: 'modules' },
-  { id: 'same_day_10',  name: 'Unstoppable',     description: 'Completed 10 different programs in one day',  iconName: 'rocket',  category: 'modules' },
+  // Modules (programs)
+  { id: 'modules_tried_2',      name: 'First Detour',          description: 'Tried 2 different programs',              iconName: 'book',                  stars: 1, category: 'modules' },
+  { id: 'modules_tried_3',      name: 'Getting Curious',       description: 'Tried 3 different programs',              iconName: 'book',                  stars: 2, category: 'modules' },
+  { id: 'modules_tried_5',      name: 'Library Card',          description: 'Tried 5 different programs',              iconName: 'book',                  stars: 3, category: 'modules' },
+  { id: 'modules_tried_10',     name: 'Full Shelf',            description: 'Tried 10 different programs',             iconName: 'bookmarks',                       category: 'modules' },
+  { id: 'module_completionist', name: 'Full Sweep',            description: 'Completed every built-in program',        iconName: 'checkmark-done-circle',           category: 'modules' },
+  { id: 'same_day_2',           name: 'Double Down',           description: 'Completed 2 different programs in one day', iconName: 'layers',              stars: 1, category: 'modules' },
+  { id: 'same_day_3',           name: 'Triple Threat',         description: 'Completed 3 different programs in one day', iconName: 'layers',              stars: 2, category: 'modules' },
+  { id: 'same_day_5',           name: 'Five-a-Day',            description: 'Completed 5 different programs in one day', iconName: 'layers',              stars: 3, category: 'modules' },
+  { id: 'same_day_10',          name: 'Unstoppable',           description: 'Completed 10 different programs in one day', iconName: 'rocket',                       category: 'modules' },
 
   // Exercise variety
-  { id: 'exercises_10',   name: 'Explorer',       description: 'Tried 10 different exercises',       iconName: 'compass',              category: 'exercises' },
-  { id: 'exercises_25',   name: 'Adventurer',     description: 'Tried 25 different exercises',       iconName: 'compass',              category: 'exercises' },
-  { id: 'exercises_50',   name: 'Experimenter',   description: 'Tried 50 different exercises',       iconName: 'flask',                category: 'exercises' },
-  { id: 'exercises_all',  name: 'Completionist',  description: 'Tried every built-in exercise',      iconName: 'checkmark-done',       category: 'exercises' },
+  { id: 'exercises_10',   name: 'Early Explorer',  description: 'Tried 10 different exercises',    iconName: 'compass', stars: 1, category: 'exercises' },
+  { id: 'exercises_25',   name: 'Body Scholar',    description: 'Tried 25 different exercises',    iconName: 'compass', stars: 2, category: 'exercises' },
+  { id: 'exercises_50',   name: 'Lab Rat',         description: 'Tried 50 different exercises',    iconName: 'flask',              category: 'exercises' },
+  { id: 'exercises_all',  name: 'Full Range',      description: 'Tried every built-in exercise',   iconName: 'barbell',            category: 'exercises' },
 
   // Time
-  { id: 'time_10m',  name: 'Moving More',         description: 'Accumulated 10 minutes of exercise',   iconName: 'timer', category: 'time' },
-  { id: 'time_1h',   name: 'Mobility Student',    description: 'Accumulated 1 hour of exercise',       iconName: 'timer', category: 'time' },
-  { id: 'time_10h',  name: 'Flexibility Builder', description: 'Accumulated 10 hours of exercise',     iconName: 'time',  category: 'time' },
-  { id: 'time_50h',  name: 'Recovery Veteran',    description: 'Accumulated 50 hours of exercise',     iconName: 'time',  category: 'time' },
+  { id: 'time_10m',  name: 'Moving More',       description: 'Accumulated 10 minutes of exercise',   iconName: 'timer', stars: 1, category: 'time' },
+  { id: 'time_1h',   name: 'First Hour',        description: 'Accumulated 1 hour of exercise',       iconName: 'timer', stars: 2, category: 'time' },
+  { id: 'time_10h',  name: 'Ten Hours Deep',    description: 'Accumulated 10 hours of exercise',     iconName: 'time',  stars: 1, category: 'time' },
+  { id: 'time_50h',  name: 'Time Well Spent',   description: 'Accumulated 50 hours of exercise',     iconName: 'time',  stars: 2, category: 'time' },
 
-  // Level
-  { id: 'level_3',    name: 'Level 3',      description: 'Reached Level 3',    iconName: 'star',      category: 'level' },
-  { id: 'level_5',    name: 'Rising',       description: 'Reached Level 5',    iconName: 'star',      category: 'level' },
-  { id: 'level_10',   name: 'Grounded',     description: 'Reached Level 10',   iconName: 'star',      category: 'level' },
-  { id: 'level_25',   name: 'Established',  description: 'Reached Level 25',   iconName: 'sparkles',  category: 'level' },
-  { id: 'level_50',   name: 'Apex',         description: 'Reached Level 50',   iconName: 'sparkles',  category: 'level' },
-  { id: 'level_100',  name: 'Legend',       description: 'Reached Level 100',  iconName: 'sparkles',  category: 'level' },
+  // Level — trending-up (3) → sparkles (3)
+  { id: 'level_3',    name: 'Ember',       description: 'Your spark is lit. Keep it going.',            iconName: 'trending-up', stars: 1, category: 'level' },
+  { id: 'level_5',    name: 'Ignited',     description: 'Five levels in. The habit is taking hold.',    iconName: 'trending-up', stars: 2, category: 'level' },
+  { id: 'level_10',   name: 'Grounded',    description: 'Ten levels of consistency. Something real is being built.', iconName: 'trending-up', stars: 3, category: 'level' },
+  { id: 'level_25',   name: 'Ascendant',   description: 'A quarter of the way up. Most never get here.',  iconName: 'sparkles',    stars: 1, category: 'level' },
+  { id: 'level_50',   name: 'Apex',        description: 'Halfway to the top. The view is better from here.', iconName: 'sparkles',    stars: 2, category: 'level' },
+  { id: 'level_100',  name: 'Legend',      description: 'Every level earned. The full climb, complete.',  iconName: 'sparkles',    stars: 3, category: 'level' },
 
   // Custom exercises
-  { id: 'custom_ex_1',   name: 'Exercise Inventor',   description: 'Created your first custom exercise',  iconName: 'pencil',  category: 'custom' },
-  { id: 'custom_ex_5',   name: 'Creative Mover',      description: 'Created 5 custom exercises',          iconName: 'pencil',  category: 'custom' },
-  { id: 'custom_ex_10',  name: 'Training Designer',   description: 'Created 10 custom exercises',         iconName: 'hammer',  category: 'custom' },
+  { id: 'custom_ex_1',   name: 'The Blueprint',    description: 'Created your first custom exercise',  iconName: 'pencil',    category: 'custom' },
+  { id: 'custom_ex_5',   name: 'Creative Mover',   description: 'Created 5 custom exercises',          iconName: 'create',    category: 'custom' },
+  { id: 'custom_ex_10',  name: 'The Architect',    description: 'Created 10 custom exercises',         iconName: 'construct', category: 'custom' },
 
   // Progress photos
-  { id: 'photo_1',   name: 'First Progress Photo',  description: 'Uploaded your first progress photo',  iconName: 'camera', category: 'photo' },
-  { id: 'photo_10',  name: 'Progress Tracker',      description: 'Uploaded 10 progress photos',         iconName: 'images', category: 'photo' },
+  { id: 'photo_1',   name: 'First Frame',   description: 'Uploaded your first progress photo',  iconName: 'camera', category: 'photo' },
+  { id: 'photo_10',  name: 'In Focus',      description: 'Uploaded 10 progress photos',         iconName: 'images', category: 'photo' },
 
-  // Special
-  { id: 'early_bird',       name: 'Early Bird',             description: 'Completed a session before 7 AM',             iconName: 'sunny',    category: 'special' },
-  { id: 'night_owl',        name: 'Night Owl',              description: 'Completed a session after 10 PM',             iconName: 'moon',     category: 'special' },
-  { id: 'weekend_warrior',  name: 'Weekend Warrior',        description: 'Trained on 10 different weekends',            iconName: 'calendar-outline', category: 'special' },
-  { id: 'comeback_kid',     name: 'Comeback Kid',           description: 'Returned after 30 days away',                 iconName: 'refresh',  category: 'special' },
-  { id: 'marathon_session', name: 'Marathon Session',       description: 'Completed a single session over 20 minutes',  iconName: 'hourglass', category: 'special' },
+  // Special — each has its own color
+  { id: 'early_bird',       name: 'Early Bird',       description: 'Completed a session before 7 AM',             iconName: 'sunny',     color: '#F59E0B', category: 'special' },
+  { id: 'night_owl',        name: 'Night Owl',         description: 'Completed a session after 10 PM',             iconName: 'moon',      color: '#818CF8', category: 'special' },
+  { id: 'weekend_warrior',  name: 'Weekend Warrior',   description: 'Trained on 10 different weekends',            iconName: 'flash',     color: '#F97316', category: 'special' },
+  { id: 'comeback_kid',     name: 'Comeback Kid',      description: 'Returned after 30 days away',                 iconName: 'refresh',   color: '#10B981', category: 'special' },
+  { id: 'marathon_session', name: 'The Long Stretch',  description: 'Completed a single session over 20 minutes',  iconName: 'hourglass', color: '#A855F7', category: 'special' },
 ];
 
 export function getBadgeDefinition(id: string): BadgeDefinition | undefined {

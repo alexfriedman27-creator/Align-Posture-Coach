@@ -38,6 +38,20 @@ function weightedRandom<T>(items: T[], weights: number[], rand: () => number): T
   return items[items.length - 1];
 }
 
+// Order exercises after picking to minimize position transitions.
+// Upright first (standing/seated), then floor in a smooth progression.
+const POSITION_ORDER: Record<string, number> = {
+  any: 0,
+  seated_or_standing: 1,
+  standing: 2,
+  seated: 3,
+  supine: 4,
+  'side-lying': 5,
+  kneeling: 6,
+  quadruped: 7,
+  prone: 8,
+};
+
 function pick(
   candidates: Exercise[],
   usedFamilies: Set<string>,
@@ -74,10 +88,17 @@ export async function generateOrGetDailyPlan(dateString: string): Promise<DailyP
     }
   }
 
+  // Sort by position so the session flows without unnecessary transitions
+  const sortedIds = selectedIds
+    .map((id) => exerciseRepository.exercise(id))
+    .filter((e): e is Exercise => e !== undefined)
+    .sort((a, b) => (POSITION_ORDER[a.position] ?? 4) - (POSITION_ORDER[b.position] ?? 4))
+    .map((e) => e.id);
+
   const plan: DailyPlan = {
     id: `plan_${dateString}`,
     date: dateString,
-    exerciseIds: selectedIds,
+    exerciseIds: sortedIds,
     completedAt: null,
     xpEarned: 0,
   };

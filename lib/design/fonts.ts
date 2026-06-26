@@ -2,58 +2,58 @@ import { TextStyle } from 'react-native';
 import { Colors } from './colors';
 
 export const FontFamily = {
-  outfitExtraBold: 'Outfit-ExtraBold',
-  outfitBold: 'Outfit-Bold',
-  outfitSemiBold: 'Outfit-SemiBold',
-  dmSansRegular: 'DMSans-Regular',
-  dmSansMedium: 'DMSans-Medium',
+  poppinsExtraBold: 'Poppins-ExtraBold',
+  poppinsBold: 'Poppins-Bold',
+  poppinsSemiBold: 'Poppins-SemiBold',
+  poppinsMedium: 'Poppins-Medium',
+  poppinsRegular: 'Poppins-Regular',
 } as const;
 
 export const Typography: Record<string, TextStyle> = {
   display: {
-    fontFamily: FontFamily.outfitExtraBold,
+    fontFamily: FontFamily.poppinsExtraBold,
     fontSize: 32,
     color: Colors.primaryText,
     lineHeight: 38,
   },
   title: {
-    fontFamily: FontFamily.outfitBold,
+    fontFamily: FontFamily.poppinsBold,
     fontSize: 26,
     color: Colors.primaryText,
     lineHeight: 32,
   },
   headline: {
-    fontFamily: FontFamily.outfitBold,
+    fontFamily: FontFamily.poppinsBold,
     fontSize: 23,
     color: Colors.primaryText,
     lineHeight: 28,
   },
   subheadline: {
-    fontFamily: FontFamily.outfitSemiBold,
+    fontFamily: FontFamily.poppinsSemiBold,
     fontSize: 17,
     color: Colors.primaryText,
     lineHeight: 22,
   },
   body: {
-    fontFamily: FontFamily.dmSansRegular,
+    fontFamily: FontFamily.poppinsRegular,
     fontSize: 15,
     color: Colors.primaryText,
     lineHeight: 21,
   },
   bodyMedium: {
-    fontFamily: FontFamily.dmSansMedium,
+    fontFamily: FontFamily.poppinsMedium,
     fontSize: 15,
     color: Colors.primaryText,
     lineHeight: 21,
   },
   label: {
-    fontFamily: FontFamily.outfitBold,
+    fontFamily: FontFamily.poppinsBold,
     fontSize: 12,
     color: Colors.primaryText,
     lineHeight: 16,
   },
   caption: {
-    fontFamily: FontFamily.dmSansRegular,
+    fontFamily: FontFamily.poppinsRegular,
     fontSize: 11,
     color: Colors.secondaryText,
     lineHeight: 15,

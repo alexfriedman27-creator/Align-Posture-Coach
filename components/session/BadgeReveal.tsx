@@ -100,7 +100,7 @@ export function BadgeReveal({ badges, onDismiss }: Props) {
 
   const badge  = badges[index];
   const def    = getBadgeDefinition(badge.id);
-  const color  = def ? CATEGORY_COLORS[def.category] : CATEGORY_COLORS.special;
+  const color  = def ? (def.color ?? CATEGORY_COLORS[def.category]) : CATEGORY_COLORS.special;
   const isLast = index === badges.length - 1;
 
   useEffect(() => {
@@ -200,14 +200,17 @@ export function BadgeReveal({ badges, onDismiss }: Props) {
 
           <ParticleBurst key={burstKey} categoryColor={color} />
 
-          <Animated.View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: color + '22', borderColor: color + 'AA' },
-              { transform: [{ scale: iconAnim }] },
-            ]}
-          >
-            <Ionicons name={badge.iconName as IoniconsName} size={40} color={color} />
+          <Animated.View style={{ alignItems: 'center', gap: 10, transform: [{ scale: iconAnim }] }}>
+            <View style={[styles.iconCircle, { backgroundColor: color + '22', borderColor: color + 'AA' }]}>
+              <Ionicons name={badge.iconName as IoniconsName} size={40} color={color} />
+            </View>
+            {(def?.stars ?? 0) > 0 && (
+              <View style={{ flexDirection: 'row', gap: 6 }}>
+                {Array.from({ length: def!.stars! }, (_, i) => (
+                  <View key={i} style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: color }} />
+                ))}
+              </View>
+            )}
           </Animated.View>
         </View>
 

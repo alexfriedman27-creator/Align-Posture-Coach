@@ -70,7 +70,7 @@
       "target_condition": [
         "forward_head_posture"
       ],
-      "description": "Lying down removes gravity assistance and isolates the deep cervical flexors more strictly than the seated version, a common clinical progression.",
+      "description": "Lying down makes gravity less helpful, so the neck muscles have to work harder than in the seated version. A step up from the standard chin tuck.",
       "instructions": [
         "Lie on back, knees bent, head flat on floor or small pillow.",
         "Nod chin gently as if drawing the back of the head up and away, flattening the neck's curve into the floor.",
@@ -141,7 +141,7 @@
         "forward_head_posture",
         "neck_pain"
       ],
-      "description": "Adds light manual resistance to the chin tuck, used in clinical trials targeting deep neck flexor endurance specifically.",
+      "description": "Adds a small amount of hand resistance to the chin tuck, building more endurance in the deep neck muscles that hold the head up.",
       "instructions": [
         "Place two fingers against forehead.",
         "Perform a chin tuck while gently pressing forehead into fingers.",
@@ -178,7 +178,7 @@
         "forward_head_posture",
         "neck_tension"
       ],
-      "description": "Releases rotational tension in the SCM and upper cervical rotators that often tighten with sustained forward head posture.",
+      "description": "Releases tightness in the side and back of the neck that builds up from holding the head forward for long periods.",
       "instructions": [
         "Sit tall, slowly turn head to look over one shoulder until a gentle stretch is felt.",
         "Hold 20-30 seconds.",
@@ -199,7 +199,7 @@
     },
     {
       "id": "upper_trap_stretch",
-      "name": "Upper Trap Stretch",
+      "name": "Neck Tilt Stretch",
       "category": "stretch",
       "slot": "neck",
       "family_id": "neck_stretch_family",
@@ -212,7 +212,7 @@
         "forward_head_posture",
         "neck_tension"
       ],
-      "description": "Releases tension in the upper traps and levator scapulae, overactive and tight from forward head posture and elevated shoulders.",
+      "description": "Releases tension in the neck and shoulder muscles that tighten up from forward head posture and raised shoulders.",
       "instructions": [
         "Anchor one hand under thigh or behind back.",
         "Tilt head to opposite side, gently assist with free hand.",
@@ -247,7 +247,7 @@
         "forward_head_posture",
         "neck_tension"
       ],
-      "description": "Combines flexion, rotation, and lateral flexion to specifically bias the levator scapulae, a muscle the simpler upper-trap stretch doesn't fully isolate.",
+      "description": "Targets a deeper neck muscle that a simple side tilt misses, by combining a slight head turn with the side stretch.",
       "instructions": [
         "Sit tall, turn head 45 degrees away from the tight side, then drop chin toward the collarbone.",
         "Gently assist with hand on the back of the head for added stretch.",
@@ -269,7 +269,7 @@
     {
       "id": "isometric_neck_extension",
       "reps": 10,
-      "name": "Isometric Neck Extension Press",
+      "name": "Neck Press Hold",
       "category": "strengthen",
       "slot": "neck",
       "family_id": "neck_extension_family",
@@ -282,7 +282,7 @@
         "forward_head_posture",
         "neck_pain"
       ],
-      "description": "Builds endurance in the cervical extensors that hold the head up against gravity, complementing deep flexor work.",
+      "description": "Builds endurance in the muscles at the back of the neck, working the opposite side from the chin tuck for balanced strength.",
       "instructions": [
         "Clasp hands behind head.",
         "Gently press head back into hands without moving the head.",
@@ -339,7 +339,7 @@
     },
     {
       "id": "doorway_pec_stretch_mid",
-      "name": "Doorway Chest Stretch (Mid)",
+      "name": "Doorway Chest Stretch (Arm Level)",
       "category": "stretch",
       "slot": "shoulder_scapula",
       "family_id": "pec_stretch_family",
@@ -372,7 +372,7 @@
     },
     {
       "id": "doorway_pec_stretch_high",
-      "name": "Doorway Chest Stretch (High)",
+      "name": "Doorway Chest Stretch (Arm Raised)",
       "category": "stretch",
       "slot": "shoulder_scapula",
       "family_id": "pec_stretch_family",
@@ -420,7 +420,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "An equipment-free version of scapular retraction performed lying face down.",
+      "description": "Strengthens the muscles that pull the shoulder blades together, lying face down to load them against gravity.",
       "instructions": [
         "Lie face down, arms at sides, palms down.",
         "Squeeze shoulder blades together and slightly down, lifting hands an inch off the floor.",
@@ -455,7 +455,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "A desk-friendly retraction drill needing no floor space or equipment.",
+      "description": "A desk-friendly squeeze that trains the same shoulder blade muscles without needing any floor space.",
       "instructions": [
         "Sit tall, arms relaxed at sides.",
         "Squeeze shoulder blades together and down without shrugging.",
@@ -492,9 +492,9 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "Targets lower trapezius and serratus anterior, which control shoulder blade tilt and rotation, key to correcting round-shoulder posture.",
+      "description": "Trains the muscles that anchor the shoulder blades down and back, key to correcting round-shoulder posture.",
       "instructions": [
-        "In quadruped or forearm plank, draw shoulder blades down and back without shrugging.",
+        "On all fours or in a forearm plank, draw shoulder blades down and back without shrugging.",
         "Hold 5 seconds.",
         "10 reps, 2-3 sets."
       ],
@@ -527,7 +527,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "Same posterior tilt motion performed standing against a wall for feedback.",
+      "description": "The same shoulder blade anchoring motion performed standing against a wall, which gives helpful feedback on whether the blades are moving correctly.",
       "instructions": [
         "Stand with back against wall, arms relaxed.",
         "Draw shoulder blades down and back, pressing them gently into the wall, without shrugging.",
@@ -790,7 +790,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "An equipment-free alternative using bodyweight/gravity instead of a band to load the same posterior rotator cuff muscles.",
+      "description": "Uses gravity instead of a resistance band to work the rotator cuff muscles that keep the shoulder from rolling forward, no equipment needed.",
       "instructions": [
         "Lie on side, bottom arm supporting head, top elbow bent 90 degrees resting on rib cage.",
         "Rotate top forearm upward, keeping elbow pinned to side.",
@@ -1225,7 +1225,7 @@
     },
     {
       "id": "extended_child_pose_lateral_reach",
-      "name": "Extended Child's Pose with Lateral Reach",
+      "name": "Child's Pose Side Reach",
       "category": "stretch",
       "slot": "thoracic_spine",
       "family_id": "child_pose_family",
@@ -1340,7 +1340,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "A deeper hip flexor stretch using an elevated surface (couch, chair, or wall) to flex the back knee further than the standard lunge. More intense -- best for people already comfortable with the basic hip flexor stretch.",
+      "description": "A deeper hip flexor stretch using a couch, chair, or wall to flex the back knee further than the standard lunge. More intense than the kneeling version, best for those who find that one easy.",
       "instructions": [
         "Kneel facing away from a couch or chair, back foot propped up on the seat with knee bent.",
         "Front foot forward, torso upright, tuck pelvis slightly.",
@@ -1529,7 +1529,7 @@
         "anterior_pelvic_tilt",
         "general_core_stability"
       ],
-      "description": "Trains the deep abdominals to control pelvic position under load, reinforcing posterior pelvic tilt and supporting overall spinal stability.",
+      "description": "Trains the deep abs to keep the lower back flat while the limbs move, building the core control needed to maintain good posture throughout the day.",
       "instructions": [
         "Lie on back, arms toward ceiling, knees bent 90 degrees over hips.",
         "Engage core, flatten lower back gently.",
@@ -1567,7 +1567,7 @@
         "anterior_pelvic_tilt",
         "general_core_stability"
       ],
-      "description": "An easier regression of the dead bug, removing the arm movement and lowering only the legs.",
+      "description": "An easier version of the dead bug, removing the arm movement and lowering just one leg at a time.",
       "instructions": [
         "Lie on back, knees bent 90 degrees over hips, arms relaxed at sides.",
         "Engage core, lower one foot to tap the floor.",
@@ -1607,7 +1607,7 @@
         "general_core_stability",
         "anterior_pelvic_tilt"
       ],
-      "description": "Trains anti-rotation core stability, simultaneously activating the glutes, multifidus, and lumbar erector spinae.",
+      "description": "Trains the back and core muscles to stay stable while the arms and legs move, a key skill for maintaining upright posture throughout the day.",
       "instructions": [
         "Hands under shoulders, knees under hips, neutral spine.",
         "Extend one arm forward and opposite leg back, keeping hips and shoulders level.",
@@ -1648,7 +1648,7 @@
       "target_condition": [
         "general_core_stability"
       ],
-      "description": "A standing version of the bird dog studied directly in the EMG research below; adds a substantial balance challenge while still strengthening the hip and lumbar extensors with the spine kept neutral.",
+      "description": "A standing version of the bird dog that adds a balance challenge while still strengthening the hips and lower back with the spine in neutral.",
       "instructions": [
         "Stand tall, hinge slightly at hips.",
         "Extend one arm forward and the opposite leg back, keeping spine neutral and hips level.",
@@ -1686,7 +1686,7 @@
       "target_condition": [
         "general_core_stability"
       ],
-      "description": "Builds lateral core endurance (obliques, quadratus lumborum), supporting frontal-plane pelvic and spinal stability that forward-facing core work misses.",
+      "description": "Builds the side core muscles that keep the pelvis level during walking and standing, a plane of strength that forward-facing core exercises miss.",
       "instructions": [
         "Lie on side, prop up on forearm, hips stacked.",
         "Lift hips until body forms a straight line.",
@@ -1712,7 +1712,7 @@
     },
     {
       "id": "modified_side_plank_knee",
-      "name": "Modified Side Plank (Knees Bent)",
+      "name": "Side Plank (Knees Bent)",
       "category": "strengthen",
       "slot": "core_pelvis",
       "family_id": "plank_family",
@@ -1724,7 +1724,7 @@
       "target_condition": [
         "general_core_stability"
       ],
-      "description": "An accessible regression of the side plank with bent knees, reducing the lever arm for beginners or lower-intensity days.",
+      "description": "An easier version of the side plank with bent knees, great for building up to the full hold or on lower-intensity days.",
       "instructions": [
         "Lie on side, knees bent and stacked, forearm propped under shoulder.",
         "Lift hips until torso and thighs form a straight line from knee to shoulder.",
@@ -1782,7 +1782,7 @@
     },
     {
       "id": "incline_plank",
-      "name": "Incline Plank (Hands Elevated)",
+      "name": "Elevated Plank",
       "category": "strengthen",
       "slot": "core_pelvis",
       "family_id": "plank_family",
@@ -1794,7 +1794,7 @@
       "target_condition": [
         "general_core_stability"
       ],
-      "description": "An accessible regression of the forearm plank with hands elevated on a chair or counter, reducing the load while keeping the same trunk-bracing pattern.",
+      "description": "An easier version of the forearm plank with hands raised on a chair or counter, keeping the same core engagement at lower intensity.",
       "instructions": [
         "Place forearms or hands on a sturdy elevated surface (chair, counter, low table).",
         "Step feet back until body forms a straight line.",
@@ -1817,7 +1817,7 @@
     },
     {
       "id": "single_leg_balance_reset",
-      "name": "Single-Leg Balance Reset",
+      "name": "Single-Leg Balance Hold",
       "category": "mobility",
       "slot": "integration",
       "family_id": "balance_family",
@@ -1829,7 +1829,7 @@
       "target_condition": [
         "general_postural_control"
       ],
-      "description": "A brief proprioceptive/balance challenge promoting postural adjustments and afferent feedback, integrating the session's work into whole-body control.",
+      "description": "Challenges balance and body awareness, putting the session's strength work into practice through whole-body control.",
       "instructions": [
         "Stand tall, shift weight onto one foot, lift the other knee slightly.",
         "Hold 15-20 seconds maintaining tall posture (ears over shoulders, ribs over pelvis).",
@@ -1865,7 +1865,7 @@
       "target_condition": [
         "general_postural_control"
       ],
-      "description": "A more dynamic progression of the balance reset, adding a reaching arm movement that increases the proprioceptive and postural-control demand.",
+      "description": "Builds on the single-leg hold by adding a reaching arm movement that increases the balance and coordination challenge.",
       "instructions": [
         "Stand tall, shift weight onto one foot.",
         "Slowly reach the opposite arm forward and up while maintaining balance and tall posture.",
@@ -1904,7 +1904,7 @@
         "thoracic_kyphosis",
         "general"
       ],
-      "description": "Not a physical exercise, but a behavioral close-out: a conscious posture check to reinforce the session's gains into daily movement habits.",
+      "description": "A conscious posture check to close out the session and reinforce good alignment into daily habits.",
       "instructions": [
         "Stand or sit tall.",
         "Check: ears over shoulders, shoulders relaxed and back, ribcage stacked over pelvis.",
@@ -1938,7 +1938,7 @@
         "forward_head_posture",
         "general"
       ],
-      "description": "A context-triggered variant of postural awareness cueing, tied specifically to the habit (picking up a phone) most strongly linked to forward head posture in the research population.",
+      "description": "Ties good neck posture to the habit most linked to forward head posture: looking down at your phone.",
       "instructions": [
         "Before looking at your phone, pause for one breath.",
         "Bring the phone up toward eye level rather than dropping your head down to it.",
@@ -2028,7 +2028,7 @@
       "id": "serratus_punch_supine",
       "reps": 12,
       "sets": 2,
-      "name": "Lying Serratus Punch",
+      "name": "Ceiling Punch",
       "category": "strengthen",
       "slot": "shoulder_scapula",
       "family_id": "serratus_protraction_family",
@@ -2041,7 +2041,7 @@
         "rounded_shoulders",
         "scapular_winging"
       ],
-      "description": "Isolates the serratus anterior through scapular protraction. EMG research found the serratus punch produced higher serratus activation than push-up-plus variants while minimizing pectoralis minor involvement, making it an efficient, targeted choice.",
+      "description": "Strengthens the muscles that keep the shoulder blades flat against the ribs, preventing the shoulder rounding that comes from weak scapular control.",
       "instructions": [
         "Lie on back, arm reaching straight up toward the ceiling, light weight optional.",
         "Without bending the elbow, push the fist further toward the ceiling by protracting the shoulder blade (lifting it off the floor).",
@@ -2077,7 +2077,7 @@
         "rounded_shoulders",
         "scapular_winging"
       ],
-      "description": "A classic serratus anterior strengthener adding an extra scapular protraction ('plus') at the top of a push-up. The floor (knee) version can be regressed against a wall for accessibility.",
+      "description": "A push-up with an extra spreading of the shoulder blades at the top, training the muscles that keep the shoulders from rounding forward. Can be done on knees or against a wall.",
       "instructions": [
         "From a push-up position (full or on knees), perform a push-up.",
         "At the top, with elbows straight, push the upper back toward the ceiling by spreading the shoulder blades apart (the 'plus').",
@@ -2103,7 +2103,7 @@
       "id": "serratus_floor_press",
       "reps": 10,
       "sets": 2,
-      "name": "All-Fours Serratus Press",
+      "name": "All-Fours Shoulder Press",
       "category": "strengthen",
       "slot": "shoulder_scapula",
       "family_id": "serratus_protraction_family",
@@ -2116,7 +2116,7 @@
         "rounded_shoulders",
         "scapular_winging"
       ],
-      "description": "A quadruped protraction drill that trains all three serratus functions (protraction, upward rotation, posterior tilt) together through pressing the floor away and rounding the upper back.",
+      "description": "Trains the muscles under the armpits that anchor the shoulder blades, using floor pressure and a gentle upper back rounding to load them.",
       "instructions": [
         "Start on hands and knees, hands slightly forward of the shoulders.",
         "Press the floor away, spreading the shoulder blades and gently rounding the upper back.",
@@ -2152,7 +2152,7 @@
         "rounded_shoulders",
         "thoracic_kyphosis"
       ],
-      "description": "Completes the I-Y-T-W raise family; arms straight overhead in line with the body ('I') emphasizes the lower trapezius and the connection into the thoracic extensors.",
+      "description": "Arms straight overhead in line with the body, lifting slightly to target the lower shoulder blade muscles and the upper back.",
       "instructions": [
         "Lie face down, arms straight overhead in line with the body, thumbs up ('I' shape).",
         "Lift arms a few inches, keeping them in line with the torso, squeezing shoulder blades down.",
@@ -2176,7 +2176,7 @@
     },
     {
       "id": "bilateral_doorway_pec_stretch",
-      "name": "Doorway Chest Stretch (Both Arms)",
+      "name": "Doorway Chest Stretch (Both Sides)",
       "category": "stretch",
       "slot": "shoulder_scapula",
       "family_id": "pec_stretch_family",
@@ -2224,7 +2224,7 @@
         "rounded_shoulders",
         "forward_head_posture"
       ],
-      "description": "A posture-specific prone extension where the arms rotate out (thumbs up) and the shoulder blades pull down and together, combining thoracic extensor and scapular retractor strengthening in one move. Distinct from the superman (arms overhead) by its emphasis on shoulder-blade depression.",
+      "description": "Lifts the chest and rotates the arms outward (thumbs up) while pulling the shoulder blades down and together, combining upper back and shoulder blade strengthening in one move.",
       "instructions": [
         "Lie face down, arms at sides, palms down, forehead resting on the floor, gaze down.",
         "Tighten the core, lift the head, chest, and hands slightly, rotating thumbs toward the ceiling.",
@@ -2264,7 +2264,7 @@
       "target_condition": [
         "thoracic_kyphosis"
       ],
-      "description": "A gentle prone backbend that uses light arm support to extend the spine and open the chest, mobilizing thoracic extension while stretching the abdominals and hip flexors. Lower-effort than the strengthening cobra; good for recovery days.",
+      "description": "A gentle backbend using light arm support to extend the spine and open the chest. Lower-effort than the Cobra Lift, good for recovery days.",
       "instructions": [
         "Lie face down, hands under shoulders, elbows close to body.",
         "Press hips gently into the floor and pull the chest forward and up, keeping hips down.",
@@ -2341,7 +2341,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "A foundational motor-control drill teaching active posterior pelvic tilt, the exact motion needed to counter anterior pelvic tilt, by gently flattening the lower back into the floor using the deep abs and glutes.",
+      "description": "Teaches the deep abs and glutes to flatten the lower back into the floor, the key motion for correcting an overly arched lower back.",
       "instructions": [
         "Lie on back, knees bent, feet flat.",
         "Gently flatten the lower back into the floor by tilting the pelvis backward, engaging the lower abs and squeezing the glutes lightly.",
@@ -2380,7 +2380,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "Trains the same posterior pelvic tilt motion against gravity in a hands-and-knees position, increasing the core demand versus the supine version.",
+      "description": "Trains the same lower back flattening motion on all fours against gravity, increasing the core demand compared to the lying version.",
       "instructions": [
         "Start on hands and knees, spine neutral.",
         "Without moving the back into a full cat, tuck the tailbone under by engaging the lower abs and glutes.",
@@ -2460,7 +2460,7 @@
         "hip_mobility",
         "anterior_pelvic_tilt"
       ],
-      "description": "A seated floor stretch targeting hip internal and external rotation simultaneously (front leg externally rotated, back leg internally rotated), addressing rotational hip tightness that the sagittal-plane hip flexor stretches miss.",
+      "description": "A floor stretch that targets hip rotation from both sides at once, reaching the rotational tightness that front-to-back hip stretches cannot address.",
       "instructions": [
         "Sit on the floor, front leg bent 90 degrees in front, back leg bent 90 degrees out to the side.",
         "Keep the back tall, hinge gently forward over the front shin until a stretch is felt in the front hip/glute.",
@@ -2496,7 +2496,7 @@
       "target_condition": [
         "general_postural_control"
       ],
-      "description": "A heel-to-toe narrow stance that challenges balance and postural control with both feet down, an accessible alternative to single-leg balance for those less steady.",
+      "description": "A narrow heel-to-toe stance that challenges balance and posture with both feet down, a good starting point before the single-leg hold.",
       "instructions": [
         "Stand with one foot directly in front of the other, heel touching toe.",
         "Maintain tall posture (ears over shoulders, ribs over pelvis) for 20-30 seconds.",

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Animated, Modal,
+  View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Animated, Modal, Share,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../lib/design/colors';
-import { Typography } from '../lib/design/fonts';
+import { Typography, FontFamily } from '../lib/design/fonts';
 import { Spacing } from '../lib/design/spacing';
 import { Radii } from '../lib/design/radii';
 import { ProgressRing } from '../components/session/ProgressRing';
@@ -20,8 +20,55 @@ import { persistSessionCompletion, SessionSource } from '../lib/services/Session
 import { Exercise, SLOT_NAME } from '../types/Exercise';
 import { xpProgress, xpForLevel, xpForNextLevel, UserProgress } from '../types/UserProgress';
 import { Badge } from '../types/Badge';
+import { MODULE_ICON } from '../types/Module';
 
 type SessionState = 'preview' | 'exercise' | 'complete';
+
+type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+
+const COMPLETE_TITLES = [
+  (name: string) => `Nicely done, ${name}.`,
+  (name: string) => `That's what it's about, ${name}.`,
+  (name: string) => `You showed up, ${name}.`,
+  (name: string) => `Crushed it, ${name}.`,
+  (name: string) => `Look at you go, ${name}.`,
+  (name: string) => `${name}, you're on a roll.`,
+  (name: string) => `Way to show up, ${name}.`,
+  (name: string) => `${name}, that's a win.`,
+  (name: string) => `Killing it, ${name}.`,
+  (name: string) => `${name}, your future self thanks you.`,
+  (name: string) => `That felt good, didn't it, ${name}?`,
+  (name: string) => `${name}, you just leveled up your posture.`,
+  (name: string) => `Making it happen, ${name}.`,
+  (_name: string) => `Another one in the books.`,
+  (_name: string) => `Session complete. Body happy.`,
+  (_name: string) => `That's the habit being built.`,
+  (_name: string) => `Consistency is the whole game.`,
+  (_name: string) => `Ten minutes that matter.`,
+];
+
+const MODULE_COMPLETE_MESSAGE: Record<string, string> = {
+  morning_unlock:        'Great way to start the day. Your body is ready to move.',
+  desk_break_reset:      "That's what your desk didn't want you to do. Do it again tomorrow.",
+  bedtime_release:       'Your body is ready for deep, restful sleep.',
+  tech_neck_fix:         "Your neck just breathed a sigh of relief. Screen time can't touch you.",
+  shoulder_unrounding:   "Chest open, shoulders back. That's what standing tall feels like.",
+  upper_back_kyphosis:   'Your upper back is standing at attention. Keep stacking sessions.',
+  lower_back_core:       'A stronger core is a better back. You just invested in both.',
+  hip_flexor_reset:      'Your hips are unlocked. Walking, sitting — everything feels better.',
+  gamer_reset:           'Battle-ready posture restored. You earned that next session.',
+  full_body_alignment:   "Head to toe, you're dialed in. That's full-body work.",
+  seated_neck_relief:    'The tension you carried into this session is gone. Nice work.',
+  chest_and_spine_open:  'Chest open, spine long. You just created more space to breathe.',
+  rotation_flow:         'Your spine loves to rotate. You just reminded it why.',
+  glute_activation:      'Glutes switched on. Your lower back will thank you for this.',
+  shoulder_stability:    'Shoulders locked in and stable. That foundation builds one session at a time.',
+  prone_shoulder_series: "The muscles between your shoulder blades are awake. That's the good kind.",
+  lateral_chain:         'Side body strength is often forgotten. You just made yours harder to ignore.',
+  deep_neck_protocol:    "That's precision work. Your deep neck muscles are the real MVP.",
+  dynamic_core:          'Your core is more ready than it was ten minutes ago. That compounds.',
+  balance_training:      'Balance is a skill. You just practiced it.',
+};
 
 const CATEGORY_COLOR: Record<string, string> = {
   stretch: '#4EA8FF',
@@ -143,6 +190,7 @@ export default function SessionScreen() {
   const [showBadgeReveal, setShowBadgeReveal] = useState(false);
   const [currentSet, setCurrentSet] = useState(1);
   const [burstCount, setBurstCount] = useState(0);
+  const [completeTitleFn] = useState(() => COMPLETE_TITLES[Math.floor(Math.random() * COMPLETE_TITLES.length)]);
 
   const hasAdvancedRef = useRef(false);
   const startTimeRef = useRef(Date.now());
@@ -328,6 +376,7 @@ export default function SessionScreen() {
   }
 
   function handleReady() {
+    if (currentIndex === 0) startTimeRef.current = Date.now();
     setState('exercise');
   }
 
@@ -350,12 +399,6 @@ export default function SessionScreen() {
     }
   }
 
-  function handlePrev() {
-    if (currentIndex > 0) {
-      setCurrentIndex((ci) => ci - 1);
-      setState('preview');
-    }
-  }
 
   if (state === 'complete') {
     const displayProgress = completedProgress ?? progress;
@@ -363,36 +406,61 @@ export default function SessionScreen() {
     const nextLevelXP = xpForNextLevel(displayProgress?.level ?? 1);
     const xpIntoLevel = (displayProgress?.totalXP ?? 0) - currentLevelXP;
     const xpNeededForLevel = nextLevelXP - currentLevelXP;
+    const isDailyPlan = params.source !== 'module';
+    const completedModuleId = params.source === 'module' ? params.moduleId : undefined;
+    const completeIcon: IoniconsName = isDailyPlan
+      ? 'ribbon'
+      : (MODULE_ICON[completedModuleId ?? ''] ?? 'checkmark') as IoniconsName;
+    const completeMessage = isDailyPlan
+      ? 'Your spine thanks you. Keep the streak alive tomorrow.'
+      : MODULE_COMPLETE_MESSAGE[completedModuleId ?? ''] ?? 'Great work. Keep the momentum going.';
+
+    const handleShare = async () => {
+      const streak = displayProgress?.streakDays ?? 0;
+      const time = formatTime(sessionDuration);
+      let message: string;
+      if (isDailyPlan) {
+        message = `Just finished my daily posture session on Align.${streak > 0 ? ` ${streak} day streak.` : ''} ${time}.`;
+      } else {
+        const modName = moduleRepository.module(completedModuleId ?? '')?.name ?? 'a posture program';
+        message = `Just finished the ${modName} program on Align. ${time}.`;
+      }
+      try {
+        await Share.share({ message });
+      } catch {}
+    };
+
     return (
       <>
       <SafeAreaView style={styles.safe}>
         <View style={styles.completeContainer}>
           <Animated.View style={[styles.checkWrap, { transform: [{ scale: scaleAnim }] }]}>
-            <Ionicons name="checkmark" size={40} color={Colors.white} />
+            <Ionicons name={completeIcon} size={40} color={Colors.white} />
           </Animated.View>
           <Text style={styles.completeLabel}>SESSION COMPLETE</Text>
-          <Text style={styles.completeTitle}>Nicely done, {profile?.name ?? 'you'}</Text>
+          <Text style={styles.completeTitle}>{completeTitleFn(profile?.name ?? 'you')}</Text>
           <Text style={[Typography.body, { color: Colors.secondaryText, textAlign: 'center', marginTop: 4 }]}>
-            Your spine thanks you. Keep the streak alive tomorrow.
+            {completeMessage}
           </Text>
 
           <View style={styles.xpProgressWrap}>
             <View style={styles.xpProgressRow}>
               <Animated.Text style={[
                 Typography.label,
+                { fontSize: 17, lineHeight: 22 },
                 leveledUp && { color: Colors.accent, fontWeight: 'bold' },
                 { transform: [{ scale: levelPopAnim }], transformOrigin: 'left center' },
               ]}>
                 LEVEL {displayProgress?.level ?? 1}
               </Animated.Text>
-              <Text style={[Typography.label, { color: Colors.accent }]}>+{xpEarned} XP</Text>
+              <Text style={[Typography.label, { fontSize: 17, lineHeight: 22, color: Colors.accent }]}>+{xpEarned} XP</Text>
             </View>
             <View style={styles.xpBar}>
               <Animated.View style={[styles.xpFill, {
                 width: xpBarAnim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }),
               }]} />
             </View>
-            <Text style={[Typography.caption, { color: Colors.secondaryText }]}>
+            <Text style={[Typography.caption, { fontSize: 14, lineHeight: 18, color: Colors.secondaryText }]}>
               {xpIntoLevel} / {xpNeededForLevel} XP
             </Text>
             {leveledUp && (
@@ -408,22 +476,29 @@ export default function SessionScreen() {
               <Text style={styles.completeStatValue}>+{xpEarned}</Text>
               <Text style={styles.completeStatLabel}>XP EARNED</Text>
             </View>
+            {isDailyPlan && (
+              <View style={styles.completeStat}>
+                <Text style={styles.completeStatValue}>{displayProgress?.streakDays ?? 0}</Text>
+                <Text style={styles.completeStatLabel}>DAY STREAK</Text>
+              </View>
+            )}
             <View style={styles.completeStat}>
-              <Text style={styles.completeStatValue}>{displayProgress?.streakDays ?? 0}</Text>
-              <Text style={styles.completeStatLabel}>DAY STREAK</Text>
-            </View>
-            <View style={styles.completeStat}>
-              <Text style={styles.completeStatValue}>{Math.round(sessionDuration / 60)}</Text>
-              <Text style={styles.completeStatLabel}>MINUTES</Text>
+              <Text style={styles.completeStatValue}>{formatTime(sessionDuration)}</Text>
+              <Text style={styles.completeStatLabel}>TIME</Text>
             </View>
           </View>
 
-          <TouchableOpacity
-            onPress={handleDone}
-            style={[styles.doneBtn, styles.doneBtnPrimary]}
-          >
-            <Text style={[styles.doneBtnText, styles.doneBtnTextPrimary]}>Done</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: Spacing.tight, width: '100%' }}>
+            <TouchableOpacity style={styles.shareBtn} onPress={handleShare}>
+              <Ionicons name="share-outline" size={22} color={Colors.primaryText} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleDone}
+              style={[styles.doneBtn, styles.doneBtnPrimary, { flex: 1, width: undefined }]}
+            >
+              <Text style={[styles.doneBtnText, styles.doneBtnTextPrimary]}>Done</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </SafeAreaView>
 
@@ -641,40 +716,28 @@ export default function SessionScreen() {
 
       {/* Controls */}
       <View style={styles.controls}>
-        <TouchableOpacity style={styles.ctrlBtn} onPress={handlePrev} disabled={currentIndex === 0}>
-          <Ionicons name="chevron-back" size={22} color={currentIndex === 0 ? Colors.tertiaryText : Colors.primaryText} />
-        </TouchableOpacity>
         {state === 'preview' ? (
-          <>
-            <Button label="Ready" onPress={handleReady} style={{ flex: 1 }} />
-            <View style={[styles.ctrlBtn, { backgroundColor: 'transparent' }]} />
-          </>
+          <Button label="Ready" onPress={handleReady} style={{ flex: 1 }} />
         ) : currentExercise.reps ? (
-          <>
-            {!allSetsDone ? (
-              <Button
-                label={`Complete Set ${currentSet}`}
-                onPress={handleCompleteSet}
-                style={{ flex: 1 }}
-              />
-            ) : (
-              <Button
-                label={currentIndex === exercises.length - 1 ? 'Finish' : 'Next →'}
-                onPress={handleNext}
-                style={{ flex: 1 }}
-              />
-            )}
-            <View style={[styles.ctrlBtn, { backgroundColor: 'transparent' }]} />
-          </>
-        ) : timedSetWaiting ? (
-          <>
+          !allSetsDone ? (
             <Button
-              label={`Start Set ${currentSet + 1}`}
-              onPress={handleStartNextSet}
+              label={`Complete Set ${currentSet}`}
+              onPress={handleCompleteSet}
               style={{ flex: 1 }}
             />
-            <View style={[styles.ctrlBtn, { backgroundColor: 'transparent' }]} />
-          </>
+          ) : (
+            <Button
+              label={currentIndex === exercises.length - 1 ? 'Finish' : 'Next →'}
+              onPress={handleNext}
+              style={{ flex: 1 }}
+            />
+          )
+        ) : timedSetWaiting ? (
+          <Button
+            label={`Start Set ${currentSet + 1}`}
+            onPress={handleStartNextSet}
+            style={{ flex: 1 }}
+          />
         ) : (
           <>
             <Button
@@ -712,8 +775,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerCenter: { flex: 1 },
-  headerTitle: { ...Typography.bodyMedium, textAlign: 'center' },
-  headerCounter: { ...Typography.caption, color: Colors.secondaryText, textAlign: 'center', marginTop: 1 },
+  headerTitle: { ...Typography.subheadline, textAlign: 'center' },
+  headerCounter: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, textAlign: 'center', marginTop: 1 },
   body: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.card, gap: Spacing.inner },
   restLabel: { ...Typography.title, color: Colors.secondaryText, letterSpacing: 2 },
   videoCard: {
@@ -735,11 +798,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 4,
   },
-  categoryChipText: { ...Typography.label, color: Colors.primaryText },
+  categoryChipText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.primaryText },
   videoIcon: { opacity: 0.4 },
-  videoLabel: { ...Typography.caption, color: Colors.tertiaryText, letterSpacing: 2, marginTop: Spacing.tight },
-  exerciseName: { ...Typography.title, textAlign: 'center' },
-  exerciseSub: { ...Typography.body, color: Colors.secondaryText },
+  videoLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, letterSpacing: 2, marginTop: Spacing.tight },
+  exerciseName: { ...Typography.title, fontSize: 28, lineHeight: 34, textAlign: 'center' },
+  exerciseSub: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
   controls: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -771,8 +834,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: Spacing.micro,
   },
-  completeLabel: { ...Typography.label, color: Colors.accent, letterSpacing: 2, textTransform: 'uppercase' },
-  completeTitle: { ...Typography.display, textAlign: 'center' },
+  completeLabel: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.accent, letterSpacing: 2, textTransform: 'uppercase' },
+  completeTitle: { ...Typography.display, fontSize: 36, lineHeight: 44, textAlign: 'center' },
   xpProgressWrap: { width: '100%', gap: Spacing.micro },
   xpProgressRow: { flexDirection: 'row', justifyContent: 'space-between' },
   xpBar: { height: 6, backgroundColor: Colors.cardElevated, borderRadius: 3, overflow: 'hidden' },
@@ -788,7 +851,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     marginTop: Spacing.micro,
   },
-  levelUpText: { ...Typography.label, color: Colors.white, letterSpacing: 1 },
+  levelUpText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.white, letterSpacing: 1 },
   completeStats: { flexDirection: 'row', gap: Spacing.tight, width: '100%' },
   completeStat: {
     flex: 1,
@@ -798,8 +861,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  completeStatValue: { ...Typography.headline },
-  completeStatLabel: { ...Typography.caption, color: Colors.secondaryText, textTransform: 'uppercase', letterSpacing: 0.8, textAlign: 'center' },
+  completeStatValue: { ...Typography.title },
+  completeStatLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, textTransform: 'uppercase', letterSpacing: 0.8, textAlign: 'center' },
+  shareBtn: {
+    width: 52,
+    height: 52,
+    borderRadius: Radii.button,
+    backgroundColor: Colors.card,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   doneBtn: {
     width: '100%',
     backgroundColor: Colors.card,
@@ -808,7 +879,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   doneBtnPrimary: { backgroundColor: Colors.accent },
-  doneBtnText: { ...Typography.subheadline },
+  doneBtnText: { fontFamily: FontFamily.poppinsExtraBold, fontSize: 22, lineHeight: 28, letterSpacing: 0.3 },
   doneBtnTextPrimary: { color: Colors.white },
   previewScroll: { paddingBottom: Spacing.card },
   previewVideo: {
@@ -836,7 +907,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   previewSlotCircleText: { ...Typography.subheadline, color: Colors.secondaryText, letterSpacing: 1 },
-  previewVideoHint: { ...Typography.caption, color: Colors.tertiaryText, letterSpacing: 0.5 },
+  previewVideoHint: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, letterSpacing: 0.5 },
   previewContent: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, gap: Spacing.section },
   previewChipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.tight },
   previewChip: {
@@ -850,24 +921,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.cardElevated,
   },
-  previewChipText: { ...Typography.caption, color: Colors.secondaryText },
-  previewTitle: { ...Typography.headline, marginTop: -Spacing.tight },
+  previewChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  previewTitle: { ...Typography.title, marginTop: -Spacing.tight },
   previewSection: { gap: Spacing.tight },
-  previewSectionLabel: { ...Typography.label, color: Colors.accent, letterSpacing: 1.5, marginBottom: 2 },
-  previewSectionBody: { ...Typography.body, color: Colors.secondaryText, lineHeight: 24 },
+  previewSectionLabel: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.accent, letterSpacing: 1.5, marginBottom: 2 },
+  previewSectionBody: { ...Typography.body, fontSize: 17, lineHeight: 26, color: Colors.secondaryText },
   previewStep: { flexDirection: 'row', gap: Spacing.inner, alignItems: 'flex-start' },
   previewStepNum: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
     marginTop: 1,
   },
-  previewStepNumText: { ...Typography.label },
-  previewStepText: { ...Typography.body, color: Colors.secondaryText, flex: 1, lineHeight: 22 },
+  previewStepNumText: { ...Typography.label, fontSize: 14, lineHeight: 18 },
+  previewStepText: { ...Typography.body, fontSize: 17, lineHeight: 26, color: Colors.secondaryText, flex: 1 },
   previewSetupItem: {
     flexDirection: 'row',
     gap: Spacing.inner,
@@ -876,8 +947,8 @@ const styles = StyleSheet.create({
     borderRadius: Radii.card,
     padding: Spacing.inner,
   },
-  previewSetupLabel: { ...Typography.caption, color: Colors.tertiaryText },
-  previewSetupValue: { ...Typography.bodyMedium, marginTop: 2 },
+  previewSetupLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText },
+  previewSetupValue: { ...Typography.bodyMedium, fontSize: 17, lineHeight: 24, marginTop: 2 },
   repDisplay: { alignItems: 'center', gap: Spacing.tight },
   repBurstWrap: {
     alignItems: 'center',
@@ -886,8 +957,8 @@ const styles = StyleSheet.create({
     height: 100,
   },
   repNumber: { ...Typography.display, fontSize: 72, lineHeight: 80, color: Colors.primaryText },
-  repUnit: { ...Typography.label, color: Colors.secondaryText, letterSpacing: 2 },
-  repSets: { ...Typography.body, color: Colors.tertiaryText },
+  repUnit: { ...Typography.label, fontSize: 16, lineHeight: 20, color: Colors.secondaryText, marginTop: -16 },
+  repSets: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.tertiaryText },
   setDots: { flexDirection: 'row', gap: 8, marginBottom: 4 },
   setDot: {
     width: 30,

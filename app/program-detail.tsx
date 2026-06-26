@@ -5,7 +5,7 @@ import {
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../lib/design/colors';
-import { Typography } from '../lib/design/fonts';
+import { Typography, FontFamily } from '../lib/design/fonts';
 import { Spacing } from '../lib/design/spacing';
 import { Radii } from '../lib/design/radii';
 import { moduleRepository } from '../lib/data/ModuleRepository';
@@ -210,12 +210,12 @@ const styles = StyleSheet.create({
     borderRadius: Radii.chip, borderWidth: 1,
     paddingHorizontal: Spacing.tight, paddingVertical: 3,
   },
-  intensityChipText: { ...Typography.caption, fontFamily: 'Outfit-Bold', letterSpacing: 0.8 },
-  metaText: { ...Typography.caption, color: Colors.secondaryText },
+  intensityChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, fontFamily: FontFamily.poppinsBold, letterSpacing: 0.8 },
+  metaText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
 
   section: { gap: Spacing.tight },
   description: { ...Typography.subheadline, color: Colors.primaryText },
-  rationale: { ...Typography.body, color: Colors.secondaryText, lineHeight: 22 },
+  rationale: { ...Typography.body, fontSize: 17, lineHeight: 26, color: Colors.secondaryText },
   sectionTitle: { ...Typography.subheadline, marginBottom: 4 },
 
   exerciseList: {
@@ -236,9 +236,9 @@ const styles = StyleSheet.create({
   categoryDot: { width: 8, height: 8, borderRadius: 4, flexShrink: 0 },
   exerciseInfo: { flex: 1 },
   exerciseName: { ...Typography.bodyMedium },
-  exerciseSlot: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
+  exerciseSlot: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
   exerciseRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
-  exerciseDuration: { ...Typography.caption, color: Colors.secondaryText },
+  exerciseDuration: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
 
   xpCard: {
     flexDirection: 'row',
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   xpAmount: { ...Typography.subheadline, color: Colors.primaryText },
-  xpSub: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
+  xpSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
 
   footer: {
     paddingHorizontal: Spacing.card,
@@ -273,5 +273,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  startBtnText: { ...Typography.bodyMedium, color: Colors.white },
+  startBtnText: { fontFamily: FontFamily.poppinsExtraBold, fontSize: 22, lineHeight: 28, color: Colors.white, letterSpacing: 0.3 },
 });

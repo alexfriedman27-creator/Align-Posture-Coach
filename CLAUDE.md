@@ -7,8 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run start        # start Expo dev server (Expo Go)
-npm run ios          # open on iOS simulator
+npm run start        # start Expo dev server and open on iOS simulator
 npx tsc --noEmit    # type-check (no test runner configured)
 ```
 

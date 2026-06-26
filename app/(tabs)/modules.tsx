@@ -6,7 +6,7 @@ import {
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../lib/design/colors';
-import { Typography } from '../../lib/design/fonts';
+import { Typography, FontFamily } from '../../lib/design/fonts';
 import { Spacing } from '../../lib/design/spacing';
 import { Radii } from '../../lib/design/radii';
 import { moduleRepository } from '../../lib/data/ModuleRepository';
@@ -90,7 +90,7 @@ export default function ModulesTab() {
 
   const INTENSITY_ORDER = { easy: 0, moderate: 1, hard: 2 };
   const allModules = [...moduleRepository.allModules].sort(
-    (a, b) => INTENSITY_ORDER[a.intensity] - INTENSITY_ORDER[b.intensity]
+    (a, b) => INTENSITY_ORDER[a.intensity] - INTENSITY_ORDER[b.intensity] || a.name.localeCompare(b.name)
   );
 
   useFocusEffect(useCallback(() => {
@@ -118,8 +118,7 @@ export default function ModulesTab() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>Programs</Text>
-        <Text style={styles.sub}>Targeted fixes for the way you live. Follow one through to clear it.</Text>
+
 
         {/* Browse row */}
         <TouchableOpacity style={styles.browseRow} activeOpacity={0.8} onPress={() => router.push('/library')}>
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: Spacing.card, gap: Spacing.gap },
   heading: { ...Typography.title },
-  sub: { ...Typography.body, color: Colors.secondaryText, marginTop: 4 },
+  sub: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText, marginTop: 4 },
   browseRow: {
     backgroundColor: Colors.accent,
     borderRadius: Radii.card,
@@ -172,7 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   browseTitle: { ...Typography.bodyMedium, color: Colors.white },
-  browseSub: { ...Typography.caption, color: Colors.white + 'AA', marginTop: 1 },
+  browseSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.white + 'AA', marginTop: 1 },
   customRow: {
     backgroundColor: Colors.card,
     borderRadius: Radii.card,
@@ -190,7 +189,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   customTitle: { ...Typography.bodyMedium },
-  customSub: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
+  customSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
   proBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -199,7 +198,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 4,
   },
-  proBadgeText: { ...Typography.caption, color: Colors.white, fontFamily: 'Outfit-Bold' },
+  proBadgeText: { ...Typography.caption, color: Colors.white, fontFamily: FontFamily.poppinsBold },
   sectionTitle: { ...Typography.subheadline, marginTop: Spacing.micro },
   moduleCard: {
     backgroundColor: Colors.card,
@@ -225,7 +224,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 3,
   },
-  intensityChipText: { ...Typography.caption, fontFamily: 'Outfit-Bold', letterSpacing: 0.8 },
+  intensityChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, fontFamily: FontFamily.poppinsBold, letterSpacing: 0.8 },
   moduleContent: { padding: Spacing.inner, gap: Spacing.micro },
   moduleNameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight },
   moduleIconCircle: {
@@ -234,8 +233,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   moduleName: { ...Typography.headline, flex: 1 },
-  moduleTagline: { ...Typography.body, color: Colors.secondaryText },
-  moduleMeta: { ...Typography.caption, color: Colors.tertiaryText, marginTop: 2 },
+  moduleTagline: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
+  moduleMeta: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, marginTop: 2 },
   tapChip: {
     alignSelf: 'flex-start',
     backgroundColor: Colors.cardElevated,
@@ -244,7 +243,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginTop: Spacing.micro,
   },
-  tapChipText: { ...Typography.caption, color: Colors.secondaryText },
+  tapChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
   upgradeBadge: {
     alignSelf: 'flex-start',
     flexDirection: 'row',
@@ -255,5 +254,5 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginTop: Spacing.micro,
   },
-  upgradeBadgeText: { ...Typography.caption, color: Colors.white, fontFamily: 'Outfit-Bold' },
+  upgradeBadgeText: { ...Typography.caption, color: Colors.white, fontFamily: FontFamily.poppinsBold },
 });

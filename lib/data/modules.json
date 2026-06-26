@@ -25,17 +25,17 @@
     },
     {
       "id": "desk_break_reset",
-      "name": "Desk Break Reset",
+      "name": "Desk Escape",
       "category": "context",
       "tagline": "Discreet, mostly seated/standing moves to counter a long sitting block.",
       "est_minutes": 4,
       "intensity": "easy",
       "rationale": "The most common context module across apps: short, office-friendly moves targeting the neck, upper back, and hip flexors that suffer most from sitting. Chosen to need no floor.",
       "exercise_ids": [
-        "chin_tuck",
-        "seated_scapular_squeeze",
         "seated_thoracic_rotation",
         "chair_back_thoracic_extension",
+        "chin_tuck",
+        "seated_scapular_squeeze",
         "standing_hip_flexor_stretch"
       ]
     },
@@ -48,9 +48,9 @@
       "intensity": "easy",
       "rationale": "Evening modules use gentle, longer-hold stretches and down-regulation rather than strengthening, mirroring Bend's 'Sleep' and NeckReset's 'Bedtime Release'.",
       "exercise_ids": [
-        "child_pose_thoracic_stretch",
         "upper_trap_stretch",
         "levator_scapulae_stretch",
+        "child_pose_thoracic_stretch",
         "cobra_pose_stretch",
         "open_book_stretch"
       ]
@@ -81,9 +81,9 @@
       "rationale": "Rounded-shoulder correction pairs pec stretching with scapular retractor and serratus strengthening, the combination shown effective for forward shoulder posture.",
       "exercise_ids": [
         "doorway_pec_stretch_mid",
+        "serratus_punch_supine",
         "prone_t_raise",
         "prone_scapular_retraction",
-        "serratus_punch_supine",
         "scapular_posterior_tilt"
       ]
     },
@@ -97,15 +97,15 @@
       "rationale": "Kyphosis-specific module combining thoracic extension mobility with extensor strengthening (prone cobra, superman), the approach shown to reduce kyphosis angle.",
       "exercise_ids": [
         "cat_cow",
-        "standing_thoracic_extension_wall",
         "prone_cobra",
         "prone_extension_superman",
-        "wall_slides"
+        "wall_slides",
+        "standing_thoracic_extension_wall"
       ]
     },
     {
       "id": "lower_back_core",
-      "name": "Lower Back & Core Stability",
+      "name": "Lower Back & Core Power",
       "category": "body_region",
       "tagline": "Build the deep core and pelvic control that protect the lower back.",
       "est_minutes": 6,
@@ -137,15 +137,15 @@
     },
     {
       "id": "gamer_reset",
-      "name": "Gamer Reset",
+      "name": "Gamer Reboot",
       "category": "body_region",
       "tagline": "Undo the neck-forward, shoulders-in, hips-locked posture that gaming locks in.",
       "est_minutes": 5,
       "intensity": "moderate",
       "rationale": "Gaming drives a compound posture pattern: forward head, rounded shoulders, tight pecs, and hip flexor shortening from long static sitting. This module hits all four with strengthen-first ordering.",
       "exercise_ids": [
-        "chin_tuck",
         "wall_angel",
+        "chin_tuck",
         "prone_cobra",
         "doorway_pec_stretch_mid",
         "standing_hip_flexor_stretch"
@@ -161,10 +161,10 @@
       "rationale": "Mirrors the 'Full Body' module every leading app offers. Hits all six body regions once, the multi-region comprehensive approach shown most effective in meta-analysis.",
       "exercise_ids": [
         "chin_tuck",
-        "prone_y_raise",
-        "prone_cobra",
-        "bird_dog",
         "glute_bridge",
+        "bird_dog",
+        "prone_cobra",
+        "prone_y_raise",
         "single_leg_balance_reach"
       ]
     },
@@ -177,10 +177,10 @@
       "intensity": "easy",
       "rationale": "A fully seated sequence targeting the lateral flexors, scalenes, and upper traps — the muscles that shorten during prolonged forward head posture. No floor work required.",
       "exercise_ids": [
+        "chin_tuck",
         "lateral_neck_flexion_stretch",
         "scalene_stretch",
         "neck_rotation_stretch",
-        "chin_tuck",
         "upper_trap_stretch"
       ]
     },
@@ -193,9 +193,9 @@
       "intensity": "easy",
       "rationale": "Pairs anterior chest stretching with thoracic extension to counter flexion-dominated posture. Ends with rotation to restore full three-dimensional spinal movement.",
       "exercise_ids": [
-        "bilateral_doorway_pec_stretch",
         "chair_back_thoracic_extension",
         "cobra_pose_stretch",
+        "bilateral_doorway_pec_stretch",
         "standing_backbend_reach",
         "standing_thoracic_rotation"
       ]
@@ -209,10 +209,10 @@
       "intensity": "moderate",
       "rationale": "Pure thoracic rotation from three positions — quadruped, side-lying, and upright — to systematically address stiffness at every segment of the thoracic spine.",
       "exercise_ids": [
-        "quadruped_thoracic_rotation",
         "open_book_stretch",
-        "seated_thoracic_rotation",
+        "quadruped_thoracic_rotation",
         "extended_child_pose_lateral_reach",
+        "seated_thoracic_rotation",
         "standing_thoracic_rotation"
       ]
     },
@@ -242,15 +242,15 @@
       "rationale": "Focused on serratus anterior and lower trapezius — the two muscles most responsible for scapular upward rotation and the prevention of shoulder impingement.",
       "exercise_ids": [
         "wall_slides",
-        "push_up_plus",
-        "serratus_floor_press",
         "floor_slides_snow_angel",
-        "scapular_posterior_tilt"
+        "serratus_floor_press",
+        "scapular_posterior_tilt",
+        "push_up_plus"
       ]
     },
     {
       "id": "prone_shoulder_series",
-      "name": "Y-T-W Shoulder Series",
+      "name": "Shoulder Blade Series",
       "category": "strength_training",
       "tagline": "The lower trap and rhomboid protocol used in shoulder rehab clinics worldwide.",
       "est_minutes": 8,
@@ -266,7 +266,7 @@
     },
     {
       "id": "lateral_chain",
-      "name": "Lateral Chain",
+      "name": "Side Body Strength",
       "category": "body_region",
       "tagline": "Build the lateral stability system that holds your spine against gravity.",
       "est_minutes": 7,
@@ -275,8 +275,8 @@
       "exercise_ids": [
         "side_plank",
         "side_lying_external_rotation",
-        "single_leg_glute_bridge",
         "side_lying_hip_abduction",
+        "single_leg_glute_bridge",
         "standing_bird_dog"
       ]
     },
@@ -289,10 +289,10 @@
       "intensity": "hard",
       "rationale": "Progressively loads the longus colli and longus capitis — the deep neck flexors — through four variations of chin tuck, finishing with posterior neck strengthening for balanced cervical stability.",
       "exercise_ids": [
-        "deep_neck_flexor_resisted",
         "chin_tuck_wall",
-        "chin_tuck_supine",
+        "deep_neck_flexor_resisted",
         "isometric_neck_extension",
+        "chin_tuck_supine",
         "prone_neck_extension"
       ]
     },
@@ -314,17 +314,17 @@
     },
     {
       "id": "balance_training",
-      "name": "Balance & Proprioception",
+      "name": "Balance & Body Sense",
       "category": "strength_training",
       "tagline": "Challenge the proprioceptive system that tells your brain where your body is in space.",
       "est_minutes": 7,
       "intensity": "hard",
       "rationale": "Single-leg stability with progressive challenge: static hold, multi-directional reach, loaded hip patterns, and upright coordination. Proprioceptive training here improves the automatic postural responses that prevent chronic spinal loading.",
       "exercise_ids": [
+        "single_leg_glute_bridge",
         "tandem_stance_balance",
         "single_leg_balance_reset",
         "single_leg_balance_reach",
-        "single_leg_glute_bridge",
         "standing_bird_dog"
       ]
     }

@@ -230,6 +230,8 @@ const styles = StyleSheet.create({
   },
   videoHint: {
     ...Typography.caption,
+    fontSize: 13,
+    lineHeight: 18,
     color: Colors.tertiaryText,
     letterSpacing: 0.5,
   },
@@ -256,10 +258,12 @@ const styles = StyleSheet.create({
   },
   chipText: {
     ...Typography.caption,
+    fontSize: 13,
+    lineHeight: 18,
     color: Colors.secondaryText,
   },
   title: {
-    ...Typography.headline,
+    ...Typography.title,
     marginTop: -Spacing.tight,
   },
   section: {
@@ -267,14 +271,17 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     ...Typography.label,
+    fontSize: 14,
+    lineHeight: 18,
     color: Colors.accent,
     letterSpacing: 1.5,
     marginBottom: 2,
   },
   sectionBody: {
     ...Typography.body,
+    fontSize: 17,
+    lineHeight: 26,
     color: Colors.secondaryText,
-    lineHeight: 24,
   },
   step: {
     flexDirection: 'row',
@@ -282,9 +289,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   stepNum: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -293,12 +300,15 @@ const styles = StyleSheet.create({
   },
   stepNumText: {
     ...Typography.label,
+    fontSize: 14,
+    lineHeight: 18,
   },
   stepText: {
     ...Typography.body,
+    fontSize: 17,
+    lineHeight: 26,
     color: Colors.secondaryText,
     flex: 1,
-    lineHeight: 22,
   },
   setupItem: {
     flexDirection: 'row',
@@ -310,10 +320,14 @@ const styles = StyleSheet.create({
   },
   setupItemLabel: {
     ...Typography.caption,
+    fontSize: 13,
+    lineHeight: 18,
     color: Colors.tertiaryText,
   },
   setupItemValue: {
     ...Typography.bodyMedium,
+    fontSize: 17,
+    lineHeight: 24,
     marginTop: 2,
   },
 });

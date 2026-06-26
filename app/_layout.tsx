@@ -5,14 +5,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import {
   useFonts,
-  Outfit_800ExtraBold,
-  Outfit_700Bold,
-  Outfit_600SemiBold,
-} from '@expo-google-fonts/outfit';
-import {
-  DMSans_400Regular,
-  DMSans_500Medium,
-} from '@expo-google-fonts/dm-sans';
+  Poppins_800ExtraBold,
+  Poppins_700Bold,
+  Poppins_600SemiBold,
+  Poppins_500Medium,
+  Poppins_400Regular,
+} from '@expo-google-fonts/poppins';
 import { initDb } from '../lib/db/schema';
 import { useUserStore } from '../lib/store/useUserStore';
 import { useProgressStore } from '../lib/store/useProgressStore';
@@ -34,11 +32,11 @@ export default function RootLayout() {
   const segments = useSegments();
 
   const [fontsLoaded] = useFonts({
-    'Outfit-ExtraBold': Outfit_800ExtraBold,
-    'Outfit-Bold': Outfit_700Bold,
-    'Outfit-SemiBold': Outfit_600SemiBold,
-    'DMSans-Regular': DMSans_400Regular,
-    'DMSans-Medium': DMSans_500Medium,
+    'Poppins-ExtraBold': Poppins_800ExtraBold,
+    'Poppins-Bold': Poppins_700Bold,
+    'Poppins-SemiBold': Poppins_600SemiBold,
+    'Poppins-Medium': Poppins_500Medium,
+    'Poppins-Regular': Poppins_400Regular,
   });
 
   // Hide native splash immediately when fonts are ready, then enforce minimum

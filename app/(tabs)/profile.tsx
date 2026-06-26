@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  Switch, TouchableOpacity, Modal
+  Switch, TouchableOpacity, Modal, TextInput
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../lib/design/colors';
@@ -35,6 +35,9 @@ const ICON_MAP: Record<string, IoniconsName> = {
   'pencil': 'pencil', 'hammer': 'hammer', 'camera': 'camera', 'images': 'images',
   'sunny': 'sunny', 'moon': 'moon', 'refresh': 'refresh', 'hourglass': 'hourglass',
   'play-circle': 'play-circle',
+  'shield-checkmark': 'shield-checkmark', 'infinite': 'infinite', 'barbell': 'barbell',
+  'trending-up': 'trending-up', 'create': 'create', 'construct': 'construct',
+  'bookmarks': 'bookmarks', 'flash': 'flash', 'book': 'book',
 };
 
 function badgeIconName(iconName: string): IoniconsName {
@@ -43,7 +46,54 @@ function badgeIconName(iconName: string): IoniconsName {
 
 function badgeCategoryColor(badge: Badge): string {
   const def = getBadgeDefinition(badge.id);
-  return def ? CATEGORY_COLORS[def.category] : CATEGORY_COLORS.special;
+  if (!def) return CATEGORY_COLORS.special;
+  return def.color ?? CATEGORY_COLORS[def.category];
+}
+
+// Static Align logo mark — geometry copied from AlignLoadingScreen.tsx
+const _MS = 0.17;
+const _WIDTHS = [38, 31, 24, 18];
+const _HEAD_R = 13;
+const _SEG_H = 15;
+const _SEG_GAP = 6;
+const _SEG_RX = 6.5;
+const _NECK_GAP = 7;
+const _stackH = _WIDTHS.length * _SEG_H + (_WIDTHS.length - 1) * _SEG_GAP;
+const _totalH = _HEAD_R * 2 + _NECK_GAP + _stackH;
+const _topOff = (140 - _totalH) / 2;
+const _headCy = _topOff + _HEAD_R;
+const _firstCy = _topOff + _HEAD_R * 2 + _NECK_GAP + _SEG_H / 2;
+
+function AlignMark({ tint }: { tint?: string }) {
+  const segColor = tint ?? '#2F6BFF';
+  const headColor = tint ? tint + 'AA' : '#A7CBFF';
+  return (
+    <View style={{ width: 100 * _MS, height: 140 * _MS }}>
+      <View style={{
+        position: 'absolute',
+        left: (50 - _HEAD_R) * _MS,
+        top: (_headCy - _HEAD_R) * _MS,
+        width: _HEAD_R * 2 * _MS,
+        height: _HEAD_R * 2 * _MS,
+        borderRadius: _HEAD_R * _MS,
+        backgroundColor: headColor,
+      }} />
+      {_WIDTHS.map((w, i) => {
+        const cy = _firstCy + i * (_SEG_H + _SEG_GAP);
+        return (
+          <View key={i} style={{
+            position: 'absolute',
+            left: (50 - w / 2) * _MS,
+            top: (cy - _SEG_H / 2) * _MS,
+            width: w * _MS,
+            height: _SEG_H * _MS,
+            borderRadius: _SEG_RX * _MS,
+            backgroundColor: segColor,
+          }} />
+        );
+      })}
+    </View>
+  );
 }
 
 function SettingRow({
@@ -110,13 +160,23 @@ export default function ProfileTab() {
   const [pickerHour, setPickerHour] = useState(8);
   const [pickerMinute, setPickerMinute] = useState(0);
   const [pickerIsPM, setPickerIsPM] = useState(false);
+  const [nameEdit, setNameEdit] = useState(profile?.name ?? '');
+
+  useEffect(() => {
+    if (profile) setNameEdit(profile.name);
+  }, [profile?.name]);
 
   useFocusEffect(useCallback(() => {
     getBadges().then(setBadges);
   }, []));
 
   const slotBadge = badges.find((b) => b.isPinned === pickerSlot);
-  const initials = (profile?.name ?? 'U').split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+
+  async function handleSaveName() {
+    if (!profile) return;
+    const trimmed = nameEdit.trim();
+    if (trimmed && trimmed !== profile.name) await saveProfile({ ...profile, name: trimmed });
+  }
 
   const reminderH = profile?.reminderHour ?? 8;
   const reminderM = profile?.reminderMinute ?? 0;
@@ -181,18 +241,23 @@ export default function ProfileTab() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Profile header */}
         <View style={styles.profileHeader}>
-          <View style={styles.avatarWrap}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{initials}</Text>
-            </View>
-            <View>
-              <Text style={styles.profileName}>{profile?.name ?? 'You'}</Text>
-              <Text style={styles.profileHandle}>@{profile?.username ?? 'align'} · Align {profile?.isPro ? 'Pro' : 'Free'}</Text>
-            </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.nameLabel} allowFontScaling={false}>Name</Text>
+            <TextInput
+              style={styles.nameInput}
+              value={nameEdit}
+              onChangeText={setNameEdit}
+              onBlur={handleSaveName}
+              returnKeyType="done"
+              allowFontScaling={false}
+              placeholderTextColor={Colors.secondaryText}
+              placeholder="Your name"
+            />
           </View>
           {profile?.isPro ? (
             <View style={styles.proBadge}>
-              <Text style={styles.proBadgeText}>PRO</Text>
+              <AlignMark />
+              <Text style={styles.proBadgeText}>Pro</Text>
             </View>
           ) : (
             <TouchableOpacity
@@ -200,8 +265,8 @@ export default function ProfileTab() {
               onPress={() => router.push({ pathname: '/(onboarding)/paywall', params: { directToPlan: '1' } })}
               activeOpacity={0.8}
             >
-              <Ionicons name="sparkles" size={12} color={Colors.white} />
-              <Text style={styles.upgradeButtonText}>Upgrade</Text>
+              <AlignMark tint={Colors.white} />
+              <Text style={styles.upgradeButtonText}>Unlock Pro</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -266,8 +331,15 @@ export default function ProfileTab() {
                     {badge ? (
                       <>
                         <View style={[styles.badgeSlotIcon, { backgroundColor: color + '22' }]}>
-                          <Ionicons name={badge.iconName as IoniconsName} size={26} color={color} />
+                          <Ionicons name={badgeIconName(badge.iconName)} size={26} color={color} />
                         </View>
+                        {(getBadgeDefinition(badge.id)?.stars ?? 0) > 0 && (
+                          <View style={{ flexDirection: 'row', gap: 4 }}>
+                            {Array.from({ length: getBadgeDefinition(badge.id)!.stars! }, (_, i) => (
+                              <View key={i} style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: color }} />
+                            ))}
+                          </View>
+                        )}
                         <Text style={styles.badgeSlotName} numberOfLines={2}>{badge.name}</Text>
                       </>
                     ) : (
@@ -390,19 +462,12 @@ const styles = StyleSheet.create({
     borderRadius: Radii.card,
     padding: Spacing.inner,
   },
-  avatarWrap: { flexDirection: 'row', alignItems: 'center', gap: Spacing.inner },
-  avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: Colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: { ...Typography.subheadline, color: Colors.white },
-  profileName: { ...Typography.subheadline },
-  profileHandle: { ...Typography.caption, color: Colors.secondaryText, marginTop: 2 },
+  nameLabel: { ...Typography.caption, color: Colors.secondaryText, marginBottom: 4 },
+  nameInput: { ...Typography.subheadline, color: Colors.primaryText, padding: 0 },
   proBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     backgroundColor: Colors.cardElevated,
     borderRadius: Radii.chip,
     paddingHorizontal: Spacing.inner,
@@ -410,11 +475,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.accent + '44',
   },
-  proBadgeText: { ...Typography.label, color: Colors.primaryText, letterSpacing: 1 },
+  proBadgeText: { ...Typography.label, color: Colors.primaryText, letterSpacing: 0.5 },
   upgradeButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 6,
     backgroundColor: Colors.accent,
     borderRadius: Radii.chip,
     paddingHorizontal: Spacing.inner,

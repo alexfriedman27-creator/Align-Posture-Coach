@@ -5,7 +5,7 @@ import {
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../lib/design/colors';
-import { Typography } from '../lib/design/fonts';
+import { Typography, FontFamily } from '../lib/design/fonts';
 import { Spacing } from '../lib/design/spacing';
 import { Radii } from '../lib/design/radii';
 import { exerciseRepository } from '../lib/data/ExerciseRepository';
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: { ...Typography.headline },
-  subtitle: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
+  subtitle: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
   addBtn: {
     marginLeft: 'auto',
     width: 36,
@@ -282,6 +282,8 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     ...Typography.body,
+    fontSize: 17,
+    lineHeight: 24,
     color: Colors.primaryText,
     padding: 0,
   },
@@ -295,6 +297,8 @@ const styles = StyleSheet.create({
   },
   filterGroupLabel: {
     ...Typography.caption,
+    fontSize: 13,
+    lineHeight: 18,
     color: Colors.tertiaryText,
     letterSpacing: 1,
     textTransform: 'uppercase',
@@ -316,7 +320,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent,
     borderColor: Colors.accent,
   },
-  filterChipText: { ...Typography.label, color: Colors.secondaryText },
+  filterChipText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.secondaryText },
   filterChipTextActive: { color: Colors.white },
   list: { paddingBottom: Spacing.card },
   separator: { height: 1, backgroundColor: Colors.cardElevated, marginLeft: 72 },
@@ -342,13 +346,13 @@ const styles = StyleSheet.create({
     opacity: 0.12,
     backgroundColor: Colors.cardElevated,
   },
-  badgeText: { ...Typography.label, color: Colors.secondaryText, letterSpacing: 0.5 },
+  badgeText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.secondaryText, letterSpacing: 0.5 },
   rowContent: { flex: 1 },
-  rowName: { ...Typography.bodyMedium, color: Colors.primaryText },
+  rowName: { ...Typography.bodyMedium, fontSize: 17, lineHeight: 24, color: Colors.primaryText },
   rowMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
-  rowCategory: { ...Typography.caption, fontFamily: 'Outfit-Bold' },
-  rowDot: { ...Typography.caption, color: Colors.tertiaryText },
-  rowMetaText: { ...Typography.caption, color: Colors.secondaryText },
+  rowCategory: { ...Typography.caption, fontSize: 13, lineHeight: 18, fontFamily: FontFamily.poppinsBold },
+  rowDot: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText },
+  rowMetaText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
   lockBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -357,6 +361,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 4,
   },
-  lockBadgeText: { ...Typography.caption, color: Colors.white, fontFamily: 'Outfit-Bold' },
+  lockBadgeText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.white, fontFamily: FontFamily.poppinsBold },
   empty: { alignItems: 'center', paddingTop: 60 },
 });

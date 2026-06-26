@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet, ViewStyle, TextStyle, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../lib/design/colors';
-import { Typography } from '../../lib/design/fonts';
+import { Typography, FontFamily } from '../../lib/design/fonts';
 import { Radii } from '../../lib/design/radii';
 import { Spacing } from '../../lib/design/spacing';
 
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
 });
 
 const textStyles: Record<Variant, TextStyle> = {
-  primary: { ...Typography.subheadline, color: Colors.white, fontFamily: 'Outfit-Bold' },
+  primary: { ...Typography.subheadline, fontSize: 22, lineHeight: 28, color: Colors.white, fontFamily: FontFamily.poppinsExtraBold, letterSpacing: 0.3 },
   secondary: { ...Typography.subheadline },
   text: { ...Typography.body, color: Colors.secondaryText },
   danger: { ...Typography.subheadline, color: Colors.danger },

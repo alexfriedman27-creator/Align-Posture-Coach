@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   hero: { alignItems: 'center', paddingTop: Spacing.tight, gap: Spacing.tight },
   dayName: { ...Typography.display, textAlign: 'center' },
   dateStr: { ...Typography.subheadline, color: Colors.secondaryText, marginTop: -4 },
-  motivation: { ...Typography.body, color: Colors.tertiaryText, marginTop: 2 },
+  motivation: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.tertiaryText, marginTop: 2 },
 
   slotRow: {
     flexDirection: 'row',
@@ -227,9 +227,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  slotAbbr: { ...Typography.label, fontFamily: 'Outfit-Bold', fontSize: 13 },
-  slotLabel: { ...Typography.caption, color: Colors.secondaryText, fontSize: 10, textAlign: 'center' },
-  metaText: { ...Typography.body, color: Colors.secondaryText },
+  slotAbbr: { ...Typography.label, fontFamily: FontFamily.poppinsBold, fontSize: 15, lineHeight: 20 },
+  slotLabel: { ...Typography.caption, color: Colors.secondaryText, fontSize: 12, lineHeight: 16, textAlign: 'center' },
+  metaText: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
 
   section: { gap: Spacing.tight },
   sectionTitle: { ...Typography.subheadline },
@@ -258,20 +258,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
-  indexText: { ...Typography.label, fontSize: 12 },
+  indexText: { ...Typography.label, fontSize: 14, lineHeight: 18 },
   exerciseInfo: { flex: 1 },
-  exerciseName: { ...Typography.bodyMedium },
+  exerciseName: { ...Typography.bodyMedium, fontSize: 17, lineHeight: 24 },
   exerciseMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 },
-  exerciseSlot: { ...Typography.caption, color: Colors.secondaryText },
+  exerciseSlot: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
   metaDot: { width: 2, height: 2, borderRadius: 1, backgroundColor: Colors.tertiaryText },
   categoryChip: {
     borderRadius: 4,
     paddingHorizontal: 5,
     paddingVertical: 1,
   },
-  categoryChipText: { ...Typography.caption, fontSize: 10, fontFamily: 'DMSans-Medium' },
+  categoryChipText: { ...Typography.caption, fontSize: 12, lineHeight: 16, fontFamily: FontFamily.poppinsMedium },
   exerciseRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
-  exerciseDuration: { ...Typography.caption, color: Colors.secondaryText },
+  exerciseDuration: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
 
   xpCard: {
     flexDirection: 'row',
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   xpAmount: { ...Typography.subheadline, color: Colors.primaryText },
-  xpSub: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
+  xpSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 5,
   },
-  streakText: { ...Typography.caption, color: Colors.orange, fontFamily: 'DMSans-Medium' },
+  streakText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.orange, fontFamily: FontFamily.poppinsMedium },
 
   footer: {
     paddingHorizontal: Spacing.card,
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  startBtnText: { ...Typography.bodyMedium, color: Colors.white },
+  startBtnText: { fontFamily: FontFamily.poppinsExtraBold, fontSize: 22, lineHeight: 28, color: Colors.white, letterSpacing: 0.3 },
   completedRow: {
     flexDirection: 'row',
     alignItems: 'center',
