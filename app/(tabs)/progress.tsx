@@ -17,18 +17,39 @@ import { StatBlock } from '../../components/shared/StatBlock';
 import { useProgressStore } from '../../lib/store/useProgressStore';
 import { useUserStore } from '../../lib/store/useUserStore';
 import { xpProgress, xpForLevel, xpForNextLevel } from '../../types/UserProgress';
-import { getPhotos, upsertPhoto, deletePhoto } from '../../lib/db/queries';
+import {
+  getPhotos, upsertPhoto, deletePhoto,
+  getAllModuleSessions, getAllDailyPlans, getCustomPrograms,
+} from '../../lib/db/queries';
 import { ProgressPhoto } from '../../types/ProgressPhoto';
 import { Badge } from '../../types/Badge';
 import { BadgeReveal } from '../../components/session/BadgeReveal';
 import { checkAndAwardPhotoBadges } from '../../lib/services/SessionManager';
+import { ModuleSession } from '../../types/ModuleSession';
+import { DailyPlan } from '../../types/DailyPlan';
+import { CustomProgram } from '../../types/CustomProgram';
+import { moduleRepository } from '../../lib/data/ModuleRepository';
+import { exerciseRepository } from '../../lib/data/ExerciseRepository';
+import { ModuleIntensity, INTENSITY_LABEL } from '../../types/Module';
 
 const CAPTION_LIMIT = 100;
+
+const CUSTOM_PURPLE = '#B57BFF';
+
+const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
+  easy: '#4EC97B',
+  moderate: '#4EA8FF',
+  hard: '#FF7A33',
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function monthStr() {
+  return new Date().toISOString().slice(0, 7);
 }
 
 function formatDisplayDate(dateStr: string): string {
@@ -48,6 +69,8 @@ function pastDays(n: number): string[] {
     return d.toISOString().slice(0, 10);
   });
 }
+
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 // ─── Pro gate ─────────────────────────────────────────────────────────────────
 
@@ -155,7 +178,6 @@ function PhotoDetailModal({ photo, onClose, onDelete }: { photo: ProgressPhoto; 
         <ScrollView showsVerticalScrollIndicator={false}>
           <Image source={{ uri: photo.imageUri }} style={styles.detailImage} resizeMode="cover" />
 
-          {/* Stats snapshot */}
           {(photo.streakDays !== undefined || photo.level !== undefined) && (
             <View style={styles.detailStats}>
               {photo.streakDays !== undefined && (
@@ -175,7 +197,6 @@ function PhotoDetailModal({ photo, onClose, onDelete }: { photo: ProgressPhoto; 
             </View>
           )}
 
-          {/* Full caption */}
           {photo.caption ? (
             <Text style={styles.detailCaption}>{photo.caption}</Text>
           ) : null}
@@ -199,7 +220,6 @@ function PhotoCard({ photo, onDelete }: { photo: ProgressPhoto; onDelete: () => 
           <View style={styles.photoCardImageWrap}>
             <Image source={{ uri: photo.imageUri }} style={styles.photoCardImage} resizeMode="cover" />
 
-            {/* Stat overlay at bottom of image */}
             {hasStats && (
               <View style={styles.imageStatsRow}>
                 {photo.streakDays !== undefined && (
@@ -223,7 +243,6 @@ function PhotoCard({ photo, onDelete }: { photo: ProgressPhoto; onDelete: () => 
           </View>
         </TouchableOpacity>
 
-        {/* Caption with truncation */}
         {photo.caption ? (
           <View style={styles.captionWrap}>
             {isCaptionLong ? (
@@ -337,6 +356,186 @@ function MonthCalendar({ sessionDates }: { sessionDates: string[] }) {
   );
 }
 
+// ─── Reports: Program Leaderboard ─────────────────────────────────────────────
+
+interface ProgramEntry {
+  id: string;
+  name: string;
+  kind: 'daily' | 'builtin' | 'custom';
+  intensity?: ModuleIntensity;
+  count: number;
+}
+
+function buildProgramEntries(
+  sessions: ModuleSession[],
+  completedPlans: DailyPlan[],
+  customPrograms: CustomProgram[],
+  period: 'alltime' | 'month',
+): ProgramEntry[] {
+  const month = monthStr();
+  const filteredSessions = period === 'month' ? sessions.filter((s) => s.date.startsWith(month)) : sessions;
+  const filteredPlans = period === 'month' ? completedPlans.filter((p) => p.date.startsWith(month)) : completedPlans;
+
+  const counts = new Map<string, number>();
+  for (const s of filteredSessions) {
+    counts.set(s.moduleId, (counts.get(s.moduleId) ?? 0) + 1);
+  }
+
+  const customById = new Map(customPrograms.map((p) => [p.id, p]));
+  const entries: ProgramEntry[] = [];
+
+  for (const [id, count] of counts.entries()) {
+    const isCustom = id.startsWith('custprog_');
+    if (isCustom) {
+      const prog = customById.get(id);
+      entries.push({ id, name: prog?.name ?? 'Custom Program', kind: 'custom', count });
+    } else {
+      const mod = moduleRepository.module(id);
+      if (mod) {
+        entries.push({ id, name: mod.name, kind: 'builtin', intensity: mod.intensity, count });
+      }
+    }
+  }
+
+  entries.sort((a, b) => b.count - a.count);
+
+  return entries.slice(0, 6);
+}
+
+function ProgramLeaderboard({
+  sessions, completedPlans, customPrograms,
+}: {
+  sessions: ModuleSession[];
+  completedPlans: DailyPlan[];
+  customPrograms: CustomProgram[];
+}) {
+  const [period, setPeriod] = useState<'alltime' | 'month'>('alltime');
+  const entries = buildProgramEntries(sessions, completedPlans, customPrograms, period);
+  const maxCount = entries.length > 0 ? Math.max(...entries.map((e) => e.count)) : 1;
+
+  return (
+    <Card style={styles.reportCard}>
+      <View style={styles.reportCardHeader}>
+        <Text style={styles.reportCardTitle}>Top Programs</Text>
+        <View style={styles.periodToggle}>
+          <TouchableOpacity
+            style={[styles.periodBtn, period === 'alltime' && styles.periodBtnActive]}
+            onPress={() => setPeriod('alltime')}
+          >
+            <Text style={[styles.periodBtnText, period === 'alltime' && styles.periodBtnTextActive]}>All Time</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.periodBtn, period === 'month' && styles.periodBtnActive]}
+            onPress={() => setPeriod('month')}
+          >
+            <Text style={[styles.periodBtnText, period === 'month' && styles.periodBtnTextActive]}>This Month</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {entries.length === 0 ? (
+        <View style={styles.reportEmpty}>
+          <Text style={styles.reportEmptyText}>
+            {period === 'month' ? 'No sessions this month yet.' : 'Complete a session to see your top programs.'}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.leaderList}>
+          {entries.map((entry, i) => {
+            const barFill = maxCount > 0 ? entry.count / maxCount : 0;
+            const isDaily = entry.kind === 'daily';
+            const isCustom = entry.kind === 'custom';
+            const chipColor = isDaily
+              ? Colors.accent
+              : isCustom
+              ? CUSTOM_PURPLE
+              : INTENSITY_COLOR[entry.intensity!];
+
+            return (
+              <View key={entry.id} style={[styles.leaderRow, i < entries.length - 1 && styles.leaderRowBorder]}>
+                <Text style={styles.leaderRank}>#{i + 1}</Text>
+                <View style={styles.leaderInfo}>
+                  <View style={styles.leaderNameRow}>
+                    <Text style={styles.leaderName} numberOfLines={1}>{entry.name}</Text>
+                    <View style={[styles.leaderChip, { backgroundColor: chipColor + '22', borderColor: chipColor + '55' }]}>
+                      <Text style={[styles.leaderChipText, { color: chipColor }]} allowFontScaling={false}>
+                        {isDaily ? 'DAILY' : isCustom ? 'CUSTOM' : INTENSITY_LABEL[entry.intensity!].toUpperCase()}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.leaderBarRow}>
+                    <View style={styles.leaderBarBg}>
+                      <View style={[styles.leaderBarFill, { width: `${Math.round(barFill * 100)}%`, backgroundColor: chipColor }]} />
+                    </View>
+                    <Text style={styles.leaderCount}>{entry.count}</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      )}
+    </Card>
+  );
+}
+
+// ─── Reports: Activity Insights ───────────────────────────────────────────────
+
+function ActivityInsights({
+  sessions, completedPlans, thirtyDayDates, totalSessions, totalMinutes,
+}: {
+  sessions: ModuleSession[];
+  completedPlans: DailyPlan[];
+  thirtyDayDates: string[];
+  totalSessions: number;
+  totalMinutes: number;
+}) {
+  const month = monthStr();
+  const filteredSessions = sessions.filter((s) => s.date.startsWith(month));
+  const filteredPlans = completedPlans.filter((p) => p.date.startsWith(month));
+  const monthSessions = filteredSessions.length + filteredPlans.length;
+
+  const xpThisMonth =
+    filteredSessions.reduce((sum, s) => sum + (s.xpEarned ?? 0), 0) +
+    filteredPlans.reduce((sum, p) => sum + (p.xpEarned ?? 0), 0);
+  const xpLabel = `${xpThisMonth} XP`;
+
+  const avgMins = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
+
+  // Most active day of week from last 30 days (all session types)
+  const dayCounts = Array(7).fill(0);
+  for (const ds of thirtyDayDates) {
+    const [y, m, d] = ds.split('-').map(Number);
+    const dow = new Date(y, m - 1, d).getDay();
+    dayCounts[dow]++;
+  }
+  const maxDayCount = Math.max(...dayCounts);
+  const topDay = maxDayCount > 0 ? DAY_NAMES[dayCounts.indexOf(maxDayCount)] : null;
+
+  const tiles: { label: string; value: string; icon: React.ComponentProps<typeof Ionicons>['name'] }[] = [
+    { label: 'Avg Session', value: avgMins > 0 ? `${avgMins} min` : '—', icon: 'time-outline' },
+    { label: 'This Month', value: `${monthSessions} sessions`, icon: 'calendar-outline' },
+    { label: 'Best Day', value: topDay ?? '—', icon: 'sunny-outline' },
+    { label: 'XP This Month', value: xpThisMonth > 0 ? xpLabel : '—', icon: 'flash-outline' },
+  ];
+
+  return (
+    <Card style={styles.reportCard}>
+      <Text style={styles.reportCardTitle}>Activity Insights</Text>
+      <View style={styles.insightGrid}>
+        {tiles.map((tile, i) => (
+          <View key={tile.label} style={[styles.insightTile, i % 2 === 0 && styles.insightTileLeft]}>
+            <Ionicons name={tile.icon} size={15} color={Colors.accent} style={{ marginBottom: 8 }} />
+            <Text style={styles.insightValue}>{tile.value}</Text>
+            <Text style={styles.insightLabel}>{tile.label}</Text>
+          </View>
+        ))}
+      </View>
+    </Card>
+  );
+}
+
+
 // ─── Main tab ─────────────────────────────────────────────────────────────────
 
 export default function ProgressTab() {
@@ -347,8 +546,22 @@ export default function ProgressTab() {
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
   const [showBadgeReveal, setShowBadgeReveal] = useState(false);
 
+  // Reports data
+  const [moduleSessions, setModuleSessions] = useState<ModuleSession[]>([]);
+  const [completedPlans, setCompletedPlans] = useState<DailyPlan[]>([]);
+  const [customPrograms, setCustomPrograms] = useState<CustomProgram[]>([]);
+
   useFocusEffect(useCallback(() => {
     getPhotos().then(setPhotos);
+    Promise.all([
+      getAllModuleSessions(),
+      getAllDailyPlans(),
+      getCustomPrograms(),
+    ]).then(([sessions, plans, customs]) => {
+      setModuleSessions(sessions);
+      setCompletedPlans(plans.filter((p) => p.completedAt != null));
+      setCustomPrograms(customs);
+    });
   }, []));
 
   const isPro = profile?.isPro ?? false;
@@ -421,6 +634,20 @@ export default function ProgressTab() {
 
         {/* Calendar */}
         <MonthCalendar sessionDates={progress?.thirtyDaySessionDates ?? []} />
+
+        <ProgramLeaderboard
+          sessions={moduleSessions}
+          completedPlans={completedPlans}
+          customPrograms={customPrograms}
+        />
+
+        <ActivityInsights
+          sessions={moduleSessions}
+          completedPlans={completedPlans}
+          thirtyDayDates={progress?.thirtyDaySessionDates ?? []}
+          totalSessions={progress?.totalSessions ?? 0}
+          totalMinutes={progress?.totalMinutes ?? 0}
+        />
 
         {/* Progress Photos */}
         <View>
@@ -530,6 +757,104 @@ const styles = StyleSheet.create({
   calDayNum: { ...Typography.caption, color: Colors.tertiaryText, fontSize: 12 },
   calDayNumToday: { color: Colors.accent },
 
+  // Reports section header
+  reportsSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: -Spacing.micro,
+  },
+  reportsSectionTitle: { ...Typography.subheadline, color: Colors.accent },
+
+  // Report cards
+  reportCard: { gap: Spacing.inner },
+  reportCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  reportCardTitle: { ...Typography.bodyMedium },
+
+  // Period toggle
+  periodToggle: {
+    flexDirection: 'row',
+    backgroundColor: Colors.cardElevated,
+    borderRadius: Radii.chip,
+    padding: 2,
+  },
+  periodBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: Radii.chip - 1,
+  },
+  periodBtnActive: { backgroundColor: Colors.card },
+  periodBtnText: { ...Typography.caption, fontSize: 12, lineHeight: 17, color: Colors.tertiaryText },
+  periodBtnTextActive: { color: Colors.primaryText, fontFamily: FontFamily.poppinsBold },
+
+  // Leaderboard
+  reportEmpty: { paddingVertical: Spacing.inner, alignItems: 'center' },
+  reportEmptyText: { ...Typography.body, fontSize: 14, lineHeight: 20, color: Colors.tertiaryText, textAlign: 'center' },
+  leaderList: { gap: 0 },
+  leaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.tight,
+    paddingVertical: 8,
+  },
+  leaderRowBorder: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.cardElevated,
+  },
+  leaderRank: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, width: 24, textAlign: 'center' },
+  leaderInfo: { flex: 1, gap: 5 },
+  leaderNameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight },
+  leaderName: { ...Typography.bodyMedium, flex: 1 },
+  leaderChip: {
+    borderRadius: Radii.chip,
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    flexShrink: 0,
+  },
+  leaderChipText: { fontFamily: FontFamily.poppinsBold, fontSize: 10, lineHeight: 14, letterSpacing: 0.5 },
+  leaderBarRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight },
+  leaderBarBg: {
+    flex: 1,
+    height: 5,
+    backgroundColor: Colors.cardElevated,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  leaderBarFill: { height: '100%', borderRadius: 3 },
+  leaderCount: { ...Typography.caption, fontSize: 12, lineHeight: 17, color: Colors.secondaryText, width: 28, textAlign: 'right' },
+
+  // Activity insights grid
+  insightGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  insightTile: {
+    width: '50%',
+    paddingTop: Spacing.gap,
+    paddingBottom: Spacing.gap,
+    paddingRight: Spacing.inner,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.cardElevated,
+  },
+  insightTileLeft: {
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderRightColor: Colors.cardElevated,
+  },
+  insightValue: {
+    fontFamily: FontFamily.poppinsExtraBold,
+    fontSize: 22,
+    lineHeight: 28,
+    color: Colors.primaryText,
+    marginBottom: 3,
+  },
+  insightLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+
+
   // Photos
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.tight },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
@@ -561,7 +886,6 @@ const styles = StyleSheet.create({
   photoCardImageWrap: {},
   photoCardImage: { width: '100%', aspectRatio: 4 / 3 },
 
-  // Stats overlay on image
   imageStatsRow: {
     position: 'absolute', bottom: 8, left: 8,
     flexDirection: 'row', gap: 6,
@@ -573,7 +897,6 @@ const styles = StyleSheet.create({
   },
   imageStatText: { ...Typography.caption, color: Colors.white, fontSize: 11 },
 
-  // Caption
   captionWrap: { paddingHorizontal: Spacing.inner, paddingTop: 10, paddingBottom: 4 },
   captionText: { ...Typography.body, color: Colors.primaryText },
   captionEllipsis: { color: Colors.secondaryText },
@@ -585,7 +908,6 @@ const styles = StyleSheet.create({
   },
   photoCardDate: { ...Typography.caption, color: Colors.secondaryText },
 
-  // Detail modal
   detailSafe: { flex: 1, backgroundColor: Colors.background },
   detailHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
@@ -609,7 +931,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: 40,
   },
 
-  // Add Photo sheet
   sheetOverlay: { flex: 1, backgroundColor: 'rgba(4,6,14,0.6)', justifyContent: 'flex-end' },
   sheetCard: { backgroundColor: Colors.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '92%' },
   sheetHeader: {

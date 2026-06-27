@@ -17,6 +17,8 @@ import { useUserStore } from '../lib/store/useUserStore';
 import { useProgressStore } from '../lib/store/useProgressStore';
 import { usePlanStore } from '../lib/store/usePlanStore';
 import { persistSessionCompletion, SessionSource } from '../lib/services/SessionManager';
+import { getCustomProgram } from '../lib/db/queries';
+import { resolveExerciseIds } from '../lib/utils/resolveExercises';
 import { Exercise, SLOT_NAME } from '../types/Exercise';
 import { xpProgress, xpForLevel, xpForNextLevel, UserProgress } from '../types/UserProgress';
 import { Badge } from '../types/Badge';
@@ -170,7 +172,7 @@ function SetBurst({ color }: { color: string }) {
 
 export default function SessionScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ source: string; moduleId?: string }>();
+  const params = useLocalSearchParams<{ source: string; moduleId?: string; customProgramId?: string }>();
   const { profile, devFastMode } = useUserStore();
   const { progress } = useProgressStore();
   const { plan, markCompleted } = usePlanStore();
@@ -190,6 +192,7 @@ export default function SessionScreen() {
   const [showBadgeReveal, setShowBadgeReveal] = useState(false);
   const [currentSet, setCurrentSet] = useState(1);
   const [burstCount, setBurstCount] = useState(0);
+  const [customProgramName, setCustomProgramName] = useState<string | undefined>();
   const [completeTitleFn] = useState(() => COMPLETE_TITLES[Math.floor(Math.random() * COMPLETE_TITLES.length)]);
 
   const hasAdvancedRef = useRef(false);
@@ -208,11 +211,23 @@ export default function SessionScreen() {
     if (params.source === 'module' && params.moduleId) {
       const module = moduleRepository.module(params.moduleId);
       if (module) exs = exerciseRepository.exercises(module.exercise_ids);
+      setExercises(exs);
+      if (exs.length > 0) setTimeLeft(exs[0].duration_seconds);
+    } else if (params.source === 'customProgram' && params.customProgramId) {
+      (async () => {
+        const prog = await getCustomProgram(params.customProgramId!);
+        if (prog) {
+          setCustomProgramName(prog.name);
+          const resolved = await resolveExerciseIds(prog.exerciseIds);
+          setExercises(resolved);
+          if (resolved.length > 0) setTimeLeft(resolved[0].duration_seconds);
+        }
+      })();
     } else if (plan) {
       exs = exerciseRepository.exercises(plan.exerciseIds);
+      setExercises(exs);
+      if (exs.length > 0) setTimeLeft(exs[0].duration_seconds);
     }
-    setExercises(exs);
-    if (exs.length > 0) setTimeLeft(exs[0].duration_seconds);
   }, []);
 
   useEffect(() => {
@@ -282,11 +297,14 @@ export default function SessionScreen() {
     Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, tension: 80, friction: 6 }).start();
 
     if (!progress) return;
-    const source: SessionSource | null = params.source === 'module' && params.moduleId
-      ? { type: 'module', moduleId: params.moduleId }
-      : plan
-        ? { type: 'dailyPlan', plan }
-        : null;
+    const source: SessionSource | null =
+      params.source === 'module' && params.moduleId
+        ? { type: 'module', moduleId: params.moduleId }
+        : params.source === 'customProgram' && params.customProgramId
+          ? { type: 'customProgram', programId: params.customProgramId }
+          : plan
+            ? { type: 'dailyPlan', plan }
+            : null;
     if (!source) return;
 
     try {
@@ -406,14 +424,18 @@ export default function SessionScreen() {
     const nextLevelXP = xpForNextLevel(displayProgress?.level ?? 1);
     const xpIntoLevel = (displayProgress?.totalXP ?? 0) - currentLevelXP;
     const xpNeededForLevel = nextLevelXP - currentLevelXP;
-    const isDailyPlan = params.source !== 'module';
+    const isDailyPlan = params.source !== 'module' && params.source !== 'customProgram';
     const completedModuleId = params.source === 'module' ? params.moduleId : undefined;
     const completeIcon: IoniconsName = isDailyPlan
       ? 'ribbon'
-      : (MODULE_ICON[completedModuleId ?? ''] ?? 'checkmark') as IoniconsName;
+      : params.source === 'customProgram'
+        ? 'color-wand'
+        : (MODULE_ICON[completedModuleId ?? ''] ?? 'checkmark') as IoniconsName;
     const completeMessage = isDailyPlan
       ? 'Your spine thanks you. Keep the streak alive tomorrow.'
-      : MODULE_COMPLETE_MESSAGE[completedModuleId ?? ''] ?? 'Great work. Keep the momentum going.';
+      : params.source === 'customProgram'
+        ? 'Great work. Keep the momentum going.'
+        : MODULE_COMPLETE_MESSAGE[completedModuleId ?? ''] ?? 'Great work. Keep the momentum going.';
 
     const handleShare = async () => {
       const streak = displayProgress?.streakDays ?? 0;
@@ -421,6 +443,8 @@ export default function SessionScreen() {
       let message: string;
       if (isDailyPlan) {
         message = `Just finished my daily posture session on Align.${streak > 0 ? ` ${streak} day streak.` : ''} ${time}.`;
+      } else if (params.source === 'customProgram') {
+        message = `Just finished a custom program on Align. ${time}.`;
       } else {
         const modName = moduleRepository.module(completedModuleId ?? '')?.name ?? 'a posture program';
         message = `Just finished the ${modName} program on Align. ${time}.`;
@@ -513,7 +537,9 @@ export default function SessionScreen() {
 
   const moduleTitle = params.source === 'module' && params.moduleId
     ? moduleRepository.module(params.moduleId)?.name ?? 'Program'
-    : 'Daily Plan';
+    : params.source === 'customProgram'
+      ? customProgramName ?? 'Custom Program'
+      : 'Daily Plan';
 
   return (
     <SafeAreaView style={styles.safe}>

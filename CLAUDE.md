@@ -50,9 +50,11 @@ app/
                              paywall       (plan selection, shown AFTER first session)
                              reminder      (post-paywall reminder setup, first-time only)
   (tabs)/                  ← index (Today), modules.tsx (tab title: "Programs"), progress, profile (hidden)
-  session.tsx              ← fullscreen modal, receives { source, moduleId? } params
+  session.tsx              ← fullscreen modal, receives { source, moduleId?, customProgramId? } params
   daily-plan.tsx           ← fullscreen modal, opened from Today tab hero card
   program-detail.tsx       ← fullscreen modal, receives { moduleId } params, opened from Programs tab
+  custom-program-detail.tsx ← fullscreen modal, receives { programId } params, opened from Programs tab
+  create-program.tsx       ← fullscreen modal for creating/editing custom programs; { editId? } params
   set-reminder.tsx         ← fullscreen modal, opened from profile settings
   library.tsx              ← fullscreen modal, opened from Programs tab
   exercise-detail.tsx      ← fullscreen modal, receives { id, kind: 'builtin'|'custom' } params
@@ -103,9 +105,9 @@ The Daily Program card is the primary feature of the Today tab — it dominates 
 - `schema.ts` — `initDb()` creates 8 tables via `CREATE TABLE IF NOT EXISTS`. Array fields are JSON strings; booleans are INTEGER 0/1. Add new columns via `ALTER TABLE` migration blocks at the bottom (catch the error if the column already exists).
 - `queries.ts` — all raw SQL. Manually maps snake_case DB columns → camelCase TS fields. Never use an ORM; keep all SQL here.
 
-**Tables**: `user_profile`, `user_progress`, `daily_plans`, `module_sessions`, `progress_photos`, `badges`, `custom_exercises`, `favorite_modules`.
+**Tables**: `user_profile`, `user_progress`, `daily_plans`, `module_sessions`, `progress_photos`, `badges`, `custom_exercises`, `favorite_modules`, `custom_programs`.
 
-**Supabase** (`lib/supabase.ts`): client initialised with AsyncStorage for session persistence. The remote schema mirrors the local SQLite tables with an added `user_id UUID` FK on multi-row tables (`daily_plans`, `module_sessions`, `badges`, `custom_exercises`). `user_profile` and `user_progress` use the auth UUID as their primary key (not the local `'profile_1'` / `'progress_1'` IDs). All tables have Row Level Security — users can only access their own rows.
+**Supabase** (`lib/supabase.ts`): client initialised with AsyncStorage for session persistence. The remote schema mirrors the local SQLite tables with an added `user_id UUID` FK on multi-row tables (`daily_plans`, `module_sessions`, `badges`, `custom_exercises`). `user_profile` and `user_progress` use the auth UUID as their primary key (not the local `'profile_1'` / `'progress_1'` IDs). All tables have Row Level Security — users can only access their own rows. `custom_programs`, `favorite_modules`, and `progress_photos` are **local-only** — they are never synced to Supabase.
 
 **Static content** (`lib/data/`):
 - `exercises.json` / `modules.json` are the source of truth for built-in content.
@@ -131,9 +133,11 @@ Use `useFocusEffect(useCallback(..., []))` in screens that need fresh data when 
 **`DailyPlanGenerator`** (`lib/services/`): Picks one exercise per `ExerciseSlot` (`DAILY_SLOTS` = neck, shoulder_scapula, thoracic_spine, core_pelvis, hip). The plan is **globally deterministic** — a mulberry32 PRNG seeded from the date string ensures every user gets the same 5 exercises on a given day. A **3-day cooldown** prevents an exercise from appearing again within 3 days (read from `getRecentDailyPlans(3)`; falls back to allowing recent exercises only if a slot has no cooldown-eligible candidates). Plans are cached in SQLite so generation only runs once per day.
 
 **`SessionManager`** (`lib/services/`): Call `persistSessionCompletion(source, exercises, durationSeconds, progress)` when a session ends. Returns `{ xpEarned, updatedProgress, newBadges }`.
-- XP: daily plan = 500 + (streakDays × 50); module = 200/300/400 by intensity, or 100 if already done today
+- XP: daily plan = 500 + (streakDays × 50); built-in module = 200/300/400 by intensity; custom program = 300; any module/custom repeated same day = 100
 - Inserts session/plan record first, then runs badge checks (so same-day module counts are accurate)
-- `SessionSource` is either `{ type: 'dailyPlan'; plan }` or `{ type: 'module'; moduleId }`
+- `SessionSource` is `{ type: 'dailyPlan'; plan }` | `{ type: 'module'; moduleId }` | `{ type: 'customProgram'; programId }`
+- Custom program sessions are stored in `module_sessions` with `programId` as the `module_id`
+- Only `dailyPlan` sessions update `streakDays` and `lastSessionDate`; module and customProgram sessions do not
 - After writing to SQLite, fires background sync for progress, the plan/session record, and any newly awarded badges.
 
 **Module completion model**: `module_sessions` stores one row per completion with `module_id + date`. Multiple completions on the same day each get their own row. The daily plan has binary complete/incomplete state (`completedAt` is null or a timestamp); modules track full history.
@@ -152,7 +156,32 @@ Use `useFocusEffect(useCallback(..., []))` in screens that need fresh data when 
 
 **Pro gate**: All modules are locked for free users (`locked = !isPro` in `ModuleCard`). Tapping a locked module routes **directly to the paywall** — free users never see the program-detail screen. `TAILORED_MODULE_IDS` in `types/Module.ts` still categorizes modules for `ModuleRepository.tailoredModules` / `generalModules` but is not used for the lock check in the UI.
 
-**Favorite modules**: Pro users can star any module in the Programs tab. Stars are stored in `favorite_modules` SQLite (local-only, not synced to Supabase). Query functions: `getFavoriteModuleIds` / `addFavoriteModule` / `removeFavoriteModule` in `queries.ts`. The Today tab shows starred modules in a horizontal carousel; free users see a full-height upgrade card instead.
+**Favorite modules**: Pro users can star any module or custom program in the Programs tab. Stars are stored in `favorite_modules` SQLite (local-only). The table stores any ID — built-in module IDs and custom program IDs (`custprog_*`) coexist in the same table. Query functions: `getFavoriteModuleIds` / `addFavoriteModule` / `removeFavoriteModule` in `queries.ts`. The Today tab resolves each favorited ID to either a `PostureModule` or `CustomProgram` and renders them in a horizontal carousel; free users see a full-height upgrade card instead.
+
+### Custom programs
+
+Pro users can build their own programs from any combination of built-in and custom exercises (`app/create-program.tsx`). Custom programs are stored in the `custom_programs` SQLite table (local-only, never synced).
+
+**ID format**: `custprog_${Date.now()}` — distinguished from built-in module IDs everywhere by `id.startsWith('custprog_')`.
+
+**Data type** (`types/CustomProgram.ts`):
+```ts
+interface CustomProgram { id: string; name: string; exerciseIds: string[]; createdAt: string; }
+```
+
+**`lib/utils/resolveExercises.ts`** — shared utility used by session.tsx and custom-program-detail.tsx:
+- `resolveExerciseIds(ids)` — resolves a mixed array of builtin + custom exercise IDs to `Exercise[]`. Looks up built-in IDs via `exerciseRepository`, custom IDs via `getCustomExercises()`.
+- `customToExercise(c)` — converts a `CustomExercise` to the `Exercise` shape. `category` defaults to `'stretch'` (custom exercises only have a slot, not a category).
+
+**create-program.tsx**: Name input + selected exercise list (drag-to-reorder via `PanResponder` — no gesture handler library needed) + slot-filtered exercise picker. On save, navigates directly to `custom-program-detail` without a favorites alert — user can tap the star in the header to favorite manually.
+
+**custom-program-detail.tsx**: Shows program hero (purple `color-wand` icon, `CUSTOM` chip), exercise list, 300 XP card, and Start button (purple). Header has star/edit/delete actions. `useFocusEffect` reloads on return from edit.
+
+**Programs tab**: `CustomProgramCard` uses `CUSTOM_PURPLE = '#B57BFF'` and the `color-wand` icon. Custom programs appear above built-in modules in the list. The "Build a custom plan" row is Pro-gated.
+
+**Drag-to-reorder** (create-program.tsx): Uses `PanResponder` from RN core — no `react-native-gesture-handler` needed. Each selected exercise row has a `reorder-three` handle on the left. A 2px blue drop line shows the target position. On release, `selectedIds` is reordered. Pan responders are recreated on each render (safe — RN's gesture system holds the active responder through a gesture even if props change).
+
+**Session flow**: `session.tsx` accepts `source='customProgram'` + `customProgramId` params. Loads the program via `getCustomProgram`, resolves exercises via `resolveExerciseIds`, then runs the normal session flow with a purple `color-wand` completion icon.
 
 ### Badge system
 
@@ -163,6 +192,8 @@ Defined entirely in `types/Badge.ts`. Two distinct types:
 Ten categories (`BadgeCategory`), each with a distinct color in `CATEGORY_COLORS`: streak (orange), sessions (blue), daily (purple), modules/programs (lime), exercises (cyan), time (emerald), level (gold), custom (pink), photo (rose), special (slate). `BADGE_CATEGORY_ORDER` sets display order. The `'modules'` category key is internal — its display name is `'Programs'`.
 
 Badge checks run inside `SessionManager.checkAndAwardBadges` after every session. All DB queries are batched with `Promise.all`.
+
+**`module_completionist`** badge only counts built-in module IDs — `custprog_*` IDs stored in `module_sessions` are filtered out before comparing against `moduleRepository.allModules.length`. The `modules_tried_*` badges count all distinct program IDs including custom programs.
 
 **`ICON_MAP`** (string → `IoniconsName`) is duplicated in `BadgePicker.tsx` and `profile.tsx` — keep both in sync when adding icon names.
 
@@ -205,6 +236,17 @@ All tokens in `lib/design/` — always import from there, never hardcode:
 **Library pro gate**: Free users see a blue "Upgrade to unlock" pill badge (matching the module card lock style) instead of a chevron. Tapping navigates to paywall. Exercise detail is freely accessible from daily-plan and program-detail — only the library is gated.
 
 `exercise-detail.tsx` receives `{ id, kind: 'builtin' | 'custom' }` params. For builtin exercises it calls `exerciseRepository.exercise(id)`; for custom it calls `getCustomExercises()` and finds by id. Shows: 16:9 placeholder area (category-color accent bar + slot badge), then description, numbered instructions, and setup (position/equipment — only shown when equipment is not `"none"`).
+
+### Progress tab (`app/(tabs)/progress.tsx`)
+
+Pro-gated. Loads data in a single `useFocusEffect` `Promise.all` on each focus. Sections top to bottom:
+
+1. **Stats row** — streak, total sessions, total minutes (from `useProgressStore`)
+2. **XP card** — level + progress bar within current level
+3. **Month calendar** — session dots from `progress.thirtyDaySessionDates` (all session types update this)
+4. **Top Programs** — `ProgramLeaderboard` card with All Time / This Month toggle. Sources from `module_sessions` only (daily plans excluded from the list). Sorted by completion count descending. Shows built-in programs (intensity chip) and custom programs (CUSTOM purple chip).
+5. **Activity Insights** — 2×2 grid: avg session length, sessions this month (all types), most active day of week (from 30-day dates), XP earned this month. Month counts include both `module_sessions` and completed `daily_plans`.
+6. **Progress Photos** — photo grid with caption, stat snapshot overlay, full-screen detail modal.
 
 ### Types
 

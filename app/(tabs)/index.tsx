@@ -18,8 +18,9 @@ import { exerciseRepository } from '../../lib/data/ExerciseRepository';
 import { ExerciseCategory } from '../../types/Exercise';
 import { xpProgress, xpForLevel, xpForNextLevel } from '../../types/UserProgress';
 import { Badge, CATEGORY_COLORS, getBadgeDefinition } from '../../types/Badge';
-import { getBadges, getFavoriteModuleIds } from '../../lib/db/queries';
+import { getBadges, getFavoriteModuleIds, getCustomPrograms } from '../../lib/db/queries';
 import { PostureModule, ModuleIntensity, MODULE_ICON } from '../../types/Module';
+import { CustomProgram } from '../../types/CustomProgram';
 
 const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
   easy: '#4EC97B',
@@ -28,7 +29,7 @@ const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
 };
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
-type FavItem = PostureModule | { type: 'add' };
+type FavItem = PostureModule | CustomProgram | { type: 'add' };
 
 const _MS = 0.44;
 const _WIDTHS = [38, 31, 24, 18];
@@ -101,7 +102,7 @@ export default function TodayTab() {
   const { progress } = useProgressStore();
   const { plan, loadOrGeneratePlan } = usePlanStore();
   const [earnedBadges, setEarnedBadges] = useState<Badge[]>([]);
-  const [favoriteModules, setFavoriteModules] = useState<PostureModule[]>([]);
+  const [favoriteModules, setFavoriteModules] = useState<(PostureModule | CustomProgram)[]>([]);
 
   const isPro = profile?.isPro ?? false;
   const streakDays = progress?.streakDays ?? 0;
@@ -113,11 +114,12 @@ export default function TodayTab() {
   useFocusEffect(useCallback(() => {
     getBadges().then(setEarnedBadges);
     if (isPro) {
-      getFavoriteModuleIds().then((ids) => {
-        const modules = ids
-          .map((id) => moduleRepository.module(id))
-          .filter((m): m is PostureModule => m != null);
-        setFavoriteModules(modules);
+      Promise.all([getFavoriteModuleIds(), getCustomPrograms()]).then(([ids, customProgs]) => {
+        const customById = new Map(customProgs.map((p) => [p.id, p]));
+        const items = ids
+          .map((id) => moduleRepository.module(id) ?? customById.get(id))
+          .filter((item): item is PostureModule | CustomProgram => item != null);
+        setFavoriteModules(items);
       });
     }
   }, [isPro]));
@@ -333,6 +335,25 @@ export default function TodayTab() {
                       onPress={() => router.push('/(tabs)/modules')}
                     >
                       <Ionicons name="add" size={22} color={Colors.tertiaryText} />
+                    </TouchableOpacity>
+                  );
+                }
+                const isCustom = !('intensity' in item);
+                if (isCustom) {
+                  return (
+                    <TouchableOpacity
+                      style={styles.programCard}
+                      activeOpacity={0.8}
+                      onPress={() => router.push({ pathname: '/custom-program-detail', params: { programId: item.id } })}
+                    >
+                      <View style={styles.programStripe} />
+                      <View style={[styles.programIconCircle, { backgroundColor: '#B57BFF22' }]}>
+                        <Ionicons name="color-wand" size={16} color="#B57BFF" />
+                      </View>
+                      <View>
+                        <Text style={styles.programCat}>CUSTOM</Text>
+                        <Text style={styles.programName}>{item.name}</Text>
+                      </View>
                     </TouchableOpacity>
                   );
                 }

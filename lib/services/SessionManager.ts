@@ -15,15 +15,20 @@ import { exerciseRepository } from '../data/ExerciseRepository';
 import { todayDateString } from './DailyPlanGenerator';
 import { syncProgress, syncDailyPlan, syncModuleSession, syncBadge } from '../sync/supabaseSync';
 
-export type SessionSource = { type: 'dailyPlan'; plan: DailyPlan } | { type: 'module'; moduleId: string };
+export type SessionSource =
+  | { type: 'dailyPlan'; plan: DailyPlan }
+  | { type: 'module'; moduleId: string }
+  | { type: 'customProgram'; programId: string };
 
 async function computeXP(source: SessionSource, streakDays: number): Promise<number> {
   if (source.type === 'dailyPlan') {
     return 500 + streakDays * 50;
   }
   const today = todayDateString();
-  const priorCount = await getModuleSessionCountForDate(source.moduleId, today);
+  const sessionId = source.type === 'module' ? source.moduleId : source.programId;
+  const priorCount = await getModuleSessionCountForDate(sessionId, today);
   if (priorCount > 0) return 100;
+  if (source.type === 'customProgram') return 300;
   const mod = moduleRepository.module(source.moduleId);
   switch (mod?.intensity) {
     case 'easy': return 200;
@@ -121,13 +126,16 @@ async function checkAndAwardBadges(
   check('daily_30',  dailyPlanCount >= 30);
   check('daily_100', dailyPlanCount >= 100);
 
-  // Unique modules tried
+  // Unique modules tried (built-in + custom both count toward tried_* badges)
   const distinctModuleCount = distinctModuleIds.size;
   check('modules_tried_2',  distinctModuleCount >= 2);
   check('modules_tried_3',  distinctModuleCount >= 3);
   check('modules_tried_5',  distinctModuleCount >= 5);
   check('modules_tried_10', distinctModuleCount >= 10);
-  check('module_completionist', distinctModuleIds.size >= moduleRepository.allModules.length);
+  // Completionist only counts built-in module IDs (custprog_* IDs are excluded)
+  const builtInModuleIdSet = new Set(moduleRepository.allModules.map((m) => m.id));
+  const distinctBuiltInCount = [...distinctModuleIds].filter((id) => builtInModuleIdSet.has(id)).length;
+  check('module_completionist', distinctBuiltInCount >= moduleRepository.allModules.length);
 
   // Same-day modules
   check('same_day_2',  modulesForToday >= 2);
@@ -233,6 +241,7 @@ export async function persistSessionCompletion(
   const sessionHour = new Date().getHours();
   const prevLastSessionDate = progress.lastSessionDate;
   const isDailyPlan = source.type === 'dailyPlan';
+  const sessionId = source.type === 'module' ? source.moduleId : source.type === 'customProgram' ? source.programId : null;
   const newStreak = isDailyPlan ? updateStreak(progress, today) : progress.streakDays;
   const xpEarned = await computeXP(source, newStreak);
 
@@ -255,10 +264,10 @@ export async function persistSessionCompletion(
     const updatedPlan: DailyPlan = { ...source.plan, completedAt: new Date().toISOString(), xpEarned };
     await upsertDailyPlan(updatedPlan);
     syncDailyPlan(updatedPlan);
-  } else {
+  } else if (sessionId) {
     const session: ModuleSession = {
       id: `msession_${Date.now()}`,
-      moduleId: source.moduleId,
+      moduleId: sessionId,
       date: today,
       completedExerciseIds: exercises.map((e) => e.id),
       durationSeconds,

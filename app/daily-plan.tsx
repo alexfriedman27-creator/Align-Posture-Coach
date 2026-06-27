@@ -5,7 +5,7 @@ import {
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../lib/design/colors';
-import { Typography } from '../lib/design/fonts';
+import { Typography, FontFamily } from '../lib/design/fonts';
 import { Spacing } from '../lib/design/spacing';
 import { Radii } from '../lib/design/radii';
 import { usePlanStore } from '../lib/store/usePlanStore';
@@ -64,8 +64,17 @@ export default function DailyPlanScreen() {
   const isCompleted = !!plan?.completedAt;
   const estMinutes = exercises.reduce((sum, e) => sum + Math.ceil(e.duration_seconds / 60), 0);
   const streakDays = progress?.streakDays ?? 0;
-  const streakBonus = streakDays * 50;
-  const totalXP = 500 + streakBonus;
+  const expectedStreak = (() => {
+    if (isCompleted) return streakDays;
+    const last = progress?.lastSessionDate;
+    if (!last) return 1;
+    const diffDays = Math.round((Date.now() - new Date(last).getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays === 1) return streakDays + 1;
+    if (diffDays === 0) return streakDays;
+    return 1;
+  })();
+  const streakBonus = expectedStreak * 50;
+  const totalXP = isCompleted && plan?.xpEarned ? plan.xpEarned : 500 + streakBonus;
 
   const now = new Date();
   const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });

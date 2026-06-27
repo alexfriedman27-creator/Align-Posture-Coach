@@ -102,6 +102,20 @@ export async function initDb(): Promise<void> {
     // table already exists
   }
 
+  // Migration: custom_programs table
+  try {
+    await database.execAsync(`
+      CREATE TABLE IF NOT EXISTS custom_programs (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        exercise_ids TEXT NOT NULL DEFAULT '[]',
+        created_at TEXT NOT NULL
+      )
+    `);
+  } catch {
+    // table already exists
+  }
+
   // Migration: progress_photos — new columns
   for (const col of [
     'ALTER TABLE progress_photos ADD COLUMN caption TEXT',

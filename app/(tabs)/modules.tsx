@@ -18,7 +18,10 @@ const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
   hard: '#FF7A33',
 };
 import { useUserStore } from '../../lib/store/useUserStore';
-import { getFavoriteModuleIds, addFavoriteModule, removeFavoriteModule } from '../../lib/db/queries';
+import { getFavoriteModuleIds, addFavoriteModule, removeFavoriteModule, getCustomPrograms } from '../../lib/db/queries';
+import { CustomProgram } from '../../types/CustomProgram';
+
+const CUSTOM_PURPLE = '#B57BFF';
 
 function ModuleCard({
   module, onPress, isPro, isFavorite, onToggleFavorite,
@@ -82,11 +85,51 @@ function ModuleCard({
   );
 }
 
+function CustomProgramCard({
+  program, onPress, isFavorite, onToggleFavorite,
+}: {
+  program: CustomProgram;
+  onPress: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+}) {
+  return (
+    <TouchableOpacity style={styles.moduleCard} onPress={onPress} activeOpacity={0.85}>
+      <View style={styles.moduleStripe} />
+      <View style={styles.moduleTop}>
+        <View style={[styles.intensityChip, { backgroundColor: CUSTOM_PURPLE + '22', borderColor: CUSTOM_PURPLE + '55' }]}>
+          <Text style={[styles.intensityChipText, { color: CUSTOM_PURPLE }]}>CUSTOM</Text>
+        </View>
+        <TouchableOpacity onPress={onToggleFavorite} hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+          <Ionicons
+            name={isFavorite ? 'star' : 'star-outline'}
+            size={17}
+            color={isFavorite ? '#F5C518' : Colors.tertiaryText}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.moduleContent}>
+        <View style={styles.moduleNameRow}>
+          <View style={[styles.moduleIconCircle, { backgroundColor: CUSTOM_PURPLE + '22' }]}>
+            <Ionicons name="color-wand" size={18} color={CUSTOM_PURPLE} />
+          </View>
+          <Text style={styles.moduleName}>{program.name}</Text>
+        </View>
+        <Text style={styles.moduleMeta}>{program.exerciseIds.length} exercises</Text>
+        <View style={styles.tapChip}>
+          <Text style={styles.tapChipText}>View program</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
 export default function ModulesTab() {
   const router = useRouter();
   const { profile } = useUserStore();
   const isPro = profile?.isPro ?? false;
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const [customPrograms, setCustomPrograms] = useState<CustomProgram[]>([]);
 
   const INTENSITY_ORDER = { easy: 0, moderate: 1, hard: 2 };
   const allModules = [...moduleRepository.allModules].sort(
@@ -95,7 +138,8 @@ export default function ModulesTab() {
 
   useFocusEffect(useCallback(() => {
     getFavoriteModuleIds().then((ids) => setFavoriteIds(new Set(ids)));
-  }, []));
+    if (isPro) getCustomPrograms().then(setCustomPrograms);
+  }, [isPro]));
 
   function openDetail(moduleId: string) {
     if (!isPro) {
@@ -128,7 +172,17 @@ export default function ModulesTab() {
         </TouchableOpacity>
 
         {/* Custom plan row */}
-        <TouchableOpacity style={styles.customRow} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.customRow}
+          activeOpacity={0.8}
+          onPress={() => {
+            if (!isPro) {
+              router.push({ pathname: '/(onboarding)/paywall', params: { directToPlan: '1' } });
+              return;
+            }
+            router.push('/create-program');
+          }}
+        >
           <View style={styles.customIcon}>
             <Ionicons name="add" size={18} color={Colors.primaryText} />
           </View>
@@ -141,6 +195,16 @@ export default function ModulesTab() {
             <Text style={styles.proBadgeText}>Pro</Text>
           </View>
         </TouchableOpacity>
+
+        {customPrograms.map((prog) => (
+          <CustomProgramCard
+            key={prog.id}
+            program={prog}
+            isFavorite={favoriteIds.has(prog.id)}
+            onPress={() => router.push({ pathname: '/custom-program-detail', params: { programId: prog.id } })}
+            onToggleFavorite={() => toggleFavorite(prog.id)}
+          />
+        ))}
 
         {allModules.map((module) => (
           <ModuleCard

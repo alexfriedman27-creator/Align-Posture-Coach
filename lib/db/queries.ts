@@ -6,6 +6,7 @@ import { ModuleSession } from '../../types/ModuleSession';
 import { ProgressPhoto } from '../../types/ProgressPhoto';
 import { Badge } from '../../types/Badge';
 import { CustomExercise } from '../../types/CustomExercise';
+import { CustomProgram } from '../../types/CustomProgram';
 import { ExerciseSlot } from '../../types/Exercise';
 
 // --- UserProfile ---
@@ -360,6 +361,47 @@ export async function insertCustomExercise(ex: CustomExercise): Promise<void> {
 export async function deleteCustomExercise(id: string): Promise<void> {
   const db = await getDb();
   await db.runAsync('DELETE FROM custom_exercises WHERE id = ?', id);
+}
+
+// --- Custom Programs ---
+
+export async function getCustomPrograms(): Promise<CustomProgram[]> {
+  const db = await getDb();
+  const rows = await db.getAllAsync<any>('SELECT * FROM custom_programs ORDER BY created_at DESC');
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    exerciseIds: JSON.parse(r.exercise_ids),
+    createdAt: r.created_at,
+  }));
+}
+
+export async function getCustomProgram(id: string): Promise<CustomProgram | null> {
+  const db = await getDb();
+  const row = await db.getFirstAsync<any>('SELECT * FROM custom_programs WHERE id = ?', id);
+  if (!row) return null;
+  return { id: row.id, name: row.name, exerciseIds: JSON.parse(row.exercise_ids), createdAt: row.created_at };
+}
+
+export async function insertCustomProgram(p: CustomProgram): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(
+    'INSERT INTO custom_programs (id, name, exercise_ids, created_at) VALUES (?, ?, ?, ?)',
+    p.id, p.name, JSON.stringify(p.exerciseIds), p.createdAt
+  );
+}
+
+export async function updateCustomProgram(p: CustomProgram): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(
+    'UPDATE custom_programs SET name = ?, exercise_ids = ? WHERE id = ?',
+    p.name, JSON.stringify(p.exerciseIds), p.id
+  );
+}
+
+export async function deleteCustomProgram(id: string): Promise<void> {
+  const db = await getDb();
+  await db.runAsync('DELETE FROM custom_programs WHERE id = ?', id);
 }
 
 // --- Favorite Modules ---
