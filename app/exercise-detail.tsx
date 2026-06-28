@@ -11,6 +11,7 @@ import { Radii } from '../lib/design/radii';
 import { exerciseRepository } from '../lib/data/ExerciseRepository';
 import { getCustomExercises } from '../lib/db/queries';
 import { ExerciseCategory, SLOT_NAME, SLOT_BADGE } from '../types/Exercise';
+import { ExerciseAnimation } from '../components/shared/ExerciseAnimation';
 import { CustomExercise } from '../types/CustomExercise';
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
@@ -76,17 +77,12 @@ export default function ExerciseDetailScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-        {/* Video placeholder */}
-        <View style={styles.videoWrap}>
-          <View style={[styles.videoTopBar, { backgroundColor: catColor }]} />
-          <View style={[styles.videoBg, { backgroundColor: catColor, opacity: 0.06 }]} />
-          <View style={styles.videoCenter}>
-            <View style={styles.slotCircle}>
-              <Text style={styles.slotCircleText}>{slotBadge}</Text>
-            </View>
-            <Text style={styles.videoHint}>Animation coming soon</Text>
-          </View>
-        </View>
+        <ExerciseAnimation
+          exerciseId={id}
+          catColor={catColor}
+          slot={slot}
+          style={styles.videoWrap}
+        />
 
         <View style={styles.content}>
           {/* Meta chips */}
@@ -200,40 +196,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  videoTopBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-  },
-  videoBg: {
-    ...StyleSheet.absoluteFill,
-  },
-  videoCenter: {
-    alignItems: 'center',
-    gap: Spacing.tight,
-  },
-  slotCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.cardElevated,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  slotCircleText: {
-    ...Typography.subheadline,
-    color: Colors.secondaryText,
-    letterSpacing: 1,
-  },
-  videoHint: {
-    ...Typography.caption,
-    fontSize: 13,
-    lineHeight: 18,
-    color: Colors.tertiaryText,
-    letterSpacing: 0.5,
   },
   content: {
     paddingHorizontal: Spacing.card,

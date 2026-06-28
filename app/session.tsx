@@ -11,6 +11,7 @@ import { Radii } from '../lib/design/radii';
 import { ProgressRing } from '../components/session/ProgressRing';
 import { BadgeReveal } from '../components/session/BadgeReveal';
 import { Button } from '../components/shared/Button';
+import { ExerciseAnimation } from '../components/shared/ExerciseAnimation';
 import { exerciseRepository } from '../lib/data/ExerciseRepository';
 import { moduleRepository } from '../lib/data/ModuleRepository';
 import { useUserStore } from '../lib/store/useUserStore';
@@ -198,9 +199,11 @@ export default function SessionScreen() {
   const hasAdvancedRef = useRef(false);
   const startTimeRef = useRef(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const exerciseWallStartRef = useRef<number>(0);
+  const exerciseWallTimeLeftRef = useRef<number>(0);
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
-  const animRef = useRef<Animated.CompositeAnimation | null>(null);
+
   const xpBarAnim = useRef(new Animated.Value(0)).current;
   const levelPopAnim = useRef(new Animated.Value(1)).current;
   const preSessionProgressRef = useRef<UserProgress | null>(null);
@@ -326,42 +329,45 @@ export default function SessionScreen() {
   useEffect(() => {
     if (state === 'complete' || state === 'preview' || !currentExercise) return;
     if (currentExercise.reps) return;
-    if (animRef.current) animRef.current.stop();
     if (isPaused) return;
 
     if (timerRef.current) clearInterval(timerRef.current);
     hasAdvancedRef.current = false;
 
     const totalSecs = totalDuration || currentExercise.duration_seconds;
-    progressAnim.setValue(1 - timeLeft / totalSecs);
-    animRef.current = Animated.timing(progressAnim, {
-      toValue: 1,
-      duration: timeLeft * 1000,
-      useNativeDriver: false,
-    });
-    animRef.current.start();
+    if (totalSecs === 0) return;
+    const startProgress = 1 - timeLeft / totalSecs;
+    progressAnim.setValue(startProgress);
 
+    exerciseWallStartRef.current = Date.now();
+    exerciseWallTimeLeftRef.current = timeLeft;
+
+    // Drive both the ring and the countdown from the same elapsed value so
+    // they are always in sync — no separate Animated.timing clock to drift.
     timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!);
-          if (!hasAdvancedRef.current) {
-            hasAdvancedRef.current = true;
-            if (hasMultipleSets && currentSet < totalSets) {
-              setBurstCount((c) => c + 1);
-            } else {
-              advanceExercise();
-            }
+      const elapsed = (Date.now() - exerciseWallStartRef.current) / 1000;
+      const duration = exerciseWallTimeLeftRef.current;
+      const progress = Math.min(1, startProgress + (1 - startProgress) * (elapsed / duration));
+      const remaining = Math.max(0, Math.ceil(duration - elapsed));
+
+      progressAnim.setValue(progress);
+      setTimeLeft((prev) => (remaining !== prev ? remaining : prev));
+
+      if (elapsed >= duration) {
+        clearInterval(timerRef.current!);
+        if (!hasAdvancedRef.current) {
+          hasAdvancedRef.current = true;
+          if (hasMultipleSets && currentSet < totalSets) {
+            setBurstCount((c) => c + 1);
+          } else {
+            advanceExercise();
           }
-          return 0;
         }
-        return prev - 1;
-      });
-    }, 1000);
+      }
+    }, 50);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (animRef.current) animRef.current.stop();
     };
   }, [state, isPaused, currentIndex, exercises, currentSet]);
 
@@ -561,17 +567,12 @@ export default function SessionScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.previewScroll}
         >
-          {/* 16:9 video placeholder */}
-          <View style={styles.previewVideo}>
-            <View style={[styles.previewVideoBar, { backgroundColor: CATEGORY_COLOR[currentExercise.category] }]} />
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: CATEGORY_COLOR[currentExercise.category], opacity: 0.06 }]} />
-            <View style={styles.previewVideoCenter}>
-              <View style={styles.previewSlotCircle}>
-                <Text style={styles.previewSlotCircleText}>{currentExercise.slot.slice(0, 2).toUpperCase()}</Text>
-              </View>
-              <Text style={styles.previewVideoHint}>Animation coming soon</Text>
-            </View>
-          </View>
+          <ExerciseAnimation
+            exerciseId={currentExercise.id}
+            catColor={CATEGORY_COLOR[currentExercise.category]}
+            slot={currentExercise.slot}
+            style={styles.previewVideo}
+          />
 
           <View style={styles.previewContent}>
             {/* Chips */}
@@ -652,12 +653,15 @@ export default function SessionScreen() {
       ) : (
         <View style={styles.body}>
           <View style={styles.videoCard}>
-            <View style={styles.videoStripe} />
+            <ExerciseAnimation
+              exerciseId={currentExercise.id}
+              catColor={CATEGORY_COLOR[currentExercise.category]}
+              slot={currentExercise.slot}
+              style={StyleSheet.absoluteFill}
+            />
             <View style={styles.categoryChip}>
               <Text style={styles.categoryChipText}>{SLOT_NAME[currentExercise.slot]}</Text>
             </View>
-            <Ionicons name="body" size={40} color={Colors.tertiaryText} style={styles.videoIcon} />
-            <Text style={styles.videoLabel}>EXERCISE VIDEO</Text>
           </View>
 
           <Text style={styles.exerciseName}>{currentExercise.name}</Text>
@@ -814,7 +818,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  videoStripe: { ...StyleSheet.absoluteFill, opacity: 0.08, backgroundColor: Colors.cardElevated },
   categoryChip: {
     position: 'absolute',
     top: Spacing.inner,
@@ -825,8 +828,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   categoryChipText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.primaryText },
-  videoIcon: { opacity: 0.4 },
-  videoLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, letterSpacing: 2, marginTop: Spacing.tight },
   exerciseName: { ...Typography.title, fontSize: 28, lineHeight: 34, textAlign: 'center' },
   exerciseSub: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
   controls: {
@@ -916,24 +917,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  previewVideoBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-  },
-  previewVideoCenter: { alignItems: 'center', gap: Spacing.tight },
-  previewSlotCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.cardElevated,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  previewSlotCircleText: { ...Typography.subheadline, color: Colors.secondaryText, letterSpacing: 1 },
-  previewVideoHint: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, letterSpacing: 0.5 },
   previewContent: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, gap: Spacing.section },
   previewChipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.tight },
   previewChip: {

@@ -165,10 +165,13 @@ export default function ModulesTab() {
 
 
         {/* Browse row */}
-        <TouchableOpacity style={styles.browseRow} activeOpacity={0.8} onPress={() => router.push('/library')}>
+        <TouchableOpacity style={styles.browseRow} activeOpacity={0.8} onPress={() => {
+          if (!isPro) { router.push({ pathname: '/(onboarding)/paywall', params: { directToPlan: '1' } }); return; }
+          router.push('/library');
+        }}>
           <Ionicons name="search" size={18} color={Colors.white} style={{ marginRight: Spacing.tight }} />
           <Text style={[styles.browseTitle, { flex: 1 }]}>Search & filter our full exercise library</Text>
-          <Ionicons name="chevron-forward" size={18} color={Colors.secondaryText} />
+          <Ionicons name={isPro ? 'chevron-forward' : 'lock-closed'} size={18} color={isPro ? Colors.secondaryText : Colors.white} />
         </TouchableOpacity>
 
         {/* Custom plan row */}
