@@ -101,6 +101,24 @@ Pro-gated. Reports section (after calendar): **Top Programs** leaderboard (modul
 
 All tokens from `lib/design/` — never hardcode. `Colors.background = #0A0E17`, `Colors.accent = #2F6BFF`. When overriding `fontSize` beyond a Typography preset, also set `lineHeight` to avoid clipping.
 
+## Exercise animations
+
+Each exercise has a hand-authored stick-figure **Lottie** animation. Lottie (`lottie-react-native`) is a native module: it won't render in Expo Go, only an **EAS dev build**. Any exercise without an entry falls back to a themed placeholder (never crashes); custom exercises always fall back.
+
+- **`components/shared/ExerciseAnimation.tsx`** — the dark card frame (props `{ exerciseId, catColor, slot, style? }`). It supplies the surface + loading/fallback; animations are transparent 480×270 canvases.
+- **`lib/assets/exerciseAnimations.ts`** — static `require()` map (Metro needs string-literal paths). `getExerciseAnimation(id)`.
+- **`scripts/buildAnimations.js`** — generates all 56 `assets/animations/exercises/<id>.json` from pose specs. Edit the specs, then `node scripts/buildAnimations.js`. **Never hand-edit the JSON.**
+- **`scripts/buildGallery.js`** — rebuilds `mockups/all56-gallery.html` (live lottie-web preview, needs internet; `open` it to review). `mockups/` is gitignored.
+
+Spec conventions (all geometry in the 480×270 canvas, head at smaller `y` = up):
+- One spec = 2–3 keyframe `poses` that ping-pong loop. Each limb is a named polyline; a limb's vertex count must match across poses. `smoothPath` auto-rounds interior joints; endpoints stay sharp.
+- `face: 1|-1` marks a **side profile** and adds directional feet (toes point that way); omit it for front/top/quadruped views (no feet). `footLimbs: [...]` restricts which legs get a foot (e.g. only the planted leg).
+- `mat: [cx,cy,w,h,r]` draws a floor mat behind an **overhead/bird's-eye** pose (used for the prone Y/T/W/I raises, etc.).
+- `wall: [x,y0,y1,solidSign]` draws a hatched wall. **Back-to-wall** = side profile facing away, wall behind the back; **facing/doorway** = wall on the side the arm reaches toward.
+- Arrows auto-place just **outside** the figure along their direction with a gap; pass `fixed: true` to keep an authored `at` (used for head-region arrows). Every animated exercise should have an arrow.
+- When a move holds one limb and moves its partner, draw **both** (stationary + moving), e.g. dead bug, bird dog, thread the needle.
+- Generator palette constants live in the script (`GTOP/GBOT` gradient, `PHONE` amber, `WALL` grey); the no-hardcoded-color rule is for app TS, not this script.
+
 ## React Native layout rules
 
 - No `gap` in horizontal `ScrollView` `contentContainerStyle` — use `marginRight` on children
