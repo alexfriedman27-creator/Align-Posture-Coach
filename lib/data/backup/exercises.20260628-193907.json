@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Evidence-Based Posture Exercise Database v6",
-    "last_updated": "2026-06-28",
+    "title": "Evidence-Based Posture Exercise Database v5",
+    "last_updated": "2026-06-23",
     "schema_notes": {
       "category": "stretch | strengthen | mobility | awareness",
       "slot": "Body region for balanced daily plans: neck | shoulder_scapula | thoracic_spine | core_pelvis | hip | integration",
@@ -13,8 +13,7 @@
     "plan_generation_principle": "1) Build each day's plan by sampling one exercise per slot. 2) Weight selection by evidence_weight, favoring strengthen/mobility. 3) Exclude any exercise within its cooldown_days. 4) Exclude any exercise whose family_id already appears elsewhere in that day's plan -- swap to a different family within the same slot if a collision occurs. 5) Vary weekly emphasis: 3 strength-heavy days, rest mobility/recovery-heavy.",
     "key_finding": "Meta-analysis (969 participants, 23 studies) found chronic strengthening produced large improvements in spinal/lumbopelvic posture (d=-0.83) while stretching alone had no significant effect, and strengthening outperformed stretching head-to-head (d=0.81).",
     "disclaimer": "General population guidance based on published research. Not a substitute for individualized physical therapy assessment. Flag pain, numbness, or tingling and recommend professional evaluation.",
-    "equipment_note": "All exercises are equipment-free. Some use a wall or doorway as an ambient surface (present in essentially any room), but none require portable gear like resistance bands or foam rollers, so the routine can be done anywhere.",
-    "revision_note": "v6: deduplicated near-identical variants and trimmed low-evidence stretches; rebalanced toward strengthening and the upper body (strongest evidence for durable postural change); added distinct, equipment-free, evidence-backed movements (curl-up, prone hip extension, figure-4 glute stretch, Brugger relief, 90/90 breathing). Hamstring stretch was deliberately excluded: it increases anterior pelvic tilt and is off-goal for this population."
+    "equipment_note": "All exercises are equipment-free. Some use a wall or doorway as an ambient surface (present in essentially any room), but none require portable gear like resistance bands or foam rollers, so the routine can be done anywhere."
   },
   "exercises": [
     {
@@ -161,6 +160,40 @@
         "summary": "Deep cervical flexor training improved forward head posture, neck pain, and functional status in adolescents using computers regularly.",
         "citation": "Sikka I, et al. Effects of Deep Cervical Flexor Training on Forward Head Posture, Neck Pain, and Functional Status. Biomed Res Int. 2020.",
         "url": "https://link.springer.com/article/10.1186/s40798-024-00733-5",
+        "source_type": "peer_reviewed"
+      }
+    },
+    {
+      "id": "neck_rotation_stretch",
+      "name": "Seated Neck Rotation",
+      "category": "stretch",
+      "slot": "neck",
+      "family_id": "neck_stretch_family",
+      "position": "seated",
+      "equipment": "none",
+      "duration_seconds": 40,
+      "evidence_weight": 1,
+      "cooldown_days": 2,
+      "target_condition": [
+        "forward_head_posture",
+        "neck_tension"
+      ],
+      "description": "Releases tightness in the side and back of the neck that builds up from holding the head forward for long periods.",
+      "instructions": [
+        "Sit tall, slowly turn head to look over one shoulder until a gentle stretch is felt.",
+        "Hold 20-30 seconds.",
+        "Repeat other side, 2 reps each."
+      ],
+      "muscle_groups": {
+        "stretches": [
+          "sternocleidomastoid",
+          "upper cervical rotators"
+        ]
+      },
+      "source": {
+        "summary": "Therapeutic programs combining stretching of overactive cervical muscles with strengthening improved forward head posture and related measures.",
+        "citation": "Systematic review and meta-analysis, upper crossed syndrome therapeutic exercise (2024)",
+        "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10832142/",
         "source_type": "peer_reviewed"
       }
     },
@@ -813,6 +846,41 @@
       "sets": 2
     },
     {
+      "id": "chair_back_thoracic_extension",
+      "reps": 10,
+      "name": "Chair Back Stretch",
+      "category": "mobility",
+      "slot": "thoracic_spine",
+      "family_id": "thoracic_extension_family",
+      "position": "seated",
+      "equipment": "none",
+      "duration_seconds": 45,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "thoracic_kyphosis"
+      ],
+      "description": "A desk-chair version of thoracic extension that needs no floor space, foam roller, or wall.",
+      "instructions": [
+        "Sit toward the front of a sturdy chair, hands behind head.",
+        "Use the chair back as a fulcrum at shoulder-blade level, gently arching back over it.",
+        "Hold 2-3 seconds, return.",
+        "10 reps."
+      ],
+      "muscle_groups": {
+        "mobilizes": [
+          "thoracic spine (extension)"
+        ]
+      },
+      "source": {
+        "summary": "Thoracic extension mobility drills using accessible household furniture follow the same biomechanical principle as foam-roller and wall variants used in corrective exercise research.",
+        "citation": "Feasibility study on home-based kyphosis-specific exercises in older adults, ScienceDirect (2023).",
+        "url": "https://www.sciencedirect.com/science/article/pii/S2352013223000297",
+        "source_type": "clinical_resource"
+      },
+      "sets": 2
+    },
+    {
       "id": "prone_extension_superman",
       "reps": 10,
       "sets": 2,
@@ -928,6 +996,46 @@
       "sets": 2
     },
     {
+      "id": "seated_cat_cow",
+      "reps": 10,
+      "name": "Seated Cat-Cow",
+      "category": "mobility",
+      "slot": "thoracic_spine",
+      "family_id": "cat_cow_family",
+      "position": "seated",
+      "equipment": "none",
+      "duration_seconds": 40,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "thoracic_kyphosis",
+        "general_spinal_mobility"
+      ],
+      "description": "Same spinal flexion/extension flow adapted to a chair for office settings or limited floor space.",
+      "instructions": [
+        "Sit toward front of chair, hands on knees.",
+        "Inhale, arch back and lift chest (cow).",
+        "Exhale, round spine, tuck chin and pelvis (cat).",
+        "8-10 cycles."
+      ],
+      "muscle_groups": {
+        "mobilizes": [
+          "full spine"
+        ],
+        "engages": [
+          "erector spinae",
+          "abdominals (alternating)"
+        ]
+      },
+      "source": {
+        "summary": "Spinal mobility flows adapted to seated positions follow the same biomechanical pattern used in floor-based corrective mobility programs.",
+        "citation": "The effect of eight weeks of global postural corrective exercises on kyphosis and forward head angle, IJMRHS.",
+        "url": "https://www.ijmrhs.com/medical-research/the-effect-of-eight-weeks-of-global-postural-corrective-exercises-on-kyphosis-and-forward-head-angle-in-elderly-women-wi.pdf",
+        "source_type": "clinical_resource"
+      },
+      "sets": 2
+    },
+    {
       "id": "quadruped_thoracic_rotation",
       "reps": 8,
       "name": "Thread the Needle",
@@ -968,6 +1076,120 @@
       "sets": 2
     },
     {
+      "id": "seated_thoracic_rotation",
+      "reps": 10,
+      "name": "Seated Spine Rotation",
+      "category": "mobility",
+      "slot": "thoracic_spine",
+      "family_id": "thoracic_rotation_family",
+      "position": "seated",
+      "equipment": "none",
+      "duration_seconds": 40,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "thoracic_kyphosis"
+      ],
+      "description": "A desk-friendly variant of thoracic rotation mobility that doesn't require getting on the floor.",
+      "instructions": [
+        "Sit tall, cross arms over chest or hands behind head.",
+        "Rotate torso to one side as far as comfortable, hips facing forward.",
+        "Hold 2 seconds, return to center.",
+        "8 reps per side."
+      ],
+      "muscle_groups": {
+        "mobilizes": [
+          "thoracic spine (rotation)"
+        ],
+        "engages": [
+          "obliques"
+        ]
+      },
+      "source": {
+        "summary": "Global postural correction programs incorporate rotational mobility work alongside sagittal-plane exercises for comprehensive thoracic correction.",
+        "citation": "The effect of eight weeks of global postural corrective exercises on kyphosis and forward head angle, IJMRHS.",
+        "url": "https://www.ijmrhs.com/medical-research/the-effect-of-eight-weeks-of-global-postural-corrective-exercises-on-kyphosis-and-forward-head-angle-in-elderly-women-wi.pdf",
+        "source_type": "peer_reviewed"
+      },
+      "sets": 2
+    },
+    {
+      "id": "standing_thoracic_rotation",
+      "reps": 10,
+      "name": "Standing Torso Twist",
+      "category": "mobility",
+      "slot": "thoracic_spine",
+      "family_id": "thoracic_rotation_family",
+      "position": "standing",
+      "equipment": "none",
+      "duration_seconds": 40,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "thoracic_kyphosis"
+      ],
+      "description": "A standing, dynamic version of thoracic rotation that doubles as a brief warm-up movement.",
+      "instructions": [
+        "Stand tall, feet hip-width, arms crossed over chest.",
+        "Rotate torso side to side at a slow, controlled pace, keeping hips facing forward.",
+        "10 rotations per side."
+      ],
+      "muscle_groups": {
+        "mobilizes": [
+          "thoracic spine (rotation)"
+        ],
+        "engages": [
+          "obliques"
+        ]
+      },
+      "source": {
+        "summary": "Standing rotational mobility drills follow the same thoracic-rotation principle used in seated and quadruped variants within global postural correction research.",
+        "citation": "The effect of eight weeks of global postural corrective exercises on kyphosis and forward head angle, IJMRHS.",
+        "url": "https://www.ijmrhs.com/medical-research/the-effect-of-eight-weeks-of-global-postural-corrective-exercises-on-kyphosis-and-forward-head-angle-in-elderly-women-wi.pdf",
+        "source_type": "clinical_resource"
+      },
+      "sets": 2
+    },
+    {
+      "id": "open_book_stretch",
+      "reps": 8,
+      "name": "Open Book Stretch",
+      "category": "stretch",
+      "slot": "thoracic_spine",
+      "family_id": "thoracic_rotation_family",
+      "position": "side-lying",
+      "equipment": "none",
+      "duration_seconds": 50,
+      "evidence_weight": 1,
+      "cooldown_days": 2,
+      "target_condition": [
+        "thoracic_kyphosis"
+      ],
+      "description": "A side-lying thoracic rotation that stretches the chest and front shoulder while mobilizing rotation.",
+      "instructions": [
+        "Lie on side, knees stacked and bent, arms extended forward together.",
+        "Open the top arm up and across to the other side, following with gaze, letting the upper back rotate.",
+        "Hold briefly at end range, return.",
+        "6-8 reps per side."
+      ],
+      "muscle_groups": {
+        "mobilizes": [
+          "thoracic spine (rotation)"
+        ],
+        "stretches": [
+          "pectorals",
+          "anterior shoulder"
+        ]
+      },
+      "source": {
+        "summary": "Rotational thoracic mobility work performed from varied starting positions, including side-lying, is part of comprehensive multi-planar postural correction.",
+        "citation": "The effect of eight weeks of global postural corrective exercises on kyphosis and forward head angle, IJMRHS.",
+        "url": "https://www.ijmrhs.com/medical-research/the-effect-of-eight-weeks-of-global-postural-corrective-exercises-on-kyphosis-and-forward-head-angle-in-elderly-women-wi.pdf",
+        "source_type": "clinical_resource"
+      },
+      "sets": 2
+    },
+    {
       "id": "child_pose_thoracic_stretch",
       "name": "Child's Pose Reach",
       "category": "stretch",
@@ -1000,6 +1222,40 @@
         "url": "https://www.ijmrhs.com/medical-research/the-effect-of-eight-weeks-of-global-postural-corrective-exercises-on-kyphosis-and-forward-head-angle-in-elderly-women-wi.pdf",
         "source_type": "peer_reviewed"
       }
+    },
+    {
+      "id": "extended_child_pose_lateral_reach",
+      "name": "Child's Pose Side Reach",
+      "category": "stretch",
+      "slot": "thoracic_spine",
+      "family_id": "child_pose_family",
+      "position": "kneeling",
+      "equipment": "none",
+      "duration_seconds": 25,
+      "evidence_weight": 1,
+      "cooldown_days": 2,
+      "target_condition": [
+        "thoracic_kyphosis"
+      ],
+      "description": "Adds a side reach to the standard child's pose, isolating one side of the lat and thoracic sidebend rather than stretching both sides symmetrically.",
+      "instructions": [
+        "From child's pose, walk both hands over to one side.",
+        "Feel the stretch lengthen along the opposite side of the back and lat.",
+        "Hold 20-25 seconds, switch sides."
+      ],
+      "muscle_groups": {
+        "stretches": [
+          "latissimus dorsi (unilateral)",
+          "thoracic side flexors"
+        ]
+      },
+      "source": {
+        "summary": "Unilateral variations of mobility stretches are commonly used to address asymmetries that bilateral versions can miss, within comprehensive postural correction approaches.",
+        "citation": "The effect of eight weeks of global postural corrective exercises on kyphosis and forward head angle, IJMRHS.",
+        "url": "https://www.ijmrhs.com/medical-research/the-effect-of-eight-weeks-of-global-postural-corrective-exercises-on-kyphosis-and-forward-head-angle-in-elderly-women-wi.pdf",
+        "source_type": "clinical_resource"
+      },
+      "sets": 2
     },
     {
       "id": "hip_flexor_lunge_stretch",
@@ -1067,6 +1323,41 @@
         "citation": "Watt JR, et al. Effect of a supervised hip flexor stretching program on gait in elderly individuals. PM R. 2011;3:324-9.",
         "url": "https://link.springer.com/article/10.1186/s40798-024-00733-5",
         "source_type": "peer_reviewed"
+      },
+      "sets": 2
+    },
+    {
+      "id": "couch_stretch",
+      "name": "Couch Stretch",
+      "category": "stretch",
+      "slot": "hip",
+      "family_id": "hip_flexor_stretch_family",
+      "position": "kneeling",
+      "equipment": "none",
+      "duration_seconds": 30,
+      "evidence_weight": 1,
+      "cooldown_days": 3,
+      "target_condition": [
+        "anterior_pelvic_tilt"
+      ],
+      "description": "A deeper hip flexor stretch using a couch, chair, or wall to flex the back knee further than the standard lunge. More intense than the kneeling version, best for those who find that one easy.",
+      "instructions": [
+        "Kneel facing away from a couch or chair, back foot propped up on the seat with knee bent.",
+        "Front foot forward, torso upright, tuck pelvis slightly.",
+        "Hold 30-45 seconds, breathing steadily.",
+        "2 reps per side."
+      ],
+      "muscle_groups": {
+        "stretches": [
+          "rectus femoris",
+          "iliopsoas"
+        ]
+      },
+      "source": {
+        "summary": "Deeper hip flexor stretching variations build on the same mechanism shown to reduce anterior pelvic tilt in standard hip flexor stretch research, with greater knee flexion increasing rectus femoris involvement.",
+        "citation": "Comparison of Pelvic Tilt Before and After Hip Flexor Stretching in Healthy Adults, ScienceDirect (2021).",
+        "url": "https://www.sciencedirect.com/science/article/abs/pii/S0161475420301986",
+        "source_type": "clinical_resource"
       },
       "sets": 2
     },
@@ -1179,6 +1470,44 @@
       },
       "source": {
         "summary": "Hip abductor and external rotator strengthening is a standard component of pelvic-stability and posture-correction programs alongside glute and core work.",
+        "citation": "Standard physical therapy practice for hip-pelvic stability training, consistent with strengthening-focused findings in lumbopelvic posture research.",
+        "url": "https://link.springer.com/article/10.1186/s40798-024-00733-5",
+        "source_type": "clinical_resource"
+      }
+    },
+    {
+      "id": "side_lying_hip_abduction",
+      "reps": 12,
+      "sets": 2,
+      "name": "Side-Lying Leg Raise",
+      "category": "strengthen",
+      "slot": "hip",
+      "family_id": "hip_abduction_family",
+      "position": "side-lying",
+      "equipment": "none",
+      "duration_seconds": 50,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "pelvic_stability"
+      ],
+      "description": "Targets the same gluteus medius as the clamshell but through hip abduction with a straight leg, a different lever arm and slightly different muscle emphasis.",
+      "instructions": [
+        "Lie on side, legs stacked and straight, head supported.",
+        "Lift top leg straight up without rotating the hip forward or back.",
+        "Lower with control.",
+        "12-15 reps per side, 2 sets."
+      ],
+      "muscle_groups": {
+        "primary": [
+          "gluteus medius"
+        ],
+        "secondary": [
+          "tensor fasciae latae"
+        ]
+      },
+      "source": {
+        "summary": "Straight-leg hip abduction is a standard variation used alongside the clamshell in hip-pelvic stability training programs.",
         "citation": "Standard physical therapy practice for hip-pelvic stability training, consistent with strengthening-focused findings in lumbopelvic posture research.",
         "url": "https://link.springer.com/article/10.1186/s40798-024-00733-5",
         "source_type": "clinical_resource"
@@ -1382,6 +1711,41 @@
       "sets": 2
     },
     {
+      "id": "modified_side_plank_knee",
+      "name": "Side Plank (Knees Bent)",
+      "category": "strengthen",
+      "slot": "core_pelvis",
+      "family_id": "plank_family",
+      "position": "side-lying",
+      "equipment": "none",
+      "duration_seconds": 22,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "general_core_stability"
+      ],
+      "description": "An easier version of the side plank with bent knees, great for building up to the full hold or on lower-intensity days.",
+      "instructions": [
+        "Lie on side, knees bent and stacked, forearm propped under shoulder.",
+        "Lift hips until torso and thighs form a straight line from knee to shoulder.",
+        "Hold 15-20 seconds.",
+        "2-3 reps per side."
+      ],
+      "muscle_groups": {
+        "primary": [
+          "obliques",
+          "quadratus lumborum"
+        ]
+      },
+      "source": {
+        "summary": "Regressed plank variations follow the same trunk-activation pattern as full planks shown effective in core stability research, at reduced intensity.",
+        "citation": "A Comparison between Core Stability Exercises and Muscle Thickness Using Two Different Activation Maneuvers, PMC.",
+        "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11036226/",
+        "source_type": "clinical_resource"
+      },
+      "sets": 2
+    },
+    {
       "id": "front_plank",
       "name": "Forearm Plank",
       "category": "strengthen",
@@ -1415,6 +1779,76 @@
         "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11036226/",
         "source_type": "peer_reviewed"
       }
+    },
+    {
+      "id": "incline_plank",
+      "name": "Elevated Plank",
+      "category": "strengthen",
+      "slot": "core_pelvis",
+      "family_id": "plank_family",
+      "position": "prone",
+      "equipment": "none",
+      "duration_seconds": 40,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "general_core_stability"
+      ],
+      "description": "An easier version of the forearm plank with hands raised on a chair or counter, keeping the same core engagement at lower intensity.",
+      "instructions": [
+        "Place forearms or hands on a sturdy elevated surface (chair, counter, low table).",
+        "Step feet back until body forms a straight line.",
+        "Engage core, avoid sagging hips.",
+        "Hold 20-30 seconds.",
+        "2-3 reps."
+      ],
+      "muscle_groups": {
+        "primary": [
+          "rectus abdominis",
+          "transverse abdominis"
+        ]
+      },
+      "source": {
+        "summary": "Elevated, lower-intensity plank variations are a standard accessibility progression that preserve the same broad trunk activation pattern seen in standard planks.",
+        "citation": "A Comparison between Core Stability Exercises and Muscle Thickness Using Two Different Activation Maneuvers, PMC.",
+        "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11036226/",
+        "source_type": "clinical_resource"
+      }
+    },
+    {
+      "id": "single_leg_balance_reset",
+      "name": "Single-Leg Balance Hold",
+      "category": "mobility",
+      "slot": "integration",
+      "family_id": "balance_family",
+      "position": "standing",
+      "equipment": "none",
+      "duration_seconds": 20,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "general_postural_control"
+      ],
+      "description": "Challenges balance and body awareness, putting the session's strength work into practice through whole-body control.",
+      "instructions": [
+        "Stand tall, shift weight onto one foot, lift the other knee slightly.",
+        "Hold 15-20 seconds maintaining tall posture (ears over shoulders, ribs over pelvis).",
+        "Switch sides."
+      ],
+      "muscle_groups": {
+        "engages": [
+          "hip stabilizers",
+          "ankle stabilizers",
+          "deep core"
+        ]
+      },
+      "source": {
+        "summary": "Exercises performed in single-leg stance can significantly improve neuromuscular control by promoting postural adjustments and enhancing afferent feedback pathways.",
+        "citation": "Electromyographic and Stabilometric Analysis of the Static and Dynamic 'Standing Bird Dog' Exercise, PMC.",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10305076/",
+        "source_type": "peer_reviewed"
+      },
+      "sets": 2
     },
     {
       "id": "single_leg_balance_reach",
@@ -1557,6 +1991,40 @@
       "sets": 2
     },
     {
+      "id": "lateral_neck_flexion_stretch",
+      "name": "Ear-to-Shoulder Stretch",
+      "category": "stretch",
+      "slot": "neck",
+      "family_id": "neck_stretch_family",
+      "position": "seated_or_standing",
+      "equipment": "none",
+      "duration_seconds": 20,
+      "evidence_weight": 1,
+      "cooldown_days": 2,
+      "target_condition": [
+        "neck_tension"
+      ],
+      "description": "A simple ear-to-shoulder side bend without the rotation of the levator stretch, biasing the lateral neck and upper trap fibers through a slightly different line of pull.",
+      "instructions": [
+        "Sit tall, let one arm hang and reach toward the floor.",
+        "Tilt the opposite ear toward the shoulder until a gentle stretch is felt down the side of the neck.",
+        "Hold 20 seconds per side, 2 reps each."
+      ],
+      "muscle_groups": {
+        "stretches": [
+          "upper trapezius (lateral fibers)",
+          "sternocleidomastoid"
+        ]
+      },
+      "source": {
+        "summary": "Lateral neck stretches are part of the standard set of cervical stretches used alongside strengthening in therapeutic exercise programs for forward head posture and neck tension.",
+        "citation": "Systematic review and meta-analysis, upper crossed syndrome therapeutic exercise (2024)",
+        "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10832142/",
+        "source_type": "peer_reviewed"
+      },
+      "sets": 2
+    },
+    {
       "id": "serratus_punch_supine",
       "reps": 12,
       "sets": 2,
@@ -1632,6 +2100,42 @@
       }
     },
     {
+      "id": "serratus_floor_press",
+      "reps": 10,
+      "sets": 2,
+      "name": "All-Fours Shoulder Press",
+      "category": "strengthen",
+      "slot": "shoulder_scapula",
+      "family_id": "serratus_protraction_family",
+      "position": "quadruped",
+      "equipment": "none",
+      "duration_seconds": 50,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "rounded_shoulders",
+        "scapular_winging"
+      ],
+      "description": "Trains the muscles under the armpits that anchor the shoulder blades, using floor pressure and a gentle upper back rounding to load them.",
+      "instructions": [
+        "Start on hands and knees, hands slightly forward of the shoulders.",
+        "Press the floor away, spreading the shoulder blades and gently rounding the upper back.",
+        "Hold 5 seconds, keeping shoulders down away from ears.",
+        "Return to neutral. 10 reps, 2 sets."
+      ],
+      "muscle_groups": {
+        "primary": [
+          "serratus anterior"
+        ]
+      },
+      "source": {
+        "summary": "The serratus floor press is used to train the serratus anterior's combined functions of protraction, upward rotation, and posterior tilt of the scapula.",
+        "citation": "3 Top Exercises to Activate and Strengthen Your Serratus Anterior, Precision Movement.",
+        "url": "https://www.precisionmovement.coach/how-to-strengthen-serratus-anterior/",
+        "source_type": "clinical_resource"
+      }
+    },
+    {
       "id": "prone_i_raise",
       "reps": 10,
       "sets": 2,
@@ -1667,6 +2171,39 @@
         "summary": "Positional prone raise variations (I, Y, T, W) targeting the scapular retractors and depressors are part of comprehensive protocols effective for upper crossed syndrome correction.",
         "citation": "Systematic review and meta-analysis, upper crossed syndrome therapeutic exercise (2024)",
         "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10832142/",
+        "source_type": "peer_reviewed"
+      }
+    },
+    {
+      "id": "bilateral_doorway_pec_stretch",
+      "name": "Doorway Chest Stretch (Both Sides)",
+      "category": "stretch",
+      "slot": "shoulder_scapula",
+      "family_id": "pec_stretch_family",
+      "position": "standing",
+      "equipment": "door",
+      "duration_seconds": 50,
+      "evidence_weight": 1,
+      "cooldown_days": 2,
+      "target_condition": [
+        "rounded_shoulders"
+      ],
+      "description": "Both forearms on the door frame at once for a symmetrical chest stretch, useful when time is short or to ensure even stretch across both sides.",
+      "instructions": [
+        "Stand in a doorway, both forearms on the frame, elbows at shoulder height.",
+        "Step forward with one foot until a stretch is felt across the whole chest.",
+        "Hold 30 seconds, 2 reps."
+      ],
+      "muscle_groups": {
+        "stretches": [
+          "pectoralis major (both sides)",
+          "anterior deltoid"
+        ]
+      },
+      "source": {
+        "summary": "Pectoral stretching is a standard component of evidence-based rounded shoulder correction protocols used alongside scapular strengthening.",
+        "citation": "Yoo W. Comparison of pectoralis stretching and scapular retraction strengthening on forward shoulder. J Phys Ther Sci. 2018;30:584-5.",
+        "url": "https://link.springer.com/article/10.1186/s40798-024-00733-5",
         "source_type": "peer_reviewed"
       }
     },
@@ -1829,6 +2366,45 @@
       "sets": 2
     },
     {
+      "id": "quadruped_pelvic_tilt",
+      "reps": 10,
+      "name": "All-Fours Pelvic Tilt",
+      "category": "strengthen",
+      "slot": "core_pelvis",
+      "family_id": "pelvic_tilt_family",
+      "position": "quadruped",
+      "equipment": "none",
+      "duration_seconds": 45,
+      "evidence_weight": 2,
+      "cooldown_days": 2,
+      "target_condition": [
+        "anterior_pelvic_tilt"
+      ],
+      "description": "Trains the same lower back flattening motion on all fours against gravity, increasing the core demand compared to the lying version.",
+      "instructions": [
+        "Start on hands and knees, spine neutral.",
+        "Without moving the back into a full cat, tuck the tailbone under by engaging the lower abs and glutes.",
+        "Hold 3-5 seconds, return to neutral (not into extension).",
+        "10-12 reps."
+      ],
+      "muscle_groups": {
+        "primary": [
+          "lower rectus abdominis",
+          "gluteus maximus"
+        ],
+        "engages": [
+          "transverse abdominis"
+        ]
+      },
+      "source": {
+        "summary": "Pelvic-tilt motor control exercises against gravity build on the same strengthening principle shown to improve pelvic tilt angle and lumbopelvic posture more effectively than stretching alone.",
+        "citation": "Effects of Stretching or Strengthening Exercise on Spinal and Lumbopelvic Posture, Sports Medicine - Open (2024).",
+        "url": "https://link.springer.com/article/10.1186/s40798-024-00733-5",
+        "source_type": "peer_reviewed"
+      },
+      "sets": 2
+    },
+    {
       "id": "plank_shoulder_taps",
       "reps": 10,
       "name": "Plank Shoulder Taps",
@@ -1870,6 +2446,43 @@
       "sets": 2
     },
     {
+      "id": "hip_90_90_stretch",
+      "name": "90/90 Hip Stretch",
+      "category": "stretch",
+      "slot": "hip",
+      "family_id": "hip_rotation_stretch_family",
+      "position": "seated",
+      "equipment": "none",
+      "duration_seconds": 30,
+      "evidence_weight": 1,
+      "cooldown_days": 2,
+      "target_condition": [
+        "hip_mobility",
+        "anterior_pelvic_tilt"
+      ],
+      "description": "A floor stretch that targets hip rotation from both sides at once, reaching the rotational tightness that front-to-back hip stretches cannot address.",
+      "instructions": [
+        "Sit on the floor, front leg bent 90 degrees in front, back leg bent 90 degrees out to the side.",
+        "Keep the back tall, hinge gently forward over the front shin until a stretch is felt in the front hip/glute.",
+        "Hold 30 seconds, switch sides.",
+        "2 reps per side."
+      ],
+      "muscle_groups": {
+        "stretches": [
+          "gluteus maximus",
+          "hip external rotators (front leg)",
+          "hip internal rotators (back leg)"
+        ]
+      },
+      "source": {
+        "summary": "Multi-planar hip mobility work, including rotational stretches, complements sagittal-plane hip flexor stretching in comprehensive lumbopelvic and hip mobility programs.",
+        "citation": "Consistent with multimodal flexibility programming in lumbopelvic posture research (Sports Medicine - Open, 2024).",
+        "url": "https://link.springer.com/article/10.1186/s40798-024-00733-5",
+        "source_type": "clinical_resource"
+      },
+      "sets": 2
+    },
+    {
       "id": "tandem_stance_balance",
       "name": "Heel-to-Toe Balance",
       "category": "mobility",
@@ -1901,200 +2514,6 @@
         "summary": "Narrowed-base and single-leg stance exercises improve neuromuscular control by promoting proactive and reactive postural adjustments and enhancing afferent feedback pathways.",
         "citation": "Electromyographic and Stabilometric Analysis of the Static and Dynamic 'Standing Bird Dog' Exercise, PMC.",
         "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10305076/",
-        "source_type": "peer_reviewed"
-      }
-    },
-    {
-      "id": "curl_up",
-      "reps": 6,
-      "sets": 2,
-      "name": "Curl-Up",
-      "category": "strengthen",
-      "slot": "core_pelvis",
-      "family_id": "anterior_core_curl_family",
-      "position": "supine",
-      "equipment": "none",
-      "duration_seconds": 50,
-      "evidence_weight": 3,
-      "cooldown_days": 2,
-      "target_condition": [
-        "general_core_stability"
-      ],
-      "description": "The front-core exercise from McGill's 'Big 3' (alongside the side plank and bird dog you already do). It braces the abdominals to stiffen and protect the spine without the repeated spinal flexion of a sit-up or crunch.",
-      "instructions": [
-        "Lie on your back, one knee bent with that foot flat, the other leg straight.",
-        "Slide both hands under the natural arch of your lower back (do not flatten it).",
-        "Brace your abs and lift your head, shoulders, and upper chest a small distance off the floor as one rigid unit, chin gently tucked.",
-        "Hold 6-8 seconds breathing normally, lower with control. 5-6 reps, switch the bent leg each set."
-      ],
-      "muscle_groups": {
-        "primary": [
-          "rectus abdominis",
-          "obliques"
-        ],
-        "secondary": [
-          "transverse abdominis"
-        ]
-      },
-      "source": {
-        "summary": "The curl-up is one of McGill's 'Big 3' spine-stabilization exercises, designed to build anterior-core stiffness that supports the spine while minimizing spinal load and avoiding the repeated flexion of crunches.",
-        "citation": "McGill SM. Low Back Disorders: Evidence-Based Prevention and Rehabilitation; McGill Big 3 core-stability programming.",
-        "url": "https://squatuniversity.com/2018/06/21/the-mcgill-big-3-for-core-stability/",
-        "source_type": "clinical_resource"
-      }
-    },
-    {
-      "id": "prone_hip_extension",
-      "reps": 10,
-      "sets": 2,
-      "name": "Face-Down Hip Lift",
-      "category": "strengthen",
-      "slot": "hip",
-      "family_id": "hip_extension_family",
-      "position": "prone",
-      "equipment": "none",
-      "duration_seconds": 50,
-      "evidence_weight": 3,
-      "cooldown_days": 2,
-      "target_condition": [
-        "anterior_pelvic_tilt"
-      ],
-      "description": "Directly strengthens the gluteus maximus, which is commonly weak and underactive in anterior pelvic tilt. Bending the knee shifts the work onto the glute and off the hamstrings.",
-      "instructions": [
-        "Lie face down, forehead resting on your hands, optionally a thin pillow under the hips.",
-        "Bend one knee to about 90 degrees so the sole faces the ceiling.",
-        "Squeeze the glute to lift that thigh a few inches off the floor, keeping the pelvis pressed down and the lower back quiet.",
-        "Hold 2-3 seconds, lower with control. 10 reps per side, 2 sets."
-      ],
-      "muscle_groups": {
-        "primary": [
-          "gluteus maximus"
-        ],
-        "secondary": [
-          "hamstrings"
-        ]
-      },
-      "source": {
-        "summary": "EMG research shows prone hip extension with the knee flexed preferentially activates the gluteus maximus over the hamstrings; glute-max strengthening is used clinically for lumbopelvic and low-back conditions.",
-        "citation": "Activation of the gluteus maximus and hamstring muscles during prone hip extension with knee flexion in three hip abduction positions. Man Ther. 2013.",
-        "url": "https://pubmed.ncbi.nlm.nih.gov/23312068/",
-        "source_type": "peer_reviewed"
-      }
-    },
-    {
-      "id": "figure_4_stretch",
-      "name": "Figure-4 Glute Stretch",
-      "category": "stretch",
-      "slot": "hip",
-      "family_id": "hip_rotation_stretch_family",
-      "position": "supine",
-      "equipment": "none",
-      "duration_seconds": 30,
-      "evidence_weight": 1,
-      "cooldown_days": 2,
-      "target_condition": [
-        "hip_mobility"
-      ],
-      "description": "Targets the gluteus maximus and the deep hip external rotators (including the piriformis), a region no other stretch in the program reaches. Supports the hip mobility that underpins a level, mobile pelvis.",
-      "instructions": [
-        "Lie on your back, both knees bent, feet flat.",
-        "Cross one ankle over the opposite thigh just above the knee, making a '4' shape.",
-        "Reach through and clasp behind the supporting thigh, gently drawing it toward your chest until a stretch is felt deep in the crossed-leg hip/buttock.",
-        "Keep your head and shoulders relaxed on the floor. Hold 30 seconds per side, 2 reps each."
-      ],
-      "muscle_groups": {
-        "stretches": [
-          "gluteus maximus",
-          "piriformis",
-          "deep hip external rotators"
-        ]
-      },
-      "source": {
-        "summary": "Cadaveric research on common stretch positions shows that hip flexion combined with adduction and rotation lengthens the short external rotators of the hip; the figure-4 is a standard clinical stretch for the glutes and deep rotators.",
-        "citation": "Length Change of the Short External Rotators of the Hip in Common Stretch Positions: A Cadaveric Study. Int J Sports Phys Ther. 2017.",
-        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5717482/",
-        "source_type": "peer_reviewed"
-      },
-      "sets": 2
-    },
-    {
-      "id": "brugger_relief",
-      "name": "Brugger Posture Relief",
-      "category": "strengthen",
-      "slot": "integration",
-      "family_id": "postural_reset_active_family",
-      "position": "seated_or_standing",
-      "equipment": "none",
-      "duration_seconds": 40,
-      "evidence_weight": 2,
-      "cooldown_days": 1,
-      "target_condition": [
-        "forward_head_posture",
-        "rounded_shoulders",
-        "thoracic_kyphosis"
-      ],
-      "description": "A quick whole-upper-body postural reset that actively switches on the muscles pulling the shoulder blades back and down and lengthening the head tall, while opening the chest. Designed to be done briefly and often through a sitting day.",
-      "instructions": [
-        "Sit (or stand) tall toward the front of your seat, feet planted, weight slightly forward so the pelvis rolls into a gentle natural arch.",
-        "Turn your palms outward so the thumbs point back, rotating the whole arm open.",
-        "Draw the shoulder blades gently down and back and lengthen the crown of the head toward the ceiling, chin lightly tucked.",
-        "Breathe slowly and hold 20-30 seconds. Repeat through the day, ideally every 30-60 minutes of sitting."
-      ],
-      "muscle_groups": {
-        "primary": [
-          "lower trapezius",
-          "middle trapezius",
-          "rhomboids",
-          "shoulder external rotators"
-        ],
-        "stretches": [
-          "pectorals",
-          "anterior neck"
-        ]
-      },
-      "source": {
-        "summary": "Brugger's relief position activates the scapular retractors and external rotators while reversing the slouched posture; trial and clinical evidence support it as a self-care exercise that improves forward head posture and reduces neck/upper-back discomfort in seated workers and students.",
-        "citation": "Comparison of Brugger's Relief Exercises at the craniovertebral angle on forward head posture (RCT, NCT06845696); Brugger postural relief in office workers and students.",
-        "url": "https://clinicaltrials.gov/study/NCT06845696",
-        "source_type": "peer_reviewed"
-      }
-    },
-    {
-      "id": "breathing_90_90",
-      "name": "90/90 Breathing",
-      "category": "mobility",
-      "slot": "core_pelvis",
-      "family_id": "breathing_family",
-      "position": "supine",
-      "equipment": "none",
-      "duration_seconds": 60,
-      "evidence_weight": 2,
-      "cooldown_days": 1,
-      "target_condition": [
-        "anterior_pelvic_tilt",
-        "general_core_stability"
-      ],
-      "description": "A diaphragmatic breathing drill done with the hips and knees bent toward 90 degrees. The position gently tips the pelvis toward neutral and brings the ribs down, training the deep core and a full exhale instead of the over-arched, chest-dominant breathing pattern that accompanies anterior pelvic tilt.",
-      "instructions": [
-        "Lie on your back with your lower legs resting on a chair or couch seat (or simply knees bent, feet flat), hips and knees toward 90 degrees.",
-        "Rest one hand on your chest and one on your belly.",
-        "Inhale slowly through the nose into the belly and lower ribs, keeping the chest quiet.",
-        "Exhale fully and slowly through pursed lips, letting the ribs draw down and the lower back settle gently toward the floor. 5-8 slow breaths."
-      ],
-      "muscle_groups": {
-        "primary": [
-          "diaphragm",
-          "transverse abdominis"
-        ],
-        "engages": [
-          "deep core",
-          "pelvic floor"
-        ]
-      },
-      "source": {
-        "summary": "Performed in 90/90 hip-and-knee flexion, diaphragmatic breathing brings the ribcage down and the pelvis toward neutral/posterior tilt, increasing intra-abdominal pressure and deep-core activation that support spinal and pelvic stability.",
-        "citation": "Acute Effects of Diaphragmatic Breathing on Trunk and Shoulder Mobility and Pulmonary Function in Healthy Young Adults (2024); Postural Restoration Institute 90/90 breathing protocols.",
-        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12452328/",
         "source_type": "peer_reviewed"
       }
     }

@@ -1,76 +1,96 @@
-import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ViewStyle, ActivityIndicator } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { Colors } from '../../lib/design/colors';
 import { Typography } from '../../lib/design/fonts';
 import { Spacing } from '../../lib/design/spacing';
 import { getExerciseAnimation } from '../../lib/assets/exerciseAnimations';
+import { SLOT_BADGE } from '../../types/Exercise';
 
 interface Props {
   exerciseId: string;
+  /** Category color (CATEGORY_COLOR[exercise.category]) — used for the subtle corner accent. */
   catColor: string;
+  /** Exercise slot — used for the placeholder badge. */
   slot: string;
   style?: ViewStyle;
 }
 
+/**
+ * Single, consistent presentation for every exercise demo — "minimal elegant"
+ * finish. One library (Lottie) renders the thin gradient figure; the frame is
+ * a clean dark surface with a single subtle category-colored corner dot (no
+ * heavy bars), identical for all 56 so the look stays sleek and on-theme.
+ * Falls back to a quiet placeholder when an animation isn't present yet.
+ */
 export function ExerciseAnimation({ exerciseId, catColor, slot, style }: Props) {
   const source = getExerciseAnimation(exerciseId);
-  const slotBadge = slot.slice(0, 2).toUpperCase();
+  const [loaded, setLoaded] = useState(false);
+  const badge = (SLOT_BADGE as Record<string, string>)[slot] ?? slot.slice(0, 2).toUpperCase();
 
   return (
     <View style={[styles.container, style]}>
       {source ? (
-        <LottieView
-          source={source as any}
-          autoPlay
-          loop
-          style={StyleSheet.absoluteFill}
-          resizeMode="contain"
-        />
-      ) : (
         <>
-          <View style={[styles.topBar, { backgroundColor: catColor }]} />
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: catColor, opacity: 0.06 }]} />
-          <View style={styles.center}>
-            <View style={styles.circle}>
-              <Text style={styles.circleText}>{slotBadge}</Text>
-            </View>
-            <Text style={styles.hint}>Animation coming soon</Text>
-          </View>
+          <LottieView
+            source={source as any}
+            autoPlay
+            loop
+            resizeMode="contain"
+            style={styles.lottie}
+            onAnimationLoaded={() => setLoaded(true)}
+          />
+          {!loaded && <ActivityIndicator color={catColor} style={StyleSheet.absoluteFill} />}
         </>
+      ) : (
+        <View style={styles.center}>
+          <View style={[styles.badge, { borderColor: catColor + '55' }]}>
+            <Text style={[styles.badgeText, { color: catColor }]}>{badge}</Text>
+          </View>
+          <Text style={styles.hint}>Animation coming soon</Text>
+        </View>
       )}
+
+      {/* Minimal category accent — a single subtle corner dot */}
+      <View style={[styles.dot, { backgroundColor: catColor }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: Colors.card,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  topBar: {
+  lottie: {
+    width: '100%',
+    height: '100%',
+  },
+  dot: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
+    top: 10,
+    right: 12,
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    opacity: 0.85,
   },
   center: {
     alignItems: 'center',
     gap: Spacing.tight,
   },
-  circle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.cardElevated,
+  badge: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  circleText: {
+  badgeText: {
     ...Typography.subheadline,
-    color: Colors.secondaryText,
     letterSpacing: 1,
   },
   hint: {
