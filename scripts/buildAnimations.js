@@ -15,6 +15,7 @@ const OUT = path.join(__dirname, '..', 'assets', 'animations', 'exercises');
 
 const GROUND = [0.10196, 0.12941, 0.2, 1];
 const ARROW = [0.86, 0.90, 0.98, 1];
+const PHONE = [1, 0.70, 0.243, 1]; // warm amber so a held phone reads as a distinct object
 const CARD = [0.07059, 0.09412, 0.14902, 1]; // #121826 — matches the ExerciseAnimation card so the head matte is invisible on it
 const GTOP = [0.36863, 0.59216, 1];
 const GBOT = [0.18431, 0.41961, 1];
@@ -22,6 +23,22 @@ const e_i = { x: [0.58], y: [1] };
 const e_o = { x: [0.42], y: [0] };
 
 const pathOf = (v) => ({ c: false, v: v.map((p) => [p[0], p[1]]), i: v.map(() => [0, 0]), o: v.map(() => [0, 0]) });
+// like pathOf but gives interior vertices gentle bezier handles so multi-segment
+// limbs (elbows, knees, spine bends) round off instead of kinking sharply.
+// Endpoints stay sharp. Handle length scales with each segment, so short
+// segments round only a little (k = fraction of segment length).
+const smoothPath = (v, k = 0.42) => {
+  const i = v.map(() => [0, 0]), o = v.map(() => [0, 0]);
+  for (let n = 1; n < v.length - 1; n++) {
+    const a = v[n - 1], b = v[n], c = v[n + 1];
+    const dx = c[0] - a[0], dy = c[1] - a[1], dl = Math.hypot(dx, dy) || 1;
+    const ux = dx / dl, uy = dy / dl;
+    const d1 = Math.hypot(b[0] - a[0], b[1] - a[1]), d2 = Math.hypot(c[0] - b[0], c[1] - b[1]);
+    i[n] = [-ux * d1 * k, -uy * d1 * k];
+    o[n] = [ux * d2 * k, uy * d2 * k];
+  }
+  return { c: false, v: v.map((p) => [p[0], p[1]]), i, o };
+};
 const stroke = (c, w) => ({ ty: 'st', c: { a: 0, k: c }, o: { a: 0, k: 100 }, w: { a: 0, k: w }, lc: 2, lj: 2, bm: 0, nm: 'st' });
 const fillC = (c) => ({ ty: 'fl', c: { a: 0, k: c }, o: { a: 0, k: 100 }, r: 1, bm: 0, nm: 'fl' });
 const gstroke = (w, yT, yB) => ({ ty: 'gs', o: { a: 0, k: 100 }, w: { a: 0, k: w }, s: { a: 0, k: [0, yT] }, e: { a: 0, k: [0, yB] }, t: 1, g: { p: 2, k: { a: 0, k: [0, ...GTOP, 1, ...GBOT] } }, lc: 2, lj: 2, bm: 0, nm: 'gs' });
@@ -84,10 +101,12 @@ function buildExercise(spec) {
     const moves = poses.some((p) => JSON.stringify(p.limbs[nm]) !== JSON.stringify(poses[0].limbs[nm]));
     let sh;
     if (moves) {
-      const kf = seq.map((p, i) => { const o = { t: times[i], s: [pathOf(p.limbs[nm])] }; if (i < seq.length - 1) { o.i = e_i; o.o = e_o; } return o; });
+      const kf = seq.map((p, i) => { const o = { t: times[i], s: [smoothPath(p.limbs[nm])] }; if (i < seq.length - 1) { o.i = e_i; o.o = e_o; } return o; });
       sh = { ty: 'sh', nm, ks: { a: 1, k: kf } };
-    } else sh = { ty: 'sh', nm, ks: { a: 0, k: pathOf(poses[0].limbs[nm]) } };
-    const L = layer(0, nm, [sh, gstroke(W, yT, yB), trg()]); L.op = F; return L;
+    } else sh = { ty: 'sh', nm, ks: { a: 0, k: smoothPath(poses[0].limbs[nm]) } };
+    // the phone gets a distinct solid amber stroke; everything else is the body gradient
+    const strokeItem = nm === 'phone' ? stroke(PHONE, 13) : gstroke(W, yT, yB);
+    const L = layer(0, nm, [sh, strokeItem, trg()]); L.op = F; return L;
   });
 
   // little feet: a short toe at the distal end of each grounded leg, ALL pointing
@@ -291,10 +310,10 @@ A({ id: 'doorway_pec_stretch_high', headR: 24, ground: [[300, 50], [300, 250]], 
   { head: [220, 74], limbs: { torso: [[222, 102], [222, 176]], arm: [[222, 112], [284, 96], [294, 72]], legL: [[222, 176], [200, 236]], legR: [[222, 176], [250, 236]] } },
   { head: [212, 76], limbs: { torso: [[214, 104], [214, 176]], arm: [[214, 114], [284, 96], [294, 72]], legL: [[214, 176], [196, 236]], legR: [[214, 176], [244, 236]] } },
 ], arrows: [{ dir: 'left', at: [178, 116], phase: 'first' }] });
-A({ id: 'scapular_posterior_tilt', headR: 22, ground: [[60, 220], [420, 220]], poses: [
-  quad({ spine: [[190, 152], [310, 152]] }),
-  quad({ spine: [[190, 146], [310, 158]], head: [150, 146] }),
-], arrows: [{ dir: 'up', at: [250, 116], phase: 'first' }] });
+A({ id: 'scapular_posterior_tilt', headR: 22, ground: [[60, 220], [420, 220]], poses: [ // all-fours: upper back gently domes up between the shoulder blades
+  { head: [172, 174], limbs: { spine: [[198, 158], [250, 156], [304, 158]], arm: [[198, 158], [206, 216]], leg: [[304, 158], [312, 216]] } },
+  { head: [170, 164], limbs: { spine: [[198, 146], [250, 150], [304, 158]], arm: [[198, 146], [206, 216]], leg: [[304, 158], [312, 216]] } },
+], arrows: [{ dir: 'up', at: [212, 116], phase: 'first' }] });
 A({ id: 'standing_scapular_posterior_tilt', headR: 24, ground: [[300, 50], [300, 250]], poses: [
   fstand({ head: [248, 72], sh: [248, 100], hip: [248, 168], hands: [[214, 150], [282, 150]], feet: [[224, 236], [274, 236]] }),
   fstand({ head: [248, 72], sh: [248, 100], hip: [248, 168], hands: [[220, 140], [276, 140]], feet: [[224, 236], [274, 236]] }),
