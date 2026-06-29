@@ -139,10 +139,21 @@ function buildExercise(spec) {
   let groundL = null;
   if (spec.ground) { groundL = layer(0, 'ground', [{ ty: 'sh', nm: 'g', ks: { a: 0, k: pathOf(spec.ground) } }, stroke(GROUND, 3), trg()]); groundL.op = F; }
 
-  // order top -> bottom: arrows, head ring, head matte, limbs, neck, ground
+  // floor mat: a subtle rounded-rect outline behind an overhead (bird's-eye)
+  // figure, so a top-down pose clearly reads as lying on the floor. spec.mat =
+  // [cx, cy, w, h, cornerRadius].
+  let matL = null;
+  if (spec.mat) {
+    const [mx, my, mw, mh, mr] = spec.mat;
+    matL = layer(0, 'mat', [{ ty: 'rc', nm: 'mr', p: { a: 0, k: [mx, my] }, s: { a: 0, k: [mw, mh] }, r: { a: 0, k: mr } }, stroke(GROUND, 3), trg()]);
+    matL.op = F;
+  }
+
+  // order top -> bottom: arrows, head ring, head matte, limbs, neck, ground, mat (mat sits behind everything)
   const layers = [...arrowLs, ring, matte, ...limbLs, ...footLs];
   if (neckL) layers.push(neckL);
   if (groundL) layers.push(groundL);
+  if (matL) layers.push(matL);
   layers.forEach((L, i) => { L.ind = i + 1; });
 
   return { v: '5.7.4', fr: 30, ip: 0, op: F, w: 480, h: 270, nm: spec.id, ddd: 0, assets: [], layers };
@@ -224,30 +235,30 @@ A({ id: 'prone_neck_extension', headR: 24, face: 1, ground: [[80, 214], [400, 21
 ], arrows: [{ dir: 'up', at: [150, 158], phase: 'first' }] });
 
 /* SHOULDER */
-A({ id: 'prone_y_raise', headR: 22, ground: [[60, 220], [420, 220]], poses: [
-  { head: [240, 196], limbs: { torso: [[240, 150], [240, 196]], armL: [[240, 158], [196, 120]], armR: [[240, 158], [284, 120]], leg: [[240, 196], [240, 214]] } },
-  { head: [240, 190], limbs: { torso: [[240, 150], [240, 190]], armL: [[240, 152], [194, 110]], armR: [[240, 152], [286, 110]], leg: [[240, 190], [240, 214]] } },
-], arrows: [{ dir: 'up', at: [240, 84], phase: 'first' }] });
-A({ id: 'prone_t_raise', headR: 22, ground: [[60, 220], [420, 220]], poses: [
-  { head: [240, 196], limbs: { torso: [[240, 150], [240, 196]], armL: [[240, 168], [186, 168]], armR: [[240, 168], [294, 168]], leg: [[240, 196], [240, 214]] } },
-  { head: [240, 190], limbs: { torso: [[240, 150], [240, 190]], armL: [[240, 164], [184, 158]], armR: [[240, 164], [296, 158]], leg: [[240, 190], [240, 214]] } },
-], arrows: [{ dir: 'up', at: [240, 120], phase: 'first' }] });
-A({ id: 'prone_w_raise', headR: 22, ground: [[60, 220], [420, 220]], poses: [
-  { head: [240, 196], limbs: { torso: [[240, 150], [240, 196]], armL: [[240, 160], [206, 138], [192, 168]], armR: [[240, 160], [274, 138], [288, 168]], leg: [[240, 196], [240, 214]] } },
-  { head: [240, 190], limbs: { torso: [[240, 150], [240, 190]], armL: [[240, 156], [204, 130], [188, 160]], armR: [[240, 156], [276, 130], [292, 160]], leg: [[240, 190], [240, 214]] } },
-], arrows: [{ dir: 'up', at: [240, 110], phase: 'first' }] });
-A({ id: 'prone_i_raise', headR: 22, ground: [[60, 220], [420, 220]], poses: [
-  { head: [240, 196], limbs: { torso: [[240, 150], [240, 196]], armL: [[240, 156], [222, 116]], armR: [[240, 156], [258, 116]], leg: [[240, 196], [240, 214]] } },
-  { head: [240, 190], limbs: { torso: [[240, 150], [240, 190]], armL: [[240, 150], [224, 106]], armR: [[240, 150], [256, 106]], leg: [[240, 190], [240, 214]] } },
-], arrows: [{ dir: 'up', at: [240, 80], phase: 'first' }] });
+A({ id: 'prone_y_raise', headR: 22, mat: [240, 150, 152, 214, 48], poses: [ // overhead: head top, legs trailing, arms in a Y past the head
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 106], [212, 72], [192, 50]], armR: [[240, 106], [268, 72], [288, 50]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 106], [210, 64], [188, 42]], armR: [[240, 106], [270, 64], [292, 42]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+], arrows: [{ dir: 'up', at: [240, 28], phase: 'first' }] });
+A({ id: 'prone_t_raise', headR: 22, mat: [240, 150, 152, 214, 48], poses: [ // overhead: arms straight out to the sides (T)
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 112], [184, 112]], armR: [[240, 112], [296, 112]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 112], [182, 102]], armR: [[240, 112], [298, 102]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+], arrows: [{ dir: 'up', at: [184, 84], phase: 'first' }, { dir: 'up', at: [296, 84], phase: 'first' }] });
+A({ id: 'prone_w_raise', headR: 22, mat: [240, 150, 152, 214, 48], poses: [ // overhead: bent elbows form a W at shoulder height
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 110], [198, 128], [184, 96]], armR: [[240, 110], [282, 128], [296, 96]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 110], [196, 120], [182, 86]], armR: [[240, 110], [284, 120], [298, 86]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+], arrows: [{ dir: 'up', at: [184, 70], phase: 'first' }, { dir: 'up', at: [296, 70], phase: 'first' }] });
+A({ id: 'prone_i_raise', headR: 22, mat: [240, 150, 152, 214, 48], poses: [ // overhead: arms straight overhead in line with the body (I)
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 106], [216, 70], [226, 46]], armR: [[240, 106], [264, 70], [254, 46]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 106], [214, 64], [227, 40]], armR: [[240, 106], [266, 64], [253, 40]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+], arrows: [{ dir: 'up', at: [240, 26], phase: 'first' }] });
 A({ id: 'seated_scapular_squeeze', headR: 24, poses: [
   { head: [240, 76], limbs: { torso: [[240, 104], [240, 180]], armL: [[240, 116], [223, 133], [206, 150]], armR: [[240, 116], [257, 133], [274, 150]], legL: [[240, 180], [206, 196]], legR: [[240, 180], [274, 196]] } },
   { head: [240, 76], limbs: { torso: [[240, 104], [240, 180]], armL: [[240, 116], [212, 138], [196, 158]], armR: [[240, 116], [268, 138], [284, 158]], legL: [[240, 180], [206, 196]], legR: [[240, 180], [274, 196]] } },
 ], arrows: [{ dir: 'left', at: [196, 110], phase: 'second' }, { dir: 'right', at: [284, 110], phase: 'second' }] });
-A({ id: 'prone_scapular_retraction', headR: 22, ground: [[60, 220], [420, 220]], poses: [
-  { head: [240, 196], limbs: { torso: [[240, 150], [240, 196]], armL: [[240, 162], [204, 180]], armR: [[240, 162], [276, 180]], leg: [[240, 196], [240, 214]] } },
-  { head: [240, 192], limbs: { torso: [[240, 150], [240, 192]], armL: [[240, 158], [206, 168]], armR: [[240, 158], [274, 168]], leg: [[240, 192], [240, 214]] } },
-], arrows: [{ dir: 'up', at: [240, 120], phase: 'first' }] });
+A({ id: 'prone_scapular_retraction', headR: 22, mat: [240, 150, 152, 214, 48], poses: [ // overhead: arms at sides, shoulder blades squeeze in
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 116], [206, 116], [210, 152]], armR: [[240, 116], [274, 116], [270, 152]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 116], [214, 112], [218, 146]], armR: [[240, 116], [266, 112], [262, 146]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+], arrows: [{ dir: 'right', at: [198, 116], phase: 'second' }, { dir: 'left', at: [282, 116], phase: 'second' }] });
 A({ id: 'wall_slides', headR: 22, ground: [[330, 50], [330, 250]], poses: [
   armPose([[196, 132], [284, 132]]),
   armPose([[208, 96], [272, 96]]),
@@ -256,10 +267,10 @@ A({ id: 'wall_angel', headR: 22, ground: [[330, 50], [330, 250]], poses: [
   armPose([[202, 130], [278, 130]]),
   armPose([[210, 98], [270, 98]]),
 ], arrows: [{ dir: 'up', at: [240, 60], phase: 'first' }, { dir: 'down', at: [240, 60], phase: 'second' }] });
-A({ id: 'floor_slides_snow_angel', headR: 22, ground: [[70, 214], [410, 214]], poses: [
-  { head: [240, 190], limbs: { torso: [[240, 150], [240, 196]], armL: [[240, 160], [196, 140]], armR: [[240, 160], [284, 140]], leg: [[240, 196], [240, 210]] } },
-  { head: [240, 190], limbs: { torso: [[240, 150], [240, 196]], armL: [[240, 158], [206, 116]], armR: [[240, 158], [274, 116]], leg: [[240, 196], [240, 210]] } },
-], arrows: [{ dir: 'up', at: [240, 92], phase: 'first' }] });
+A({ id: 'floor_slides_snow_angel', headR: 22, mat: [240, 150, 152, 214, 48], poses: [ // overhead: goal-post 'W' slides up to overhead 'Y'
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 110], [204, 110], [204, 74]], armR: [[240, 110], [276, 110], [276, 74]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+  { head: [240, 64], limbs: { torso: [[240, 100], [240, 178]], armL: [[240, 110], [214, 80], [198, 52]], armR: [[240, 110], [266, 80], [282, 52]], legL: [[240, 178], [222, 234]], legR: [[240, 178], [258, 234]] } },
+], arrows: [{ dir: 'up', at: [240, 30], phase: 'first' }] });
 A({ id: 'serratus_punch_supine', headR: 22, face: 1, ground: [[70, 214], [410, 214]], poses: [
   { head: [150, 198], limbs: { spine: [[178, 202], [280, 202]], arm: [[200, 202], [200, 150]], leg: [[280, 202], [330, 178], [350, 202]] } },
   { head: [150, 198], limbs: { spine: [[178, 202], [280, 202]], arm: [[200, 202], [200, 130]], leg: [[280, 202], [330, 178], [350, 202]] } },
