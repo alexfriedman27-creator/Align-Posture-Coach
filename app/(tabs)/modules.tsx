@@ -193,10 +193,12 @@ export default function ModulesTab() {
             <Text style={styles.customTitle}>Build a custom plan</Text>
             <Text style={styles.customSub}>Design your own stretch routine</Text>
           </View>
-          <View style={styles.proBadge}>
-            <Ionicons name="lock-closed" size={10} color={Colors.white} style={{ marginRight: 3 }} />
-            <Text style={styles.proBadgeText}>Pro</Text>
-          </View>
+          {!isPro && (
+            <View style={styles.proBadge}>
+              <Ionicons name="lock-closed" size={10} color={Colors.white} style={{ marginRight: 3 }} />
+              <Text style={styles.proBadgeText}>Pro</Text>
+            </View>
+          )}
         </TouchableOpacity>
 
         {customPrograms.map((prog) => (

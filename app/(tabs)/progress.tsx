@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import Svg, { Circle } from 'react-native-svg';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Colors } from '../../lib/design/colors';
 import { Typography, FontFamily } from '../../lib/design/fonts';
@@ -61,6 +60,12 @@ function formatDisplayDate(dateStr: string): string {
   const [, m, day] = dateStr.split('-').map(Number);
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${months[m - 1]} ${day}`;
+}
+
+function daysBetween(a: string, b: string): number {
+  const da = new Date(a + 'T00:00:00').getTime();
+  const db = new Date(b + 'T00:00:00').getTime();
+  return Math.abs(Math.round((db - da) / 86400000));
 }
 
 function pastDays(n: number): string[] {
@@ -281,81 +286,6 @@ function PhotoCard({ photo, onDelete }: { photo: ProgressPhoto; onDelete: () => 
   );
 }
 
-// ─── Calendar ─────────────────────────────────────────────────────────────────
-
-function MonthCalendar({ sessionDates }: { sessionDates: string[] }) {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayOfWeek = new Date(year, month, 1).getDay();
-  const mondayOffset = (firstDayOfWeek + 6) % 7;
-
-  const dateSet = new Set(sessionDates.map((d) => d.slice(0, 10)));
-  const today = `${year}-${String(month + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
-  const cells: (number | null)[] = Array(mondayOffset).fill(null);
-  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
-
-  const monthName = now.toLocaleString('default', { month: 'long' });
-  const completedDays = cells.filter((d) => {
-    if (!d) return false;
-    const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    return dateSet.has(ds);
-  }).length;
-  const totalPast = cells.filter((d) => {
-    if (!d) return false;
-    const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    return ds <= today;
-  }).length;
-  const activePct = totalPast > 0 ? Math.round((completedDays / totalPast) * 100) : 0;
-
-  const rows: (number | null)[][] = [];
-  for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
-
-  return (
-    <Card style={styles.calCard}>
-      <View style={styles.calHeader}>
-        <Text style={styles.calTitle}>{monthName} {year}</Text>
-        <Text style={[Typography.caption, { color: Colors.accent }]}>{activePct}% active</Text>
-      </View>
-      <View style={styles.calDayHeaders}>
-        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-          <Text key={i} style={styles.calDayLabel}>{d}</Text>
-        ))}
-      </View>
-      {rows.map((row, ri) => (
-        <View key={ri} style={styles.calRow}>
-          {Array(7).fill(null).map((_, ci) => {
-            const day = row[ci] ?? null;
-            if (!day) return <View key={ci} style={styles.calCell} />;
-            const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const done = dateSet.has(ds);
-            const isPast = ds <= today;
-            const isToday = ds === today;
-            return (
-              <View
-                key={ci}
-                style={[
-                  styles.calCell,
-                  done && styles.calCellDone,
-                  !done && isPast && styles.calCellMissed,
-                  isToday && !done && styles.calCellToday,
-                ]}
-              >
-                {done
-                  ? <Ionicons name="checkmark" size={13} color={Colors.white} />
-                  : <Text style={[styles.calDayNum, isToday && styles.calDayNumToday]}>{day}</Text>
-                }
-              </View>
-            );
-          })}
-        </View>
-      ))}
-    </Card>
-  );
-}
-
 // ─── Reports: Program Leaderboard ─────────────────────────────────────────────
 
 interface ProgramEntry {
@@ -543,6 +473,7 @@ export default function ProgressTab() {
   const { profile } = useUserStore();
   const [photos, setPhotos] = useState<ProgressPhoto[]>([]);
   const [pendingUri, setPendingUri] = useState<string | null>(null);
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
   const [showBadgeReveal, setShowBadgeReveal] = useState(false);
 
@@ -569,7 +500,29 @@ export default function ProgressTab() {
 
   const xpProg = progress ? xpProgress(progress) : 0;
 
-  async function openPicker() {
+  function promptAddPhoto() {
+    Alert.alert('Add Progress Photo', undefined, [
+      { text: 'Take Photo', onPress: openCamera },
+      { text: 'Choose from Library', onPress: openLibrary },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  }
+
+  async function openCamera() {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert('Camera access needed', 'Enable camera access in Settings to take a progress photo.');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    setPendingUri(result.assets[0].uri);
+  }
+
+  async function openLibrary() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
@@ -606,6 +559,12 @@ export default function ProgressTab() {
     setPhotos(prev => prev.filter(p => p.id !== id));
   }
 
+  // Photos are newest-first. Show a few on the main screen; the rest live in "See all".
+  const PHOTO_PREVIEW_COUNT = 3;
+  const visiblePhotos = photos.slice(0, PHOTO_PREVIEW_COUNT);
+  const daysSinceLastPhoto = photos.length > 0 ? daysBetween(photos[0].date, todayStr()) : 0;
+  const showPhotoNudge = photos.length > 0 && daysSinceLastPhoto >= 14;
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -632,8 +591,67 @@ export default function ProgressTab() {
           </View>
         </Card>
 
-        {/* Calendar */}
-        <MonthCalendar sessionDates={progress?.thirtyDaySessionDates ?? []} />
+        {/* Progress Photos */}
+        <View>
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionHeaderLeft}>
+              <Ionicons name="camera-outline" size={18} color={Colors.accent} />
+              <View>
+                <Text style={styles.sectionTitle}>Progress Photos</Text>
+                <Text style={styles.sectionSub}>Watch your transformation take shape</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.addPhotoBtn} onPress={promptAddPhoto} activeOpacity={0.8}>
+              <Ionicons name="add" size={16} color={Colors.accent} />
+              <Text style={styles.addPhotoBtnText}>Add</Text>
+            </TouchableOpacity>
+          </View>
+
+          {photos.length === 0 ? (
+            <TouchableOpacity style={styles.emptyState} onPress={promptAddPhoto} activeOpacity={0.8}>
+              <View style={styles.emptyCameraCircle}>
+                <Ionicons name="camera-outline" size={28} color={Colors.accent} />
+              </View>
+              <Text style={styles.emptyTitle}>Document your journey</Text>
+              <Text style={styles.emptySub}>Add photos with captions to track how far you've come</Text>
+            </TouchableOpacity>
+          ) : (
+            <>
+              {showPhotoNudge && (
+                <TouchableOpacity style={styles.nudge} onPress={promptAddPhoto} activeOpacity={0.85}>
+                  <Ionicons name="camera-outline" size={16} color={Colors.accent} />
+                  <Text style={styles.nudgeText}>
+                    It's been {daysSinceLastPhoto} days since your last photo. Add a fresh one?
+                  </Text>
+                  <Ionicons name="chevron-forward" size={14} color={Colors.tertiaryText} />
+                </TouchableOpacity>
+              )}
+
+              <View style={styles.photoList}>
+                {visiblePhotos.map(photo => (
+                  <PhotoCard key={photo.id} photo={photo} onDelete={() => handleDelete(photo.id)} />
+                ))}
+              </View>
+
+              {photos.length > PHOTO_PREVIEW_COUNT && (
+                <TouchableOpacity style={styles.seeAllBtn} onPress={() => setShowAllPhotos(true)} activeOpacity={0.8}>
+                  <Text style={styles.seeAllBtnText}>See all {photos.length} photos</Text>
+                  <Ionicons name="chevron-forward" size={15} color={Colors.accent} />
+                </TouchableOpacity>
+              )}
+            </>
+          )}
+        </View>
+
+        <View style={[styles.sectionHeader, styles.reportsHeader]}>
+          <View style={styles.sectionHeaderLeft}>
+            <Ionicons name="stats-chart" size={18} color={Colors.accent} />
+            <View>
+              <Text style={styles.sectionTitle}>Reports</Text>
+              <Text style={styles.sectionSub}>Your wins, by the numbers</Text>
+            </View>
+          </View>
+        </View>
 
         <ProgramLeaderboard
           sessions={moduleSessions}
@@ -648,39 +666,6 @@ export default function ProgressTab() {
           totalSessions={progress?.totalSessions ?? 0}
           totalMinutes={progress?.totalMinutes ?? 0}
         />
-
-        {/* Progress Photos */}
-        <View>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionHeaderLeft}>
-              <Ionicons name="camera-outline" size={18} color={Colors.accent} />
-              <View>
-                <Text style={styles.sectionTitle}>Progress Photos</Text>
-                <Text style={styles.sectionSub}>Hold yourself accountable</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.addPhotoBtn} onPress={openPicker} activeOpacity={0.8}>
-              <Ionicons name="add" size={16} color={Colors.accent} />
-              <Text style={styles.addPhotoBtnText}>Add</Text>
-            </TouchableOpacity>
-          </View>
-
-          {photos.length === 0 ? (
-            <TouchableOpacity style={styles.emptyState} onPress={openPicker} activeOpacity={0.8}>
-              <View style={styles.emptyCameraCircle}>
-                <Ionicons name="camera-outline" size={28} color={Colors.accent} />
-              </View>
-              <Text style={styles.emptyTitle}>Document your journey</Text>
-              <Text style={styles.emptySub}>Add photos with captions to track how far you've come</Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.photoList}>
-              {photos.map(photo => (
-                <PhotoCard key={photo.id} photo={photo} onDelete={() => handleDelete(photo.id)} />
-              ))}
-            </View>
-          )}
-        </View>
       </ScrollView>
 
       {pendingUri && (
@@ -693,6 +678,30 @@ export default function ProgressTab() {
         </Modal>
       )}
 
+      {showAllPhotos && (
+        <Modal visible transparent animationType="slide">
+          <SafeAreaView style={styles.allSafe}>
+            <View style={styles.allHeader}>
+              <Text style={styles.allTitle}>Progress Photos</Text>
+              <TouchableOpacity onPress={() => setShowAllPhotos(false)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <Ionicons name="close" size={24} color={Colors.primaryText} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={styles.allContent} showsVerticalScrollIndicator={false}>
+              {photos.length === 0 ? (
+                <Text style={styles.allEmpty}>No photos yet.</Text>
+              ) : (
+                <View style={styles.photoList}>
+                  {photos.map(photo => (
+                    <PhotoCard key={photo.id} photo={photo} onDelete={() => handleDelete(photo.id)} />
+                  ))}
+                </View>
+              )}
+            </ScrollView>
+          </SafeAreaView>
+        </Modal>
+      )}
+
       {showBadgeReveal && newBadges.length > 0 && (
         <Modal visible transparent animationType="none">
           <BadgeReveal badges={newBadges} onDismiss={() => setShowBadgeReveal(false)} />
@@ -702,12 +711,10 @@ export default function ProgressTab() {
   );
 }
 
-const CAL_CELL = 38;
-
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: 120, gap: Spacing.gap },
+  content: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: Spacing.card, gap: Spacing.gap },
   heading: { ...Typography.title },
 
   // Pro gate
@@ -740,31 +747,6 @@ const styles = StyleSheet.create({
   xpBar: { height: 6, backgroundColor: Colors.cardElevated, borderRadius: 3, overflow: 'hidden' },
   xpFill: { height: '100%', backgroundColor: Colors.accent, borderRadius: 3 },
 
-  // Calendar
-  calCard: { gap: Spacing.tight },
-  calHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  calTitle: { ...Typography.bodyMedium },
-  calDayHeaders: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 2 },
-  calDayLabel: { ...Typography.caption, color: Colors.secondaryText, width: CAL_CELL, textAlign: 'center' },
-  calRow: { flexDirection: 'row', justifyContent: 'space-around' },
-  calCell: {
-    width: CAL_CELL, height: CAL_CELL, borderRadius: 10,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  calCellDone: { backgroundColor: Colors.accent },
-  calCellMissed: { backgroundColor: Colors.cardElevated },
-  calCellToday: { borderWidth: 1.5, borderColor: Colors.accent },
-  calDayNum: { ...Typography.caption, color: Colors.tertiaryText, fontSize: 12 },
-  calDayNumToday: { color: Colors.accent },
-
-  // Reports section header
-  reportsSectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: -Spacing.micro,
-  },
-  reportsSectionTitle: { ...Typography.subheadline, color: Colors.accent },
 
   // Report cards
   reportCard: { gap: Spacing.inner },
@@ -857,6 +839,9 @@ const styles = StyleSheet.create({
 
   // Photos
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.tight },
+  // Reports header is a standalone child (not wrapped like Photos), so cancel the
+  // container's gap below it to match the Photos header's spacing to its card.
+  reportsHeader: { marginBottom: -Spacing.micro },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionTitle: { ...Typography.subheadline },
   sectionSub: { ...Typography.caption, color: Colors.secondaryText, marginTop: 1 },
@@ -866,6 +851,33 @@ const styles = StyleSheet.create({
     borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6,
   },
   addPhotoBtnText: { ...Typography.label, color: Colors.accent },
+
+  nudge: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.tight,
+    backgroundColor: Colors.accent + '14',
+    borderRadius: Radii.card,
+    paddingVertical: 10, paddingHorizontal: Spacing.inner,
+    marginBottom: Spacing.tight,
+  },
+  nudgeText: { ...Typography.caption, color: Colors.primaryText, flex: 1 },
+
+  seeAllBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4,
+    backgroundColor: Colors.card,
+    borderRadius: Radii.card,
+    paddingVertical: 13,
+    marginTop: Spacing.tight,
+  },
+  seeAllBtnText: { ...Typography.bodyMedium, color: Colors.accent },
+
+  allSafe: { flex: 1, backgroundColor: Colors.background },
+  allHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: Spacing.card, paddingVertical: Spacing.inner,
+  },
+  allTitle: { ...Typography.headline },
+  allContent: { paddingHorizontal: Spacing.card, paddingBottom: Spacing.section },
+  allEmpty: { ...Typography.body, color: Colors.tertiaryText, textAlign: 'center', paddingVertical: Spacing.section },
 
   emptyState: {
     backgroundColor: Colors.card, borderRadius: Radii.card,

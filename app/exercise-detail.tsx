@@ -58,14 +58,12 @@ export default function ExerciseDetailScreen() {
   const category      = exercise?.category ?? null;
   const instructions  = exercise?.instructions ?? [];
   const position      = exercise?.position ?? null;
-  const equipment     = exercise?.equipment ?? null;
 
   const slotBadge = SLOT_BADGE[slot];
   const slotName  = SLOT_NAME[slot];
   const catColor  = category ? CATEGORY_COLOR[category] : Colors.accent;
 
-  const showEquipment = equipment && equipment !== 'none';
-  const showSetup     = position || showEquipment;
+  const showSetup     = !!position;
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -146,15 +144,6 @@ export default function ExerciseDetailScreen() {
                   <View style={{ flex: 1 }}>
                     <Text style={styles.setupItemLabel}>Starting position</Text>
                     <Text style={styles.setupItemValue}>{formatLabel(position)}</Text>
-                  </View>
-                </View>
-              )}
-              {showEquipment && (
-                <View style={styles.setupItem}>
-                  <Ionicons name="cube-outline" size={16} color={Colors.secondaryText} style={{ marginTop: 1 }} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.setupItemLabel}>Equipment</Text>
-                    <Text style={styles.setupItemValue}>{formatLabel(equipment!)}</Text>
                   </View>
                 </View>
               )}

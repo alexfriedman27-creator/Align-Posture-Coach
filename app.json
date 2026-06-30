@@ -37,7 +37,14 @@
         }
       ],
       "expo-splash-screen",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Align uses your camera so you can take progress photos.",
+          "photosPermission": "Align needs access to your photos so you can add progress photos."
+        }
+      ]
     ]
   }
 }

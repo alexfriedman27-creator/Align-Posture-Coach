@@ -625,27 +625,16 @@ export default function SessionScreen() {
             )}
 
             {/* Setup */}
-            {(currentExercise.position || (currentExercise.equipment && currentExercise.equipment !== 'none')) && (
+            {currentExercise.position && (
               <View style={styles.previewSection}>
                 <Text style={styles.previewSectionLabel}>SETUP</Text>
-                {currentExercise.position && (
-                  <View style={styles.previewSetupItem}>
-                    <Ionicons name="body-outline" size={16} color={Colors.secondaryText} style={{ marginTop: 1 }} />
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.previewSetupLabel}>Starting position</Text>
-                      <Text style={styles.previewSetupValue}>{formatLabel(currentExercise.position)}</Text>
-                    </View>
+                <View style={styles.previewSetupItem}>
+                  <Ionicons name="body-outline" size={16} color={Colors.secondaryText} style={{ marginTop: 1 }} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.previewSetupLabel}>Starting position</Text>
+                    <Text style={styles.previewSetupValue}>{formatLabel(currentExercise.position)}</Text>
                   </View>
-                )}
-                {currentExercise.equipment && currentExercise.equipment !== 'none' && (
-                  <View style={styles.previewSetupItem}>
-                    <Ionicons name="cube-outline" size={16} color={Colors.secondaryText} style={{ marginTop: 1 }} />
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.previewSetupLabel}>Equipment</Text>
-                      <Text style={styles.previewSetupValue}>{formatLabel(currentExercise.equipment)}</Text>
-                    </View>
-                  </View>
-                )}
+                </View>
               </View>
             )}
           </View>

@@ -11,7 +11,7 @@ import { Radii } from '../lib/design/radii';
 import { exerciseRepository } from '../lib/data/ExerciseRepository';
 import { getCustomExercises } from '../lib/db/queries';
 import { CustomExercise } from '../types/CustomExercise';
-import { Exercise, ExerciseSlot, ExerciseCategory, SLOT_NAME, SLOT_BADGE, DAILY_SLOTS } from '../types/Exercise';
+import { Exercise, ExerciseSlot, ExerciseCategory, SLOT_NAME, DAILY_SLOTS } from '../types/Exercise';
 import { useUserStore } from '../lib/store/useUserStore';
 
 type SlotFilter = ExerciseSlot | null;
@@ -47,15 +47,6 @@ type DisplayExercise =
   | { kind: 'builtin'; data: Exercise }
   | { kind: 'custom'; data: CustomExercise };
 
-function SlotBadge({ slot }: { slot: ExerciseSlot }) {
-  return (
-    <View style={styles.badge}>
-      <View style={styles.badgeStripes} />
-      <Text style={styles.badgeText}>{SLOT_BADGE[slot]}</Text>
-    </View>
-  );
-}
-
 function ExerciseRow({ item, onPress, isPro }: { item: DisplayExercise; onPress: () => void; isPro: boolean }) {
   const isCustom = item.kind === 'custom';
   const name = item.data.name;
@@ -65,7 +56,6 @@ function ExerciseRow({ item, onPress, isPro }: { item: DisplayExercise; onPress:
 
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
-      <SlotBadge slot={slot} />
       <View style={styles.rowContent}>
         <Text style={[styles.rowName, isCustom && { color: Colors.accent }]}>{name}</Text>
         <View style={styles.rowMeta}>
@@ -323,7 +313,7 @@ const styles = StyleSheet.create({
   filterChipText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.secondaryText },
   filterChipTextActive: { color: Colors.white },
   list: { paddingBottom: Spacing.card },
-  separator: { height: 1, backgroundColor: Colors.cardElevated, marginLeft: 72 },
+  separator: { height: 1, backgroundColor: Colors.cardElevated, marginLeft: Spacing.card },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -332,21 +322,6 @@ const styles = StyleSheet.create({
     gap: Spacing.inner,
     backgroundColor: Colors.background,
   },
-  badge: {
-    width: 48,
-    height: 48,
-    borderRadius: Radii.icon,
-    backgroundColor: Colors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  badgeStripes: {
-    ...StyleSheet.absoluteFill,
-    opacity: 0.12,
-    backgroundColor: Colors.cardElevated,
-  },
-  badgeText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.secondaryText, letterSpacing: 0.5 },
   rowContent: { flex: 1 },
   rowName: { ...Typography.bodyMedium, fontSize: 17, lineHeight: 24, color: Colors.primaryText },
   rowMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },

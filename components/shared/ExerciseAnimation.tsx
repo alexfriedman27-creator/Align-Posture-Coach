@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ViewStyle, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { Colors } from '../../lib/design/colors';
 import { Typography } from '../../lib/design/fonts';
@@ -25,23 +25,18 @@ interface Props {
  */
 export function ExerciseAnimation({ exerciseId, catColor, slot, style }: Props) {
   const source = getExerciseAnimation(exerciseId);
-  const [loaded, setLoaded] = useState(false);
   const badge = (SLOT_BADGE as Record<string, string>)[slot] ?? slot.slice(0, 2).toUpperCase();
 
   return (
     <View style={[styles.container, style]}>
       {source ? (
-        <>
-          <LottieView
-            source={source as any}
-            autoPlay
-            loop
-            resizeMode="contain"
-            style={styles.lottie}
-            onAnimationLoaded={() => setLoaded(true)}
-          />
-          {!loaded && <ActivityIndicator color={catColor} style={StyleSheet.absoluteFill} />}
-        </>
+        <LottieView
+          source={source as any}
+          autoPlay
+          loop
+          resizeMode="contain"
+          style={styles.lottie}
+        />
       ) : (
         <View style={styles.center}>
           <View style={[styles.badge, { borderColor: catColor + '55' }]}>

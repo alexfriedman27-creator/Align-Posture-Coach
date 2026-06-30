@@ -33,7 +33,7 @@
       "target_condition": [
         "forward_head_posture"
       ],
-      "description": "Isolates and strengthens the deep cervical flexors that hold the head aligned over the shoulders, countering 'text neck'.",
+      "description": "Strengthens the deep muscles at the front of the neck that hold your head stacked over your shoulders, countering 'text neck'.",
       "instructions": [
         "Sit or stand tall, shoulders relaxed.",
         "Draw chin straight back creating a 'double chin' without tilting down.",
@@ -284,7 +284,7 @@
       "target_condition": [
         "forward_head_posture"
       ],
-      "description": "A dynamic, gravity-loaded alternative to the isometric press, building cervical extensor strength through a small range of motion.",
+      "description": "A moving alternative to the static neck press, building strength in the back of the neck through a small, controlled lift.",
       "instructions": [
         "Lie face down, forehead on a small towel, hands at sides.",
         "Perform a chin tuck, then lift the head slightly off the floor keeping the tuck.",
@@ -318,7 +318,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "Lengthens the chest muscles pulling the shoulders forward; arm at shoulder height targets the sternal pec major fibers.",
+      "description": "Opens the tight chest muscles that pull your shoulders forward. With the arm at shoulder height, the stretch lands on the main part of the chest.",
       "instructions": [
         "Forearm on door frame, elbow at shoulder height bent 90 degrees.",
         "Step forward until stretch is felt across chest.",
@@ -351,7 +351,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "Arm raised above shoulder height shifts the stretch onto the clavicular pec fibers and pec minor.",
+      "description": "Raising the arm higher shifts the stretch up to the upper chest and the smaller muscle just beneath it.",
       "instructions": [
         "Forearm on door frame, elbow above shoulder height.",
         "Step forward until stretch is felt under collarbone.",
@@ -531,7 +531,7 @@
         "rounded_shoulders",
         "thoracic_kyphosis"
       ],
-      "description": "Builds serratus anterior strength and scapular control while reinforcing upright thoracic positioning.",
+      "description": "Strengthens the muscles that control your shoulder blades while training your upper back to stay tall.",
       "instructions": [
         "Back, head, and arms against wall in 'goal post' position.",
         "Slide arms up overhead keeping wall contact, then return.",
@@ -569,7 +569,7 @@
         "rounded_shoulders",
         "thoracic_kyphosis"
       ],
-      "description": "Combines shoulder mobility with thoracic extension cueing against a wall, moving through 'W' to 'Y' rather than straight overhead.",
+      "description": "Opens the shoulders and trains the upper back to straighten against a wall, moving the arms from a 'W' to a 'Y' shape rather than straight overhead.",
       "instructions": [
         "Back against wall, arms in 'W' position against wall.",
         "Straighten arms upward into 'Y' while maintaining wall contact, return to 'W'.",
@@ -647,7 +647,7 @@
         "rounded_shoulders",
         "thoracic_kyphosis"
       ],
-      "description": "Targets the lower trapezius specifically through the 'Y' arm position.",
+      "description": "Works the lower shoulder-blade muscles through the 'Y' arm position to help pull the shoulders down and back.",
       "instructions": [
         "Lie face down, arms overhead in 'Y' shape, thumbs up.",
         "Lift arms slightly, squeezing shoulder blades down and together.",
@@ -685,7 +685,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "Targets the middle trapezius and rhomboids through the 'T' arm position.",
+      "description": "Works the muscles between the shoulder blades through the 'T' arm position to pull the shoulders back.",
       "instructions": [
         "Lie face down, arms out to sides in 'T' shape.",
         "Lift arms slightly, squeezing shoulder blades together.",
@@ -721,7 +721,7 @@
       "target_condition": [
         "rounded_shoulders"
       ],
-      "description": "Completes the Y-T-W complex; the bent-elbow 'W' position biases the lower trapezius and rotator cuff with less shoulder strain than the Y position.",
+      "description": "Completes the Y-T-W set. The bent-elbow 'W' works the lower shoulder-blade and rotator-cuff muscles with less shoulder strain than the Y.",
       "instructions": [
         "Lie face down, elbows bent, arms forming a 'W' at shoulder height.",
         "Lift arms slightly, squeezing shoulder blades down and together.",
@@ -792,7 +792,7 @@
       "target_condition": [
         "thoracic_kyphosis"
       ],
-      "description": "An equipment-light standing thoracic extension drill, useful when floor space or a foam roller isn't available.",
+      "description": "A standing way to straighten and open a stiff, hunched upper back when you don't want to get down on the floor.",
       "instructions": [
         "Stand facing away from wall, hands behind head, elbows wide.",
         "Lean upper back gently into wall, extending through mid-back.",
@@ -828,7 +828,7 @@
       "target_condition": [
         "thoracic_kyphosis"
       ],
-      "description": "Strengthens the spinal erector muscles that hold the thoracic spine upright, directly opposing the slumped posture of hyperkyphosis.",
+      "description": "Strengthens the long muscles running up your back that hold the spine upright, directly fighting a slumped, hunched upper back.",
       "instructions": [
         "Lie face down, arms extended overhead or at sides.",
         "Lift chest and arms slightly, squeezing shoulder blades and glutes.",
@@ -864,7 +864,7 @@
       "target_condition": [
         "thoracic_kyphosis"
       ],
-      "description": "A dynamic, alternating version of the superman extension, building thoracic extensor endurance through continuous small movements rather than a static hold.",
+      "description": "A moving, alternating version of the superman, building upper-back endurance through continuous small movements rather than a single hold.",
       "instructions": [
         "Lie face down, arms extended overhead.",
         "Alternately lift one arm and the opposite leg a few inches, like a slow flutter kick.",
@@ -943,7 +943,7 @@
         "thoracic_kyphosis",
         "general_spinal_mobility"
       ],
-      "description": "Improves rotational mobility of the thoracic spine, a plane of motion often neglected by flexion/extension-only routines.",
+      "description": "Improves your upper back's ability to twist, a movement that bend-only routines tend to skip.",
       "instructions": [
         "Tabletop position, wrists under shoulders, knees under hips.",
         "Slide one hand under the opposite arm, rotating the upper back.",
@@ -982,7 +982,7 @@
         "thoracic_kyphosis",
         "general_spinal_mobility"
       ],
-      "description": "A gentle, floor-based stretch for the lats and thoracic extensors, useful as a low-intensity recovery option.",
+      "description": "A gentle floor stretch for the sides of the back and the upper-back muscles, good as an easy recovery move.",
       "instructions": [
         "Kneel, sit hips back toward heels, reach arms forward on floor.",
         "Let chest sink toward floor, relax shoulders away from ears.",
@@ -1015,7 +1015,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "Lengthens the hip flexors, which when tight pull the pelvis forward into anterior tilt and exaggerate lower back curvature.",
+      "description": "Lengthens the hip flexors at the front of the hip, which when tight tip your pelvis forward and over-arch your lower back.",
       "instructions": [
         "Half-kneeling lunge, back knee down.",
         "Tuck pelvis slightly, shift weight forward until stretch is felt at front of back hip.",
@@ -1050,7 +1050,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "An equipment- and floor-free alternative to the half-kneeling version.",
+      "description": "A standing version of the kneeling hip flexor stretch, for when you'd rather not get down on the floor.",
       "instructions": [
         "Stand in tall split stance, back leg straight, front knee soft.",
         "Tuck pelvis under, shift hips forward until stretch is felt in front of back hip.",
@@ -1086,7 +1086,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "Strengthens the glutes, commonly weak and inhibited in anterior pelvic tilt, helping posteriorly rotate the pelvis toward neutral.",
+      "description": "Strengthens the glutes, which are often weak when the pelvis tips forward, helping roll it back toward a neutral position.",
       "instructions": [
         "Lie on back, knees bent, feet flat.",
         "Squeeze glutes, lift hips to a straight line torso-to-thigh.",
@@ -1124,7 +1124,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "A unilateral progression of the glute bridge that increases glute activation demand per side and adds a pelvic-stability challenge the bilateral version doesn't.",
+      "description": "A one-legged version of the glute bridge that works each side harder and adds a balance challenge for the hips.",
       "instructions": [
         "Lie on back, one knee bent foot flat, other leg extended straight.",
         "Squeeze glute, lift hips, keeping extended leg in line with torso.",
@@ -1164,7 +1164,7 @@
         "anterior_pelvic_tilt",
         "pelvic_stability"
       ],
-      "description": "Strengthens the hip abductors and external rotators that support pelvic stability during walking and standing.",
+      "description": "Strengthens the outer hip muscles that keep your pelvis steady when you walk and stand.",
       "instructions": [
         "Lie on side, knees bent ~45 degrees, feet together.",
         "Keeping feet touching, lift top knee without rolling hips back.",
@@ -1395,7 +1395,7 @@
       "target_condition": [
         "general_core_stability"
       ],
-      "description": "A global core-endurance exercise reinforcing the trunk stability needed to maintain upright posture throughout the day.",
+      "description": "A whole-core endurance hold that builds the trunk strength needed to hold yourself upright all day.",
       "instructions": [
         "Forearms on floor, elbows under shoulders, body in a straight line head to heels.",
         "Engage core and glutes, avoid sagging or piking hips.",
@@ -1537,7 +1537,7 @@
         "forward_head_posture",
         "neck_tension"
       ],
-      "description": "Targets the scalene muscles on the front/side of the neck, which act as accessory breathing muscles and become tight and overactive with forward head posture and chest-dominant breathing. Distinct from the upper-trap and levator stretches in angle and target.",
+      "description": "Stretches the muscles along the front and side of the neck that get tight from forward head posture and shallow, chest-heavy breathing. It hits a different angle than the other neck stretches.",
       "instructions": [
         "Sit or stand tall, anchor the hand on the tight side under the thigh or behind the back to depress the shoulder.",
         "Tilt the head to the opposite side, then rotate to look slightly up and away.",
@@ -1573,10 +1573,10 @@
         "rounded_shoulders",
         "scapular_winging"
       ],
-      "description": "Strengthens the muscles that keep the shoulder blades flat against the ribs, preventing the shoulder rounding that comes from weak scapular control.",
+      "description": "Strengthens the muscle that keeps your shoulder blade flat against your ribs, preventing the shoulder rounding that creeps in when it's weak.",
       "instructions": [
         "Lie on back, arm reaching straight up toward the ceiling, light weight optional.",
-        "Without bending the elbow, push the fist further toward the ceiling by protracting the shoulder blade (lifting it off the floor).",
+        "Without bending the elbow, push the fist higher toward the ceiling by reaching the shoulder blade up off the floor.",
         "Lower with control.",
         "12-15 reps per side, 2 sets."
       ],
@@ -1766,7 +1766,7 @@
       "target_condition": [
         "thoracic_kyphosis"
       ],
-      "description": "A standing thoracic extension where arms reach overhead while the upper back gently arches, a quick no-equipment reset that doubles as a desk-break movement.",
+      "description": "A standing move where you reach both arms overhead and gently arch your upper back, a quick reset that works well as a desk break.",
       "instructions": [
         "Stand tall, feet hip-width.",
         "Reach both arms overhead and gently arch the upper back as you inhale, keeping the movement in the mid-back rather than the low back.",
@@ -1920,7 +1920,7 @@
       "target_condition": [
         "general_core_stability"
       ],
-      "description": "The front-core exercise from McGill's 'Big 3' (alongside the side plank and bird dog you already do). It braces the abdominals to stiffen and protect the spine without the repeated spinal flexion of a sit-up or crunch.",
+      "description": "A front-core exercise from McGill's well-known 'Big 3' for the spine. It braces the abs to stiffen and protect your back without the repeated bending of a sit-up or crunch.",
       "instructions": [
         "Lie on your back, one knee bent with that foot flat, the other leg straight.",
         "Slide both hands under the natural arch of your lower back (do not flatten it).",
@@ -1959,7 +1959,7 @@
       "target_condition": [
         "anterior_pelvic_tilt"
       ],
-      "description": "Directly strengthens the gluteus maximus, which is commonly weak and underactive in anterior pelvic tilt. Bending the knee shifts the work onto the glute and off the hamstrings.",
+      "description": "Directly strengthens the main glute muscle, which is often weak when the pelvis tips forward. Bending the knee puts the work on the glute instead of the hamstring.",
       "instructions": [
         "Lie face down, forehead resting on your hands, optionally a thin pillow under the hips.",
         "Bend one knee to about 90 degrees so the sole faces the ceiling.",
@@ -1995,7 +1995,7 @@
       "target_condition": [
         "hip_mobility"
       ],
-      "description": "Targets the gluteus maximus and the deep hip external rotators (including the piriformis), a region no other stretch in the program reaches. Supports the hip mobility that underpins a level, mobile pelvis.",
+      "description": "Stretches the glutes and the deep muscles around the hip, an area no other stretch here reaches. Helps keep the hips loose and the pelvis level.",
       "instructions": [
         "Lie on your back, both knees bent, feet flat.",
         "Cross one ankle over the opposite thigh just above the knee, making a '4' shape.",
@@ -2074,7 +2074,7 @@
         "anterior_pelvic_tilt",
         "general_core_stability"
       ],
-      "description": "A diaphragmatic breathing drill done with the hips and knees bent toward 90 degrees. The position gently tips the pelvis toward neutral and brings the ribs down, training the deep core and a full exhale instead of the over-arched, chest-dominant breathing pattern that accompanies anterior pelvic tilt.",
+      "description": "A deep belly-breathing drill done with your hips and knees bent to about 90 degrees. The position gently settles the pelvis and ribs into place, training the deep core and a full exhale instead of the shallow, chest-heavy breathing that comes with an over-arched lower back.",
       "instructions": [
         "Lie on your back with your lower legs resting on a chair or couch seat (or simply knees bent, feet flat), hips and knees toward 90 degrees.",
         "Rest one hand on your chest and one on your belly.",

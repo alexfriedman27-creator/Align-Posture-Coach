@@ -10,7 +10,7 @@ import { Typography, FontFamily } from '../lib/design/fonts';
 import { Spacing } from '../lib/design/spacing';
 import { Radii } from '../lib/design/radii';
 import { exerciseRepository } from '../lib/data/ExerciseRepository';
-import { Exercise, ExerciseSlot, SLOT_NAME } from '../types/Exercise';
+import { Exercise, ExerciseCategory, ExerciseSlot, SLOT_NAME } from '../types/Exercise';
 import { CustomExercise } from '../types/CustomExercise';
 import { CustomProgram } from '../types/CustomProgram';
 import {
@@ -20,6 +20,13 @@ import {
 import { customToExercise } from '../lib/utils/resolveExercises';
 
 const ALL_SLOTS: ExerciseSlot[] = ['neck', 'shoulder_scapula', 'thoracic_spine', 'core_pelvis', 'hip', 'integration'];
+
+const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
+  stretch:    '#4EA8FF',
+  strengthen: '#FF7A33',
+  mobility:   '#4EC97B',
+  awareness:  '#B57BFF',
+};
 
 function isCustomId(id: string) { return id.startsWith('custom_'); }
 
@@ -113,6 +120,7 @@ function DraggableExerciseList({ exercises, onReorder, onRemove }: DraggableList
               <View {...makePan(i).panHandlers} style={styles.dragHandle} hitSlop={{ top: 8, bottom: 8, left: 0, right: 8 }}>
                 <Ionicons name="reorder-three" size={22} color={Colors.tertiaryText} />
               </View>
+              <View style={[styles.categoryDot, { backgroundColor: CATEGORY_COLOR[ex.category] }]} />
               {isCustomId(ex.id) && (
                 <View style={styles.customTag}>
                   <Text style={styles.customTagText} allowFontScaling={false}>custom</Text>
@@ -295,6 +303,7 @@ export default function CreateProgramScreen() {
                   activeOpacity={0.7}
                 >
                   <View style={styles.exerciseLeft}>
+                    <View style={[styles.categoryDot, { backgroundColor: CATEGORY_COLOR[ex.category] }]} />
                     {isCustomId(ex.id) && (
                       <View style={styles.customTag}>
                         <Text style={styles.customTagText} allowFontScaling={false}>custom</Text>
@@ -395,6 +404,7 @@ const styles = StyleSheet.create({
     borderRadius: 1,
   },
   exerciseLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight, flex: 1, marginRight: Spacing.tight },
+  categoryDot: { width: 8, height: 8, borderRadius: 4, flexShrink: 0, marginRight: Spacing.tight },
   exerciseInfo: { flex: 1 },
   exerciseName: { ...Typography.bodyMedium },
   exerciseMeta: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },

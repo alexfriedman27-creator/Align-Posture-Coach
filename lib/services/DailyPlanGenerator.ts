@@ -38,18 +38,41 @@ function weightedRandom<T>(items: T[], weights: number[], rand: () => number): T
   return items[items.length - 1];
 }
 
-// Order exercises after picking to minimize position transitions.
-// Upright first (standing/seated), then floor in a smooth progression.
+// Order exercises after picking so the session reads as a coherent flow:
+// warm-up mobility first, then the strengthening work, then stretch/cool-down,
+// closing on any awareness cue. Phase is the primary key; within a phase we
+// cluster by position so the body descends toward the floor smoothly instead
+// of popping up and down.
+const PHASE_ORDER: Record<string, number> = {
+  mobility: 0, // warm-up
+  strengthen: 1, // main work
+  stretch: 2, // cool-down
+  awareness: 3, // closing reset
+};
+
+// Breathing is a down-regulation drill (tagged "mobility" but not a warm-up),
+// so it always closes the session rather than opening it.
+const CLOSER_FAMILY = 'breathing_family';
+const CLOSER_PHASE = 4;
+
+function phaseRank(e: Exercise): number {
+  if (e.family_id === CLOSER_FAMILY) return CLOSER_PHASE;
+  return PHASE_ORDER[e.category] ?? 1;
+}
+
+// Upright first, then a smooth descent to the floor (kneeling -> hands-and-knees
+// -> face down -> on the side -> on the back). Adjacent lying positions are
+// cheap to transition between, so they sit together at the end.
 const POSITION_ORDER: Record<string, number> = {
   any: 0,
   seated_or_standing: 1,
   standing: 2,
   seated: 3,
-  supine: 4,
-  'side-lying': 5,
-  kneeling: 6,
-  quadruped: 7,
-  prone: 8,
+  kneeling: 4,
+  quadruped: 5,
+  prone: 6,
+  'side-lying': 7,
+  supine: 8,
 };
 
 function pick(
@@ -88,11 +111,16 @@ export async function generateOrGetDailyPlan(dateString: string): Promise<DailyP
     }
   }
 
-  // Sort by position so the session flows without unnecessary transitions
+  // Sort by phase first (warm-up -> strengthen -> cool-down), then cluster by
+  // position within each phase so the session always flows sensibly.
   const sortedIds = selectedIds
     .map((id) => exerciseRepository.exercise(id))
     .filter((e): e is Exercise => e !== undefined)
-    .sort((a, b) => (POSITION_ORDER[a.position] ?? 4) - (POSITION_ORDER[b.position] ?? 4))
+    .sort((a, b) => {
+      const phaseDelta = phaseRank(a) - phaseRank(b);
+      if (phaseDelta !== 0) return phaseDelta;
+      return (POSITION_ORDER[a.position] ?? 0) - (POSITION_ORDER[b.position] ?? 0);
+    })
     .map((e) => e.id);
 
   const plan: DailyPlan = {
