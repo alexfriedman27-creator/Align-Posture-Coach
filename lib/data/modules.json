@@ -1,24 +1,25 @@
 {
   "meta": {
     "title": "Fixed Posture Modules (Premium)",
-    "last_updated": "2026-06-23",
-    "description": "Curated, fixed modules for premium users, separate from the rotating daily plan. Each module is a hand-picked group of 4-5 exercises themed by time-of-day, body region, or context. Categories mirror the conventions used by leading posture/stretch apps (e.g. Bend's 'Posture Reset', 'Wake Up', 'Sleep'; NeckReset's 'Morning Unlock / Desk Break / Bedtime Release'; Stretch Reminder's region-based routines). All exercise_ids reference posture_exercises_db_v5.json. All exercises are equipment-free (wall/door only).",
-    "ordering_principle": "Within each module, exercises are sequenced warm-up/mobility first, then strengthening, then stretch/down-regulation, so the module flows sensibly start to finish.",
-    "design_notes": "Modules intentionally repeat some exercises across themes (e.g. chin tuck appears in several) because a fixed module is a self-contained product, unlike the rotating daily plan which avoids repeats. The daily-plan cooldown/family logic does NOT apply inside fixed modules."
+    "last_updated": "2026-06-29",
+    "description": "Curated, fixed programs for premium users, separate from the rotating daily plan. Each is a hand-picked group of 4-6 exercises themed by time-of-day, body region, or context. All exercise_ids reference the 56-exercise Evidence-Based Posture Exercise Database v6. Every exercise is equipment-free (a wall or doorway is the only ambient surface used).",
+    "ordering_principle": "Within each program, exercises are sequenced to flow sensibly: mobility/warm-up first, then strengthening, then stretch or down-regulation, and positions are clustered to minimize getting up and down off the floor.",
+    "design_notes": "Programs intentionally reuse some exercises across themes because a fixed program is a self-contained product, unlike the rotating daily plan which avoids repeats. The daily-plan cooldown/family logic does NOT apply inside fixed programs. Module ids are stable and referenced by the icon map (types/Module.ts) and session messages (app/session.tsx); names/exercise lists may change but ids must not.",
+    "revision_note": "v6 rebuild: every program re-pointed to the current 56-exercise set after the database revision. rotation_flow repurposed from pure rotation (only one rotation exercise remains) into a full-plane Spine Mobility Flow. Each program's exercise set and description was made distinct from the others."
   },
   "modules": [
     {
       "id": "morning_unlock",
       "name": "Morning Unlock",
       "category": "time_of_day",
-      "tagline": "Gentle mobility to undo overnight stiffness and start the day tall.",
+      "tagline": "Gentle full-spine mobility to shake off overnight stiffness and stand tall.",
       "est_minutes": 5,
       "intensity": "easy",
-      "rationale": "Morning routines in the category lean on gentle mobility rather than hard strengthening, to loosen up a stiff body and set posture for the day.",
+      "rationale": "Mornings call for mobility over hard effort. This flow loosens the whole spine from the floor up, frees the shoulders and hips, and ends by consciously setting tall posture for the day.",
       "exercise_ids": [
         "cat_cow",
-        "standing_thoracic_rotation",
         "wall_angel",
+        "standing_backbend_reach",
         "standing_hip_flexor_stretch",
         "postural_awareness_cueing"
       ]
@@ -27,47 +28,47 @@
       "id": "desk_break_reset",
       "name": "Desk Escape",
       "category": "context",
-      "tagline": "Discreet, mostly seated/standing moves to counter a long sitting block.",
+      "tagline": "A quick standing and seated reset for the neck, upper back, and hips between meetings.",
       "est_minutes": 4,
       "intensity": "easy",
-      "rationale": "The most common context module across apps: short, office-friendly moves targeting the neck, upper back, and hip flexors that suffer most from sitting. Chosen to need no floor.",
+      "rationale": "The most useful office break needs no floor. It retracts the shoulder blades, resets the neck, opens the whole front of the body, lengthens the hip flexors that shorten in a chair, and closes with a screen-posture cue.",
       "exercise_ids": [
-        "seated_thoracic_rotation",
-        "chair_back_thoracic_extension",
         "chin_tuck",
         "seated_scapular_squeeze",
-        "standing_hip_flexor_stretch"
+        "brugger_relief",
+        "standing_hip_flexor_stretch",
+        "phone_pickup_posture_check"
       ]
     },
     {
       "id": "bedtime_release",
       "name": "Bedtime Release",
       "category": "time_of_day",
-      "tagline": "Slow, long-hold stretches to unwind tension before sleep.",
+      "tagline": "Long, slow holds and easy breathing to let the day go before sleep.",
       "est_minutes": 5,
       "intensity": "easy",
-      "rationale": "Evening modules use gentle, longer-hold stretches and down-regulation rather than strengthening, mirroring Bend's 'Sleep' and NeckReset's 'Bedtime Release'.",
+      "rationale": "Evenings favor down-regulation. Longer-hold neck and hip stretches plus a 90/90 breathing finish lower arousal rather than build strength, easing the body toward rest.",
       "exercise_ids": [
+        "child_pose_thoracic_stretch",
         "upper_trap_stretch",
         "levator_scapulae_stretch",
-        "child_pose_thoracic_stretch",
-        "cobra_pose_stretch",
-        "open_book_stretch"
+        "figure_4_stretch",
+        "breathing_90_90"
       ]
     },
     {
       "id": "tech_neck_fix",
       "name": "Tech Neck Fix",
       "category": "body_region",
-      "tagline": "Target forward head posture and neck tension from screens and phones.",
+      "tagline": "Strengthen the deep neck muscles and reset the screen-slump habit.",
       "est_minutes": 5,
       "intensity": "moderate",
-      "rationale": "A region module focused on the neck: combines deep neck flexor strengthening (the most-evidenced FHP intervention) with the tight muscles that need releasing.",
+      "rationale": "Forward head posture responds best to deep cervical flexor strengthening. This loads the chin tuck with resistance and isometrics, releases the levator, and reinforces keeping the phone at eye level.",
       "exercise_ids": [
         "chin_tuck",
+        "deep_neck_flexor_resisted",
         "isometric_neck_extension",
-        "scalene_stretch",
-        "upper_trap_stretch",
+        "levator_scapulae_stretch",
         "phone_pickup_posture_check"
       ]
     },
@@ -75,15 +76,15 @@
       "id": "shoulder_unrounding",
       "name": "Shoulder Un-Rounding",
       "category": "body_region",
-      "tagline": "Open the chest and strengthen the upper back to pull shoulders back.",
+      "tagline": "Loosen the tight chest, then power up the shoulder-blade muscles that pull you back.",
       "est_minutes": 5,
       "intensity": "moderate",
-      "rationale": "Rounded-shoulder correction pairs pec stretching with scapular retractor and serratus strengthening, the combination shown effective for forward shoulder posture.",
+      "rationale": "Rounded shoulders need the front opened and the back strengthened. Open with a pec stretch, then drive serratus and scapular-retractor work, finishing on all fours for posterior tilt.",
       "exercise_ids": [
         "doorway_pec_stretch_mid",
         "serratus_punch_supine",
-        "prone_t_raise",
         "prone_scapular_retraction",
+        "prone_t_raise",
         "scapular_posterior_tilt"
       ]
     },
@@ -91,26 +92,26 @@
       "id": "upper_back_kyphosis",
       "name": "Upright Upper Back",
       "category": "body_region",
-      "tagline": "Mobilize and strengthen the mid-back against a hunched thoracic curve.",
+      "tagline": "Strengthen the spinal extensors that fight a hunched mid-back.",
       "est_minutes": 6,
       "intensity": "moderate",
-      "rationale": "Kyphosis-specific module combining thoracic extension mobility with extensor strengthening (prone cobra, superman), the approach shown to reduce kyphosis angle.",
+      "rationale": "Kyphosis improves most with extensor strengthening. After a cat-cow warm-up, prone cobra, superman, and swimmers load the thoracic erectors, then child's pose decompresses the spine.",
       "exercise_ids": [
         "cat_cow",
         "prone_cobra",
         "prone_extension_superman",
-        "wall_slides",
-        "standing_thoracic_extension_wall"
+        "swimmers_prone_extension",
+        "child_pose_thoracic_stretch"
       ]
     },
     {
       "id": "lower_back_core",
-      "name": "Lower Back & Core Power",
+      "name": "Lower Back & Core",
       "category": "body_region",
-      "tagline": "Build the deep core and pelvic control that protect the lower back.",
+      "tagline": "Train deep core control and pelvic position to take load off the low back.",
       "est_minutes": 6,
       "intensity": "moderate",
-      "rationale": "Maps to the near-universal 'lower back' module, built around the core-stability and pelvic-tilt strengthening shown to improve lumbopelvic posture.",
+      "rationale": "Low-back resilience comes from deep-core control, not crunches. Pelvic tilt and dead bug teach bracing, bird dog and the plank build endurance, and child's pose unloads the spine to close.",
       "exercise_ids": [
         "posterior_pelvic_tilt",
         "dead_bug",
@@ -123,48 +124,48 @@
       "id": "hip_flexor_reset",
       "name": "Hip Flexor Reset",
       "category": "body_region",
-      "tagline": "Release tight hip flexors and fire up the glutes to neutralize pelvic tilt.",
+      "tagline": "Lengthen sitting-tight hip flexors and guide the pelvis back toward neutral.",
       "est_minutes": 5,
       "intensity": "moderate",
-      "rationale": "Hips are a staple region module (Bend's 'Hips'). This pairs hip flexor release with glute strengthening, the stretch+strengthen combo for anterior pelvic tilt.",
+      "rationale": "Anterior pelvic tilt eases when tight flexors lengthen and the pelvis re-learns neutral. Two flexor stretches and a posterior pelvic tilt set it up, a bridge anchors the glutes, and a figure-4 finishes.",
       "exercise_ids": [
+        "standing_hip_flexor_stretch",
         "hip_flexor_lunge_stretch",
-        "hip_90_90_stretch",
+        "posterior_pelvic_tilt",
         "glute_bridge",
-        "clamshell",
-        "single_leg_balance_reset"
+        "figure_4_stretch"
       ]
     },
     {
       "id": "gamer_reset",
       "name": "Gamer Reboot",
       "category": "body_region",
-      "tagline": "Undo the neck-forward, shoulders-in, hips-locked posture that gaming locks in.",
+      "tagline": "A four-region fix for the head-forward, shoulders-in, hips-locked gaming slump.",
       "est_minutes": 5,
       "intensity": "moderate",
-      "rationale": "Gaming drives a compound posture pattern: forward head, rounded shoulders, tight pecs, and hip flexor shortening from long static sitting. This module hits all four with strengthen-first ordering.",
+      "rationale": "Long sessions stack four faults at once, so this hits all of them in one pass: chin tuck for the neck, pec stretch and wall angel for the shoulders, a hip-flexor stretch and cobra to undo the seated lock.",
       "exercise_ids": [
-        "wall_angel",
         "chin_tuck",
-        "prone_cobra",
-        "doorway_pec_stretch_mid",
-        "standing_hip_flexor_stretch"
+        "doorway_pec_stretch_high",
+        "wall_angel",
+        "standing_hip_flexor_stretch",
+        "prone_cobra"
       ]
     },
     {
       "id": "full_body_alignment",
       "name": "Full-Body Alignment",
       "category": "comprehensive",
-      "tagline": "One exercise per region for a complete head-to-hips posture tune-up.",
+      "tagline": "One move per region, head to hips, for a complete posture tune-up.",
       "est_minutes": 6,
       "intensity": "moderate",
-      "rationale": "Mirrors the 'Full Body' module every leading app offers. Hits all six body regions once, the multi-region comprehensive approach shown most effective in meta-analysis.",
+      "rationale": "Modeled on the full-body routine every posture app offers. One exercise per region in head-to-hip order gives a balanced, complete tune-up in six moves.",
       "exercise_ids": [
         "chin_tuck",
-        "glute_bridge",
+        "wall_slides",
+        "cat_cow",
         "bird_dog",
-        "prone_cobra",
-        "prone_y_raise",
+        "glute_bridge",
         "single_leg_balance_reach"
       ]
     },
@@ -172,90 +173,90 @@
       "id": "seated_neck_relief",
       "name": "Seated Neck Relief",
       "category": "context",
-      "tagline": "Five desk-friendly minutes to clear tension from your neck and jaw.",
+      "tagline": "Five chair-bound minutes to melt tension out of the neck and traps.",
       "est_minutes": 5,
       "intensity": "easy",
-      "rationale": "A fully seated sequence targeting the lateral flexors, scalenes, and upper traps — the muscles that shorten during prolonged forward head posture. No floor work required.",
+      "rationale": "A fully seated sequence for the upper traps, levator, and scalenes that shorten under forward head posture, bookended by a chin tuck and a shoulder-blade squeeze to restore upright carriage. No floor work.",
       "exercise_ids": [
         "chin_tuck",
-        "lateral_neck_flexion_stretch",
         "scalene_stretch",
-        "neck_rotation_stretch",
-        "upper_trap_stretch"
+        "upper_trap_stretch",
+        "levator_scapulae_stretch",
+        "seated_scapular_squeeze"
       ]
     },
     {
       "id": "chest_and_spine_open",
       "name": "Chest & Spine Opener",
       "category": "body_region",
-      "tagline": "Undo the forward-collapse posture that builds up over hours of sitting.",
+      "tagline": "Reverse the forward collapse of sitting by opening the chest and extending the spine.",
       "est_minutes": 5,
       "intensity": "easy",
-      "rationale": "Pairs anterior chest stretching with thoracic extension to counter flexion-dominated posture. Ends with rotation to restore full three-dimensional spinal movement.",
+      "rationale": "Sitting locks the body in flexion. This pairs thoracic extension with two heights of pec stretch and a standing backbend to restore the opposite, extension-biased range of motion.",
       "exercise_ids": [
-        "chair_back_thoracic_extension",
+        "cat_cow",
         "cobra_pose_stretch",
-        "bilateral_doorway_pec_stretch",
-        "standing_backbend_reach",
-        "standing_thoracic_rotation"
+        "doorway_pec_stretch_mid",
+        "doorway_pec_stretch_high",
+        "standing_backbend_reach"
       ]
     },
     {
       "id": "rotation_flow",
-      "name": "Rotation Flow",
+      "name": "Spine Mobility Flow",
       "category": "body_region",
-      "tagline": "Restore the rotational freedom that desk work slowly locks away.",
+      "tagline": "Move the spine through the directions a desk makes it forget: flexion, extension, and rotation.",
       "est_minutes": 6,
       "intensity": "moderate",
-      "rationale": "Pure thoracic rotation from three positions — quadruped, side-lying, and upright — to systematically address stiffness at every segment of the thoracic spine.",
+      "rationale": "The desk-bound spine loses rotation and extension first. This mobility flow takes it through every plane: cat-cow flexion and extension, thread-the-needle rotation, a child's pose decompression, then standing extension and a backbend.",
       "exercise_ids": [
-        "open_book_stretch",
+        "cat_cow",
         "quadruped_thoracic_rotation",
-        "extended_child_pose_lateral_reach",
-        "seated_thoracic_rotation",
-        "standing_thoracic_rotation"
+        "child_pose_thoracic_stretch",
+        "standing_thoracic_extension_wall",
+        "standing_backbend_reach"
       ]
     },
     {
       "id": "glute_activation",
       "name": "Glute Activation",
       "category": "body_region",
-      "tagline": "Re-engage the muscles your chair has been switching off all day.",
+      "tagline": "Wake up the glutes a chair switches off, from bridges to single-leg control.",
       "est_minutes": 6,
       "intensity": "moderate",
-      "rationale": "Activates all three glute heads and the hip abductors, then stretches the antagonist hip flexors. The classic combination for reversing anterior pelvic tilt from prolonged sitting.",
+      "rationale": "Prolonged sitting leaves the glutes inhibited. Bilateral and single-leg bridges, a clamshell, and prone hip extension fire all three glute heads before stretching their antagonist hip flexor.",
       "exercise_ids": [
         "glute_bridge",
+        "single_leg_glute_bridge",
         "clamshell",
-        "side_lying_hip_abduction",
-        "hip_flexor_lunge_stretch",
-        "couch_stretch"
+        "prone_hip_extension",
+        "hip_flexor_lunge_stretch"
       ]
     },
     {
       "id": "shoulder_stability",
       "name": "Shoulder Stability",
       "category": "body_region",
-      "tagline": "Build the serratus and lower trap strength that keeps your shoulders in place.",
+      "tagline": "Drill the serratus and lower trap that keep the shoulder blade tracking cleanly.",
       "est_minutes": 7,
       "intensity": "moderate",
-      "rationale": "Focused on serratus anterior and lower trapezius — the two muscles most responsible for scapular upward rotation and the prevention of shoulder impingement.",
+      "rationale": "Clean shoulder mechanics depend on the serratus anterior and lower trapezius. Wall and floor slides groove the pattern, serratus presses and push-up-plus load it, and posterior tilt locks it in.",
       "exercise_ids": [
         "wall_slides",
         "floor_slides_snow_angel",
-        "serratus_floor_press",
-        "scapular_posterior_tilt",
-        "push_up_plus"
+        "serratus_punch_supine",
+        "push_up_plus",
+        "scapular_posterior_tilt"
       ]
     },
     {
       "id": "prone_shoulder_series",
       "name": "Shoulder Blade Series",
       "category": "strength_training",
-      "tagline": "The lower trap and rhomboid protocol used in shoulder rehab clinics worldwide.",
+      "tagline": "The Y-T-W-I prone protocol that loads every fiber of the mid and lower traps.",
       "est_minutes": 8,
       "intensity": "hard",
-      "rationale": "The Y-T-W-I protocol loads each region of the lower and middle trapezius in a shortened position — the hardest, most direct way to build the postural strength that holds shoulders back passively all day.",
+      "rationale": "The Y-T-W-I protocol loads each region of the mid and lower trapezius in a shortened position, the most direct way to build the passive strength that holds the shoulders back all day. A scapular retraction caps it.",
       "exercise_ids": [
         "prone_y_raise",
         "prone_t_raise",
@@ -268,14 +269,14 @@
       "id": "lateral_chain",
       "name": "Side Body Strength",
       "category": "body_region",
-      "tagline": "Build the lateral stability system that holds your spine against gravity.",
+      "tagline": "Build the side-body and rotator-cuff strength that resists sideways pelvic drop.",
       "est_minutes": 7,
       "intensity": "hard",
-      "rationale": "Trains the lateral subsystem — glute medius, QL, and obliques — alongside the external rotators. Side plank and unilateral glute work challenge the hip to resist lateral pelvic drop under load.",
+      "rationale": "The frontal-plane system gets neglected by front-facing training. External rotation and clamshells prime the hip and cuff, side plank and single-leg bridge load lateral stability, and standing bird dog integrates it upright.",
       "exercise_ids": [
-        "side_plank",
         "side_lying_external_rotation",
-        "side_lying_hip_abduction",
+        "clamshell",
+        "side_plank",
         "single_leg_glute_bridge",
         "standing_bird_dog"
       ]
@@ -284,15 +285,15 @@
       "id": "deep_neck_protocol",
       "name": "Deep Neck Protocol",
       "category": "body_region",
-      "tagline": "Strengthen the deep cervical muscles that forward head posture gradually shuts off.",
+      "tagline": "Four loaded chin-tuck variations plus extensor work for serious cervical strength.",
       "est_minutes": 6,
       "intensity": "hard",
-      "rationale": "Progressively loads the longus colli and longus capitis — the deep neck flexors — through four variations of chin tuck, finishing with posterior neck strengthening for balanced cervical stability.",
+      "rationale": "A progressive overload block for the longus colli and capitis. Wall and resisted chin tucks plus a gravity-loaded supine tuck build the deep flexors, then isometric and prone extension work balances the back of the neck.",
       "exercise_ids": [
         "chin_tuck_wall",
         "deep_neck_flexor_resisted",
-        "isometric_neck_extension",
         "chin_tuck_supine",
+        "isometric_neck_extension",
         "prone_neck_extension"
       ]
     },
@@ -300,14 +301,14 @@
       "id": "dynamic_core",
       "name": "Dynamic Core",
       "category": "strength_training",
-      "tagline": "Anti-rotation and anti-extension patterns that build real-world spine protection.",
+      "tagline": "Anti-rotation and anti-extension drills that protect the spine while you move.",
       "est_minutes": 8,
       "intensity": "hard",
-      "rationale": "Progresses through the anti-gravity challenge spectrum: floor-level (dead bug, bird dog), frontal plane (side plank), dynamic with arm dissociation (plank shoulder taps), and upright (standing bird dog).",
+      "rationale": "Built on McGill's anti-movement principle. Curl-up and side plank brace against flexion and lateral bend, bird dog and shoulder taps resist rotation, and standing bird dog carries the bracing into an upright pattern.",
       "exercise_ids": [
-        "dead_bug",
-        "bird_dog",
+        "curl_up",
         "side_plank",
+        "bird_dog",
         "plank_shoulder_taps",
         "standing_bird_dog"
       ]
@@ -316,16 +317,16 @@
       "id": "balance_training",
       "name": "Balance & Body Sense",
       "category": "strength_training",
-      "tagline": "Challenge the proprioceptive system that tells your brain where your body is in space.",
+      "tagline": "Single-leg and narrow-stance challenges that sharpen your sense of where you are.",
       "est_minutes": 7,
       "intensity": "hard",
-      "rationale": "Single-leg stability with progressive challenge: static hold, multi-directional reach, loaded hip patterns, and upright coordination. Proprioceptive training here improves the automatic postural responses that prevent chronic spinal loading.",
+      "rationale": "Proprioception drives the automatic postural reflexes that keep the spine stacked. Narrow-stance and single-leg work, a loaded single-leg bridge, and a closing posture check sharpen body awareness under fatigue.",
       "exercise_ids": [
-        "single_leg_glute_bridge",
         "tandem_stance_balance",
-        "single_leg_balance_reset",
         "single_leg_balance_reach",
-        "standing_bird_dog"
+        "standing_bird_dog",
+        "single_leg_glute_bridge",
+        "postural_awareness_cueing"
       ]
     }
   ]

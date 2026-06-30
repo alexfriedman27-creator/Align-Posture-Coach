@@ -63,7 +63,7 @@ const MODULE_COMPLETE_MESSAGE: Record<string, string> = {
   full_body_alignment:   "Head to toe, you're dialed in. That's full-body work.",
   seated_neck_relief:    'The tension you carried into this session is gone. Nice work.',
   chest_and_spine_open:  'Chest open, spine long. You just created more space to breathe.',
-  rotation_flow:         'Your spine loves to rotate. You just reminded it why.',
+  rotation_flow:         'You moved your spine in every direction a desk makes it forget. That is mobility.',
   glute_activation:      'Glutes switched on. Your lower back will thank you for this.',
   shoulder_stability:    'Shoulders locked in and stable. That foundation builds one session at a time.',
   prone_shoulder_series: "The muscles between your shoulder blades are awake. That's the good kind.",
