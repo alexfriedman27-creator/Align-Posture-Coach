@@ -43,7 +43,9 @@ async function _pushProfile(userId: string): Promise<void> {
     reminder_hour: profile.reminderHour,
     reminder_minute: profile.reminderMinute,
     onboarding_completed: profile.onboardingCompleted,
-    is_pro: profile.isPro,
+    // is_pro intentionally NOT synced: RevenueCat is the sole source of truth
+    // for the Pro entitlement, re-checked on launch/foreground via
+    // syncEntitlement(). Never let a client-writable cloud row unlock Pro.
     reminder_set: profile.reminderSet,
   });
 }
@@ -153,7 +155,9 @@ async function _pullProfile(userId: string): Promise<void> {
     reminderHour: data.reminder_hour,
     reminderMinute: data.reminder_minute,
     onboardingCompleted: data.onboarding_completed,
-    isPro: data.is_pro,
+    // Do not trust a cloud is_pro value: RevenueCat's syncEntitlement() on
+    // launch is authoritative and will flip this to the correct value.
+    isPro: false,
     reminderSet: data.reminder_set,
     notificationsEnabled: data.notifications_enabled ?? true,
   });
@@ -248,7 +252,7 @@ export function syncProfile(profile: UserProfile): void {
     reminder_hour: profile.reminderHour,
     reminder_minute: profile.reminderMinute,
     onboarding_completed: profile.onboardingCompleted,
-    is_pro: profile.isPro,
+    // is_pro intentionally NOT synced (see _pushProfile) — RevenueCat only.
     reminder_set: profile.reminderSet,
   });
 }

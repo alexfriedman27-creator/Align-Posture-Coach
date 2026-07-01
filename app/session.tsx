@@ -289,7 +289,7 @@ export default function SessionScreen() {
       setCurrentIndex((ci) => ci + 1);
       setState('preview');
     } else {
-      finishSession().catch(console.error);
+      finishSession().catch((e) => { if (__DEV__) console.error(e); });
     }
   }, [currentIndex, exercises.length]);
 
@@ -326,7 +326,7 @@ export default function SessionScreen() {
       // streak-saver drops and copy reflects the new streak count.
       refreshNotifications();
     } catch (e) {
-      console.error('Failed to persist session:', e);
+      if (__DEV__) console.error('Failed to persist session:', e);
     }
   }, [progress, exercises, params, plan, markCompleted]);
 

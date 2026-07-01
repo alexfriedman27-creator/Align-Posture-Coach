@@ -53,7 +53,7 @@ export const purchasesService = {
     try {
       Purchases.configure({ apiKey: RC_API_KEY, appUserID: appUserId });
     } catch (e) {
-      console.warn('[RevenueCat] init failed:', e);
+      if (__DEV__) console.warn('[RevenueCat] init failed:', e);
     }
   },
 

@@ -31,14 +31,6 @@ function emailFor(uuid: string): string {
   return `${uuid}@device.align.app`;
 }
 
-// Legacy scheme: password was derived from the UUID. Kept ONLY so existing
-// accounts can be authenticated once and immediately rotated to a strong
-// independent secret (see rotation in ensureDeviceAuth). Do not use for new
-// accounts.
-function legacyPassword(uuid: string): string {
-  return `${uuid}-d3v1c3`;
-}
-
 export type DeviceAuthOutcome =
   | { kind: 'session_restored'; userId: string; session: Session }
   | { kind: 'signed_in'; userId: string; session: Session }  // reinstall
@@ -68,11 +60,10 @@ export async function ensureDeviceAuth(): Promise<DeviceAuthOutcome> {
     return { kind: 'error', message: error?.message ?? 'Device sign-in failed' };
   }
 
-  // No secret stored yet: either a brand-new install or a legacy account whose
-  // password was derived from the UUID. Provision a fresh independent secret.
+  // No secret stored yet: brand-new install. Provision a fresh independent
+  // 256-bit secret and create the device account with it.
   const newSecret = randomHex(32); // 256-bit password
 
-  // First install — create the device account with the strong secret.
   const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
     email,
     password: newSecret,
@@ -82,23 +73,11 @@ export async function ensureDeviceAuth(): Promise<DeviceAuthOutcome> {
     return { kind: 'signed_up', userId: signUpData.user.id, session: signUpData.session };
   }
 
-  // Sign-up failed because the account already exists (legacy install).
-  // Authenticate once with the old derived password, then rotate to the
-  // strong secret so the weak password is retired.
-  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-    email,
-    password: legacyPassword(uuid),
-  });
-  if (!signInError && signInData.user && signInData.session) {
-    const { error: rotateError } = await supabase.auth.updateUser({ password: newSecret });
-    if (!rotateError) {
-      await SecureStore.setItemAsync(DEVICE_SECRET_KEY, newSecret);
-    }
-    return { kind: 'signed_in', userId: signInData.user.id, session: signInData.session };
-  }
-
+  // Sign-up failed (e.g. the account already exists but the Keychain secret is
+  // gone). We have no valid credential to recover with, so surface an error;
+  // the app still runs fully offline against local SQLite.
   return {
     kind: 'error',
-    message: signUpError?.message ?? signInError?.message ?? 'Device auth failed',
+    message: signUpError?.message ?? 'Device auth failed',
   };
 }

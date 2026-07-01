@@ -58,7 +58,7 @@ export default function CreateExerciseScreen() {
       await insertCustomExercise(ex);
       router.back();
     } catch (e) {
-      console.error(e);
+      if (__DEV__) console.error(e);
       Alert.alert('Error', 'Failed to save exercise.');
     } finally {
       setSaving(false);
