@@ -49,7 +49,7 @@ function AlignMark() {
         width: _HEAD_R * 2 * _MS,
         height: _HEAD_R * 2 * _MS,
         borderRadius: _HEAD_R * _MS,
-        backgroundColor: '#A7CBFF',
+        backgroundColor: Colors.infoMuted,
       }} />
       {_WIDTHS.map((w, i) => {
         const cy = _firstCy + i * (_SEG_H + _SEG_GAP);
@@ -101,6 +101,14 @@ export default function PaywallScreen() {
     setLoading(true);
     setError(null);
     try {
+      // Expo Go / native module not linked: no real store to charge against, so
+      // simulate a successful purchase for UI testing. This free grant must NEVER
+      // run on a real build — gate it strictly on isAvailable().
+      if (!purchasesService.isAvailable()) {
+        await finishOnboarding(true);
+        return;
+      }
+
       const offerings = await purchasesService.getOfferings();
       if (offerings?.current) {
         const targetId = selectedPlan === 'annual' ? RC_ANNUAL_PRODUCT_ID : RC_MONTHLY_PRODUCT_ID;
@@ -119,7 +127,11 @@ export default function PaywallScreen() {
           return;
         }
       }
-      await finishOnboarding(true);
+
+      // Native module is present but offerings/packages couldn't be resolved
+      // (misconfiguration or network). Surface an error instead of granting Pro.
+      setError('Subscriptions are unavailable right now. Please try again.');
+      setLoading(false);
     } catch (e: any) {
       setError(e?.message ?? 'Purchase failed. Please try again.');
       setLoading(false);

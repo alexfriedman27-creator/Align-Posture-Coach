@@ -33,12 +33,12 @@ import { ModuleIntensity, INTENSITY_LABEL } from '../../types/Module';
 
 const CAPTION_LIMIT = 100;
 
-const CUSTOM_PURPLE = '#B57BFF';
+const CUSTOM_PURPLE = Colors.custom;
 
 const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
-  easy: '#4EC97B',
-  moderate: '#4EA8FF',
-  hard: '#FF7A33',
+  easy: Colors.success,
+  moderate: Colors.info,
+  hard: Colors.streak,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -187,7 +187,7 @@ function PhotoDetailModal({ photo, onClose, onDelete }: { photo: ProgressPhoto; 
             <View style={styles.detailStats}>
               {photo.streakDays !== undefined && (
                 <View style={styles.detailStatPill}>
-                  <Ionicons name="flame" size={15} color="#FF7A33" />
+                  <Ionicons name="flame" size={15} color={Colors.streak} />
                   <Text style={styles.detailStatText}>{photo.streakDays} day streak</Text>
                 </View>
               )}
@@ -229,7 +229,7 @@ function PhotoCard({ photo, onDelete }: { photo: ProgressPhoto; onDelete: () => 
               <View style={styles.imageStatsRow}>
                 {photo.streakDays !== undefined && (
                   <View style={styles.imageStat}>
-                    <Ionicons name="flame" size={11} color="#FF7A33" />
+                    <Ionicons name="flame" size={11} color={Colors.streak} />
                     <Text style={styles.imageStatText} allowFontScaling={false}>
                       {photo.streakDays} streak
                     </Text>
@@ -269,7 +269,7 @@ function PhotoCard({ photo, onDelete }: { photo: ProgressPhoto; onDelete: () => 
               { text: 'Cancel', style: 'cancel' },
               { text: 'Delete', style: 'destructive', onPress: onDelete },
             ]);
-          }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          }} hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }}>
             <Ionicons name="trash-outline" size={15} color={Colors.tertiaryText} />
           </TouchableOpacity>
         </View>
@@ -560,7 +560,7 @@ export default function ProgressTab() {
   }
 
   // Photos are newest-first. Show a few on the main screen; the rest live in "See all".
-  const PHOTO_PREVIEW_COUNT = 3;
+  const PHOTO_PREVIEW_COUNT = 1;
   const visiblePhotos = photos.slice(0, PHOTO_PREVIEW_COUNT);
   const daysSinceLastPhoto = photos.length > 0 ? daysBetween(photos[0].date, todayStr()) : 0;
   const showPhotoNudge = photos.length > 0 && daysSinceLastPhoto >= 14;
@@ -787,7 +787,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.cardElevated,
   },
-  leaderRank: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, width: 24, textAlign: 'center' },
+  leaderRank: { ...Typography.captionLg, color: Colors.tertiaryText, width: 24, textAlign: 'center' },
   leaderInfo: { flex: 1, gap: 5 },
   leaderNameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight },
   leaderName: { ...Typography.bodyMedium, flex: 1 },
@@ -834,7 +834,7 @@ const styles = StyleSheet.create({
     color: Colors.primaryText,
     marginBottom: 3,
   },
-  insightLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  insightLabel: { ...Typography.captionLg, color: Colors.secondaryText },
 
 
   // Photos
@@ -868,7 +868,7 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     marginTop: Spacing.tight,
   },
-  seeAllBtnText: { ...Typography.bodyMedium, color: Colors.accent },
+  seeAllBtnText: { ...Typography.bodyMedium, color: Colors.primaryText },
 
   allSafe: { flex: 1, backgroundColor: Colors.background },
   allHeader: {

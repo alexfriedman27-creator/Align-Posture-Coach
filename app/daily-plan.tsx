@@ -16,10 +16,10 @@ import { Exercise, ExerciseCategory, SLOT_NAME, SLOT_BADGE } from '../types/Exer
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
-  stretch:    '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility:   '#4EC97B',
-  awareness:  '#B57BFF',
+  stretch:    Colors.info,
+  strengthen: Colors.streak,
+  mobility:   Colors.success,
+  awareness:  Colors.custom,
 };
 
 const CATEGORY_LABEL: Record<ExerciseCategory, string> = {
@@ -162,7 +162,7 @@ export default function DailyPlanScreen() {
           <View style={styles.xpCard}>
             <View style={styles.xpLeft}>
               <View style={styles.xpIconWrap}>
-                <Ionicons name="flash" size={18} color="#F5C518" />
+                <Ionicons name="flash" size={18} color={Colors.xp} />
               </View>
               <View>
                 <Text style={styles.xpAmount}>{totalXP} XP</Text>
@@ -185,7 +185,7 @@ export default function DailyPlanScreen() {
       <View style={styles.footer}>
         {isCompleted ? (
           <View style={styles.completedRow}>
-            <Ionicons name="checkmark-circle" size={22} color="#4EC97B" />
+            <Ionicons name="checkmark-circle" size={22} color={Colors.success} />
             <Text style={styles.completedText}>Completed today</Text>
           </View>
         ) : (
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   hero: { alignItems: 'center', paddingTop: Spacing.tight, gap: Spacing.tight },
   dayName: { ...Typography.display, textAlign: 'center' },
   dateStr: { ...Typography.subheadline, color: Colors.secondaryText, marginTop: -4 },
-  motivation: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.tertiaryText, marginTop: 2 },
+  motivation: { ...Typography.bodyLg, color: Colors.tertiaryText, marginTop: 2 },
 
   slotRow: {
     flexDirection: 'row',
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   },
   slotAbbr: { ...Typography.label, fontFamily: FontFamily.poppinsBold, fontSize: 15, lineHeight: 20 },
   slotLabel: { ...Typography.caption, color: Colors.secondaryText, fontSize: 12, lineHeight: 16, textAlign: 'center' },
-  metaText: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
+  metaText: { ...Typography.bodyLg, color: Colors.secondaryText },
 
   section: { gap: Spacing.tight },
   sectionTitle: { ...Typography.subheadline },
@@ -267,11 +267,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
-  indexText: { ...Typography.label, fontSize: 14, lineHeight: 18 },
+  indexText: { ...Typography.labelLg },
   exerciseInfo: { flex: 1 },
   exerciseName: { ...Typography.bodyMedium, fontSize: 17, lineHeight: 24 },
   exerciseMeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 3 },
-  exerciseSlot: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  exerciseSlot: { ...Typography.captionLg, color: Colors.secondaryText },
   metaDot: { width: 2, height: 2, borderRadius: 1, backgroundColor: Colors.tertiaryText },
   categoryChip: {
     borderRadius: 4,
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   },
   categoryChipText: { ...Typography.caption, fontSize: 12, lineHeight: 16, fontFamily: FontFamily.poppinsMedium },
   exerciseRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
-  exerciseDuration: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  exerciseDuration: { ...Typography.captionLg, color: Colors.secondaryText },
 
   xpCard: {
     flexDirection: 'row',
@@ -290,21 +290,21 @@ const styles = StyleSheet.create({
     borderRadius: Radii.card,
     padding: Spacing.inner,
     borderWidth: 1,
-    borderColor: '#F5C51820',
+    borderColor: Colors.xp + '20',
   },
   xpLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.inner },
   xpIconWrap: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#F5C51815',
+    backgroundColor: Colors.xp + '15',
     borderWidth: 1,
-    borderColor: '#F5C51830',
+    borderColor: Colors.xp + '30',
     alignItems: 'center',
     justifyContent: 'center',
   },
   xpAmount: { ...Typography.subheadline, color: Colors.primaryText },
-  xpSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  xpSub: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 5,
   },
-  streakText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.orange, fontFamily: FontFamily.poppinsMedium },
+  streakText: { ...Typography.captionLg, color: Colors.orange, fontFamily: FontFamily.poppinsMedium },
 
   footer: {
     paddingHorizontal: Spacing.card,
@@ -340,5 +340,5 @@ const styles = StyleSheet.create({
     gap: Spacing.tight,
     paddingVertical: 16,
   },
-  completedText: { ...Typography.bodyMedium, color: '#4EC97B' },
+  completedText: { ...Typography.bodyMedium, color: Colors.success },
 });

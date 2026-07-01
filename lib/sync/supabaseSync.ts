@@ -155,6 +155,7 @@ async function _pullProfile(userId: string): Promise<void> {
     onboardingCompleted: data.onboarding_completed,
     isPro: data.is_pro,
     reminderSet: data.reminder_set,
+    notificationsEnabled: data.notifications_enabled ?? true,
   });
 }
 

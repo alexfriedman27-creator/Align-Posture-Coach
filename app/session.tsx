@@ -18,6 +18,7 @@ import { useUserStore } from '../lib/store/useUserStore';
 import { useProgressStore } from '../lib/store/useProgressStore';
 import { usePlanStore } from '../lib/store/usePlanStore';
 import { persistSessionCompletion, SessionSource } from '../lib/services/SessionManager';
+import { refreshNotifications } from '../lib/notifications/refresh';
 import { getCustomProgram } from '../lib/db/queries';
 import { resolveExerciseIds } from '../lib/utils/resolveExercises';
 import { Exercise, SLOT_NAME } from '../types/Exercise';
@@ -74,10 +75,10 @@ const MODULE_COMPLETE_MESSAGE: Record<string, string> = {
 };
 
 const CATEGORY_COLOR: Record<string, string> = {
-  stretch: '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility: '#4EC97B',
-  awareness: '#B57BFF',
+  stretch: Colors.info,
+  strengthen: Colors.streak,
+  mobility: Colors.success,
+  awareness: Colors.custom,
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -321,6 +322,9 @@ export default function SessionScreen() {
       }
       if (source.type === 'dailyPlan') await markCompleted(earned);
       await loadProgress();
+      // Streak/last-session state changed — rebuild the schedule so today's
+      // streak-saver drops and copy reflects the new streak count.
+      refreshNotifications();
     } catch (e) {
       console.error('Failed to persist session:', e);
     }
@@ -795,7 +799,7 @@ const styles = StyleSheet.create({
   },
   headerCenter: { flex: 1 },
   headerTitle: { ...Typography.subheadline, textAlign: 'center' },
-  headerCounter: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, textAlign: 'center', marginTop: 1 },
+  headerCounter: { ...Typography.captionLg, color: Colors.secondaryText, textAlign: 'center', marginTop: 1 },
   body: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.card, gap: Spacing.inner },
   restLabel: { ...Typography.title, color: Colors.secondaryText, letterSpacing: 2 },
   videoCard: {
@@ -816,9 +820,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 4,
   },
-  categoryChipText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.primaryText },
+  categoryChipText: { ...Typography.labelLg, color: Colors.primaryText },
   exerciseName: { ...Typography.title, fontSize: 28, lineHeight: 34, textAlign: 'center' },
-  exerciseSub: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
+  exerciseSub: { ...Typography.bodyLg, color: Colors.secondaryText },
   controls: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -850,7 +854,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: Spacing.micro,
   },
-  completeLabel: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.accent, letterSpacing: 2, textTransform: 'uppercase' },
+  completeLabel: { ...Typography.labelLg, color: Colors.accent, letterSpacing: 2, textTransform: 'uppercase' },
   completeTitle: { ...Typography.display, fontSize: 36, lineHeight: 44, textAlign: 'center' },
   xpProgressWrap: { width: '100%', gap: Spacing.micro },
   xpProgressRow: { flexDirection: 'row', justifyContent: 'space-between' },
@@ -867,7 +871,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     marginTop: Spacing.micro,
   },
-  levelUpText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.white, letterSpacing: 1 },
+  levelUpText: { ...Typography.labelLg, color: Colors.white, letterSpacing: 1 },
   completeStats: { flexDirection: 'row', gap: Spacing.tight, width: '100%' },
   completeStat: {
     flex: 1,
@@ -878,7 +882,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   completeStatValue: { ...Typography.title },
-  completeStatLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, textTransform: 'uppercase', letterSpacing: 0.8, textAlign: 'center' },
+  completeStatLabel: { ...Typography.captionLg, color: Colors.secondaryText, textTransform: 'uppercase', letterSpacing: 0.8, textAlign: 'center' },
   shareBtn: {
     width: 52,
     height: 52,
@@ -919,11 +923,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.cardElevated,
   },
-  previewChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  previewChipText: { ...Typography.captionLg, color: Colors.secondaryText },
   previewTitle: { ...Typography.title, marginTop: -Spacing.tight },
   previewSection: { gap: Spacing.tight },
-  previewSectionLabel: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.accent, letterSpacing: 1.5, marginBottom: 2 },
-  previewSectionBody: { ...Typography.body, fontSize: 17, lineHeight: 26, color: Colors.secondaryText },
+  previewSectionLabel: { ...Typography.labelLg, color: Colors.accent, letterSpacing: 1.5, marginBottom: 2 },
+  previewSectionBody: { ...Typography.bodyLg, lineHeight: 26, color: Colors.secondaryText },
   previewStep: { flexDirection: 'row', gap: Spacing.inner, alignItems: 'flex-start' },
   previewStepNum: {
     width: 30,
@@ -935,8 +939,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     marginTop: 1,
   },
-  previewStepNumText: { ...Typography.label, fontSize: 14, lineHeight: 18 },
-  previewStepText: { ...Typography.body, fontSize: 17, lineHeight: 26, color: Colors.secondaryText, flex: 1 },
+  previewStepNumText: { ...Typography.labelLg },
+  previewStepText: { ...Typography.bodyLg, lineHeight: 26, color: Colors.secondaryText, flex: 1 },
   previewSetupItem: {
     flexDirection: 'row',
     gap: Spacing.inner,
@@ -945,7 +949,7 @@ const styles = StyleSheet.create({
     borderRadius: Radii.card,
     padding: Spacing.inner,
   },
-  previewSetupLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText },
+  previewSetupLabel: { ...Typography.captionLg, color: Colors.tertiaryText },
   previewSetupValue: { ...Typography.bodyMedium, fontSize: 17, lineHeight: 24, marginTop: 2 },
   repDisplay: { alignItems: 'center', gap: Spacing.tight },
   repBurstWrap: {
@@ -956,7 +960,7 @@ const styles = StyleSheet.create({
   },
   repNumber: { ...Typography.display, fontSize: 72, lineHeight: 80, color: Colors.primaryText },
   repUnit: { ...Typography.label, fontSize: 16, lineHeight: 20, color: Colors.secondaryText, marginTop: -16 },
-  repSets: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.tertiaryText },
+  repSets: { ...Typography.bodyLg, color: Colors.tertiaryText },
   setDots: { flexDirection: 'row', gap: 8, marginBottom: 4 },
   setDot: {
     width: 30,

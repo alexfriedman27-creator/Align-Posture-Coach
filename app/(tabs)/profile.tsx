@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  Switch, TouchableOpacity, Modal, TextInput
+  Switch, TouchableOpacity, Modal, TextInput, Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../lib/design/colors';
@@ -18,6 +18,10 @@ import { useUserStore } from '../../lib/store/useUserStore';
 import { useProgressStore } from '../../lib/store/useProgressStore';
 import { usePlanStore } from '../../lib/store/usePlanStore';
 import { getBadges, setPinnedBadge, unlockAllBadges } from '../../lib/db/queries';
+import {
+  fireTestNotification, cancelAll, getScheduledCount, requestPermissions,
+} from '../../lib/notifications/notificationService';
+import { NotificationCategory } from '../../lib/notifications/messages';
 import {
   Badge,
   CATEGORY_COLORS,
@@ -65,8 +69,8 @@ const _headCy = _topOff + _HEAD_R;
 const _firstCy = _topOff + _HEAD_R * 2 + _NECK_GAP + _SEG_H / 2;
 
 function AlignMark({ tint }: { tint?: string }) {
-  const segColor = tint ?? '#2F6BFF';
-  const headColor = tint ? tint + 'AA' : '#A7CBFF';
+  const segColor = tint ?? Colors.accent;
+  const headColor = tint ? tint + 'AA' : Colors.infoMuted;
   return (
     <View style={{ width: 100 * _MS, height: 140 * _MS }}>
       <View style={{
@@ -148,10 +152,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function ProfileTab() {
   const router = useRouter();
-  const { profile, saveProfile, setReminderSet, resetAll, devFastMode, setDevFastMode } = useUserStore();
+  const { profile, saveProfile, setReminderSet, setNotificationsEnabled, resetAll, devFastMode, setDevFastMode } = useUserStore();
   const { loadProgress } = useProgressStore();
-  const [notifications, setNotifications] = useState(true);
+  const notifications = profile?.notificationsEnabled ?? true;
   const [soundEffects, setSoundEffects] = useState(true);
+  const [scheduledCount, setScheduledCount] = useState(0);
   const [haptics, setHaptics] = useState(true);
   const [badges, setBadges] = useState<Badge[]>([]);
   const [badgePickerVisible, setBadgePickerVisible] = useState(false);
@@ -168,7 +173,25 @@ export default function ProfileTab() {
 
   useFocusEffect(useCallback(() => {
     getBadges().then(setBadges);
+    getScheduledCount().then(setScheduledCount);
   }, []));
+
+  async function handleToggleNotifications(v: boolean) {
+    if (v) await requestPermissions();
+    await setNotificationsEnabled(v);
+    setScheduledCount(await getScheduledCount());
+  }
+
+  async function handleTestNotification(category: NotificationCategory) {
+    await requestPermissions();
+    await fireTestNotification(category);
+    Alert.alert('Test scheduled', 'Background the app now — it fires in ~3 seconds.');
+  }
+
+  async function handleCancelAll() {
+    await cancelAll();
+    setScheduledCount(0);
+  }
 
   const slotBadge = badges.find((b) => b.isPinned === pickerSlot);
 
@@ -278,7 +301,7 @@ export default function ProfileTab() {
             subtitle="Enable all reminders"
             toggle={notifications}
             value={notifications}
-            onToggle={setNotifications}
+            onToggle={handleToggleNotifications}
           />
           <View style={styles.divider} />
           <SettingRow
@@ -376,33 +399,63 @@ export default function ProfileTab() {
         </Section>
 
         {__DEV__ && (
-          <Section title="DEVELOPER">
-            <SettingRow
-              label="Fast mode"
-              subtitle="Skip exercises without waiting for timer"
-              toggle={devFastMode}
-              value={devFastMode}
-              onToggle={setDevFastMode}
-            />
-            <View style={styles.divider} />
-            <SettingRow
-              label="Pro plan"
-              subtitle="Enable/disable pro features"
-              toggle={!!profile?.isPro}
-              value={!!profile?.isPro}
-              onToggle={handleTogglePro}
-            />
-            <View style={styles.divider} />
-            <TouchableOpacity style={styles.settingRow} onPress={handleUnlockBadges} activeOpacity={0.7}>
-              <Text style={styles.settingLabel}>Unlock all badges</Text>
-              <Ionicons name="ribbon" size={16} color={Colors.tertiaryText} />
-            </TouchableOpacity>
-            <View style={styles.divider} />
-            <TouchableOpacity style={styles.settingRow} onPress={handleDevReset} activeOpacity={0.7}>
-              <Text style={[styles.settingLabel, { color: Colors.danger }]}>Reset onboarding</Text>
-              <Ionicons name="refresh" size={16} color={Colors.danger} />
-            </TouchableOpacity>
-          </Section>
+          <>
+            <Section title="DEVELOPER">
+              <SettingRow
+                label="Fast mode"
+                subtitle="Skip exercises without waiting for timer"
+                toggle={devFastMode}
+                value={devFastMode}
+                onToggle={setDevFastMode}
+              />
+              <View style={styles.divider} />
+              <SettingRow
+                label="Pro plan"
+                subtitle="Enable/disable pro features"
+                toggle={!!profile?.isPro}
+                value={!!profile?.isPro}
+                onToggle={handleTogglePro}
+              />
+              <View style={styles.divider} />
+              <TouchableOpacity style={styles.settingRow} onPress={handleUnlockBadges} activeOpacity={0.7}>
+                <Text style={styles.settingLabel}>Unlock all badges</Text>
+                <Ionicons name="ribbon" size={16} color={Colors.tertiaryText} />
+              </TouchableOpacity>
+              <View style={styles.divider} />
+              <TouchableOpacity style={styles.settingRow} onPress={handleDevReset} activeOpacity={0.7}>
+                <Text style={[styles.settingLabel, { color: Colors.danger }]}>Reset onboarding</Text>
+                <Ionicons name="refresh" size={16} color={Colors.danger} />
+              </TouchableOpacity>
+            </Section>
+
+            <Section title="TEST NOTIFICATIONS">
+              <SettingRow
+                label="Motivational nudge"
+                subtitle={`${scheduledCount} scheduled · tap to preview`}
+                onPress={() => handleTestNotification('motivational')}
+              />
+              <View style={styles.divider} />
+              <SettingRow
+                label="Streak reminder"
+                onPress={() => handleTestNotification('streakActive')}
+              />
+              <View style={styles.divider} />
+              <SettingRow
+                label="Progress photo"
+                onPress={() => handleTestNotification('photo')}
+              />
+              <View style={styles.divider} />
+              <SettingRow
+                label="Pro upsell"
+                onPress={() => handleTestNotification('pro')}
+              />
+              <View style={styles.divider} />
+              <TouchableOpacity style={styles.settingRow} onPress={handleCancelAll} activeOpacity={0.7}>
+                <Text style={[styles.settingLabel, { color: Colors.danger }]}>Cancel all scheduled</Text>
+                <Ionicons name="close-circle" size={16} color={Colors.danger} />
+              </TouchableOpacity>
+            </Section>
+          </>
         )}
 
         <Text style={styles.footer}>Align v1.0.0 · LLC</Text>

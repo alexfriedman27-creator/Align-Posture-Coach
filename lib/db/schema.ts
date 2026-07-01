@@ -24,7 +24,8 @@ export async function initDb(): Promise<void> {
       reminder_minute INTEGER NOT NULL DEFAULT 0,
       onboarding_completed INTEGER NOT NULL DEFAULT 0,
       is_pro INTEGER NOT NULL DEFAULT 0,
-      reminder_set INTEGER NOT NULL DEFAULT 0
+      reminder_set INTEGER NOT NULL DEFAULT 0,
+      notifications_enabled INTEGER NOT NULL DEFAULT 1
     );
 
     CREATE TABLE IF NOT EXISTS user_progress (
@@ -86,6 +87,13 @@ export async function initDb(): Promise<void> {
   // Migration: add reminder_set column if it doesn't exist yet
   try {
     await database.execAsync('ALTER TABLE user_profile ADD COLUMN reminder_set INTEGER NOT NULL DEFAULT 0');
+  } catch {
+    // column already exists
+  }
+
+  // Migration: add notifications_enabled column if it doesn't exist yet
+  try {
+    await database.execAsync('ALTER TABLE user_profile ADD COLUMN notifications_enabled INTEGER NOT NULL DEFAULT 1');
   } catch {
     // column already exists
   }

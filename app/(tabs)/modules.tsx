@@ -13,15 +13,15 @@ import { moduleRepository } from '../../lib/data/ModuleRepository';
 import { PostureModule, ModuleIntensity, INTENSITY_LABEL, MODULE_ICON } from '../../types/Module';
 
 const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
-  easy: '#4EC97B',
-  moderate: '#4EA8FF',
-  hard: '#FF7A33',
+  easy: Colors.success,
+  moderate: Colors.info,
+  hard: Colors.streak,
 };
 import { useUserStore } from '../../lib/store/useUserStore';
 import { getFavoriteModuleIds, addFavoriteModule, removeFavoriteModule, getCustomPrograms } from '../../lib/db/queries';
 import { CustomProgram } from '../../types/CustomProgram';
 
-const CUSTOM_PURPLE = '#B57BFF';
+const CUSTOM_PURPLE = Colors.custom;
 
 function ModuleCard({
   module, onPress, isPro, isFavorite, onToggleFavorite,
@@ -53,7 +53,7 @@ function ModuleCard({
               <Ionicons
                 name={isFavorite ? 'star' : 'star-outline'}
                 size={17}
-                color={isFavorite ? '#F5C518' : Colors.tertiaryText}
+                color={isFavorite ? Colors.xp : Colors.tertiaryText}
               />
             </TouchableOpacity>
           )}
@@ -104,7 +104,7 @@ function CustomProgramCard({
           <Ionicons
             name={isFavorite ? 'star' : 'star-outline'}
             size={17}
-            color={isFavorite ? '#F5C518' : Colors.tertiaryText}
+            color={isFavorite ? Colors.xp : Colors.tertiaryText}
           />
         </TouchableOpacity>
       </View>
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { paddingHorizontal: Spacing.card, paddingTop: Spacing.inner, paddingBottom: Spacing.card, gap: Spacing.gap },
   heading: { ...Typography.title },
-  sub: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText, marginTop: 4 },
+  sub: { ...Typography.bodyLg, color: Colors.secondaryText, marginTop: 4 },
   browseRow: {
     backgroundColor: Colors.accent,
     borderRadius: Radii.card,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   browseTitle: { ...Typography.bodyMedium, color: Colors.white },
-  browseSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.white + 'AA', marginTop: 1 },
+  browseSub: { ...Typography.captionLg, color: Colors.white + 'AA', marginTop: 1 },
   customRow: {
     backgroundColor: Colors.card,
     borderRadius: Radii.card,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   customTitle: { ...Typography.bodyMedium },
-  customSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  customSub: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
   proBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 3,
   },
-  intensityChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, fontFamily: FontFamily.poppinsBold, letterSpacing: 0.8 },
+  intensityChipText: { ...Typography.captionLg, fontFamily: FontFamily.poppinsBold, letterSpacing: 0.8 },
   moduleContent: { padding: Spacing.inner, gap: Spacing.micro },
   moduleNameRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight },
   moduleIconCircle: {
@@ -302,8 +302,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   moduleName: { ...Typography.headline, flex: 1 },
-  moduleTagline: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
-  moduleMeta: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, marginTop: 2 },
+  moduleTagline: { ...Typography.bodyLg, color: Colors.secondaryText },
+  moduleMeta: { ...Typography.captionLg, color: Colors.tertiaryText, marginTop: 2 },
   tapChip: {
     alignSelf: 'flex-start',
     backgroundColor: Colors.cardElevated,
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginTop: Spacing.micro,
   },
-  tapChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  tapChipText: { ...Typography.captionLg, color: Colors.secondaryText },
   upgradeBadge: {
     alignSelf: 'flex-start',
     flexDirection: 'row',

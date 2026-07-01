@@ -17,13 +17,13 @@ import {
 import { resolveExerciseIds } from '../lib/utils/resolveExercises';
 import { useUserStore } from '../lib/store/useUserStore';
 
-const CUSTOM_PURPLE = '#B57BFF';
+const CUSTOM_PURPLE = Colors.custom;
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
-  stretch:    '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility:   '#4EC97B',
-  awareness:  '#B57BFF',
+  stretch:    Colors.info,
+  strengthen: Colors.streak,
+  mobility:   Colors.success,
+  awareness:  Colors.custom,
 };
 
 function formatDuration(ex: Exercise): string {
@@ -118,7 +118,7 @@ export default function CustomProgramDetailScreen() {
             <Ionicons
               name={isFavorite ? 'star' : 'star-outline'}
               size={22}
-              color={isFavorite ? '#F5C518' : Colors.secondaryText}
+              color={isFavorite ? Colors.xp : Colors.secondaryText}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleEdit} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     color: CUSTOM_PURPLE,
     letterSpacing: 0.8,
   },
-  metaText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  metaText: { ...Typography.captionLg, color: Colors.secondaryText },
 
   section: { gap: Spacing.tight },
   sectionTitle: { ...Typography.subheadline, marginBottom: 4 },
@@ -270,9 +270,9 @@ const styles = StyleSheet.create({
   categoryDot: { width: 8, height: 8, borderRadius: 4, flexShrink: 0 },
   exerciseInfo: { flex: 1 },
   exerciseName: { ...Typography.bodyMedium },
-  exerciseSlot: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  exerciseSlot: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
   exerciseRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
-  exerciseDuration: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  exerciseDuration: { ...Typography.captionLg, color: Colors.secondaryText },
 
   xpCard: {
     flexDirection: 'row',
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   xpAmount: { ...Typography.subheadline, color: Colors.primaryText },
-  xpSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  xpSub: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
 
   footer: {
     paddingHorizontal: Spacing.card,

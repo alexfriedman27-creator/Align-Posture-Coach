@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.section,
   },
-  wordmark: { ...Typography.label, fontSize: 14, letterSpacing: 4, color: Colors.primaryText },
+  wordmark: { ...Typography.labelLg, letterSpacing: 4, color: Colors.primaryText },
   heading: { ...Typography.display, marginBottom: Spacing.tight },
   sub: { ...Typography.body, color: Colors.secondaryText, marginBottom: Spacing.section },
   input: {

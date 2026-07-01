@@ -15,10 +15,10 @@ import { ExerciseAnimation } from '../components/shared/ExerciseAnimation';
 import { CustomExercise } from '../types/CustomExercise';
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
-  stretch: '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility: '#4EC97B',
-  awareness: '#B57BFF',
+  stretch: Colors.info,
+  strengthen: Colors.streak,
+  mobility: Colors.success,
+  awareness: Colors.custom,
 };
 
 const CATEGORY_LABEL: Record<ExerciseCategory, string> = {

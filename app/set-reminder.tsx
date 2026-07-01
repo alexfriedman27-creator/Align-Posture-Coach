@@ -8,6 +8,7 @@ import { Colors } from '../lib/design/colors';
 import { Typography } from '../lib/design/fonts';
 import { Spacing } from '../lib/design/spacing';
 import { useUserStore } from '../lib/store/useUserStore';
+import { requestPermissions } from '../lib/notifications/notificationService';
 
 export default function SetReminderScreen() {
   const router = useRouter();
@@ -25,6 +26,9 @@ export default function SetReminderScreen() {
 
   async function handleSet() {
     setLoading(true);
+    // Ask for notification permission here — this is the natural moment the user
+    // has opted into reminders. setReminderSet then schedules the first batch.
+    await requestPermissions();
     const hour24 = isPM ? (hour === 12 ? 12 : hour + 12) : hour === 12 ? 0 : hour;
     await setReminderSet(hour24, minute);
     router.replace('/(tabs)');

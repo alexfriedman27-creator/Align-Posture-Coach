@@ -12,7 +12,7 @@ import { Radii } from '../../lib/design/radii';
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 const N_PARTICLES = 18;
-const EXTRA_COLORS = ['#FFD700', '#FF6B6B', '#4EA8FF', '#4EC97B', '#B57BFF', '#FF9F43', '#FF6EB4'];
+const EXTRA_COLORS = ['#FFD700', '#FF6B6B', Colors.info, Colors.success, Colors.custom, '#FF9F43', '#FF6EB4'];
 
 interface ParticleConfig { tx: number; ty: number; color: string; size: number }
 

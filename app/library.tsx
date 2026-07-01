@@ -30,10 +30,10 @@ const CATEGORY_FILTERS: { label: string; value: ExerciseCategory }[] = ([
 ] as { label: string; value: ExerciseCategory }[]).sort((a, b) => a.label.localeCompare(b.label));
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
-  stretch: '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility: '#4EC97B',
-  awareness: '#B57BFF',
+  stretch: Colors.info,
+  strengthen: Colors.streak,
+  mobility: Colors.success,
+  awareness: Colors.custom,
 };
 
 const CATEGORY_LABEL: Record<ExerciseCategory, string> = {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: { ...Typography.headline },
-  subtitle: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  subtitle: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
   addBtn: {
     marginLeft: 'auto',
     width: 36,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent,
     borderColor: Colors.accent,
   },
-  filterChipText: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.secondaryText },
+  filterChipText: { ...Typography.labelLg, color: Colors.secondaryText },
   filterChipTextActive: { color: Colors.white },
   list: { paddingBottom: Spacing.card },
   separator: { height: 1, backgroundColor: Colors.cardElevated, marginLeft: Spacing.card },
@@ -325,9 +325,9 @@ const styles = StyleSheet.create({
   rowContent: { flex: 1 },
   rowName: { ...Typography.bodyMedium, fontSize: 17, lineHeight: 24, color: Colors.primaryText },
   rowMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
-  rowCategory: { ...Typography.caption, fontSize: 13, lineHeight: 18, fontFamily: FontFamily.poppinsBold },
-  rowDot: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText },
-  rowMetaText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  rowCategory: { ...Typography.captionLg, fontFamily: FontFamily.poppinsBold },
+  rowDot: { ...Typography.captionLg, color: Colors.tertiaryText },
+  rowMetaText: { ...Typography.captionLg, color: Colors.secondaryText },
   lockBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -336,6 +336,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.tight,
     paddingVertical: 4,
   },
-  lockBadgeText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.white, fontFamily: FontFamily.poppinsBold },
+  lockBadgeText: { ...Typography.captionLg, color: Colors.white, fontFamily: FontFamily.poppinsBold },
   empty: { alignItems: 'center', paddingTop: 60 },
 });

@@ -5,18 +5,24 @@
 // gracefully: initialize() is a no-op, checkEntitlement() returns false, and
 // purchasePackage() simulates a successful purchase so the UI can be tested.
 //
-// SETUP CHECKLIST (one-time, before shipping to the App Store):
+// SETUP CHECKLIST (one-time, before shipping to the stores):
 //   1. Create a project at app.revenuecat.com
-//   2. Add your iOS app and paste the public SDK key below
-//   3. Create products in App Store Connect with the identifiers below
+//   2. Add your iOS + Android apps and paste the public SDK keys below
+//   3. Create products in App Store Connect + Google Play with the identifiers below
 //   4. Create a "pro" entitlement in RevenueCat and attach both products to it
-//   5. Run `npx expo install react-native-purchases` (requires --legacy-peer-deps)
-//   6. Add the config plugin to app.json plugins array:
-//        ["react-native-purchases", { "apiKey": "<YOUR_IOS_KEY>" }]
-//   7. Build a development client: `eas build --profile development --platform ios`
+//   5. react-native-purchases autolinks (no config plugin needed on SDK 56 / v10)
+//   6. Build a development client on a real device:
+//        eas build --profile development --platform ios   (or android)
 
-// TODO: Replace with your iOS public SDK key from app.revenuecat.com
-const RC_API_KEY_IOS = 'appl_REPLACE_WITH_YOUR_REVENUECAT_KEY';
+import { Platform } from 'react-native';
+
+// TODO: Replace with your public SDK keys from app.revenuecat.com.
+// iOS keys start with "appl_", Android keys start with "goog_".
+const RC_API_KEY = Platform.select({
+  ios: 'appl_REPLACE_WITH_YOUR_IOS_KEY',
+  android: 'goog_REPLACE_WITH_YOUR_ANDROID_KEY',
+  default: '',
+}) as string;
 
 // TODO: Match these to your product identifiers in App Store Connect + RevenueCat
 export const RC_ANNUAL_PRODUCT_ID = 'com.align.pro.annual';
@@ -40,10 +46,12 @@ export const purchasesService = {
     return Purchases !== null;
   },
 
-  async initialize(appUserId: string): Promise<void> {
+  // appUserId is optional: when omitted, RevenueCat generates an anonymous ID.
+  // Call Purchases.logIn(userId) later to alias anonymous purchases to an account.
+  async initialize(appUserId?: string): Promise<void> {
     if (!Purchases) return;
     try {
-      Purchases.configure({ apiKey: RC_API_KEY_IOS, appUserID: appUserId });
+      Purchases.configure({ apiKey: RC_API_KEY, appUserID: appUserId });
     } catch (e) {
       console.warn('[RevenueCat] init failed:', e);
     }

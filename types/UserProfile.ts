@@ -21,4 +21,5 @@ export interface UserProfile {
   onboardingCompleted: boolean;
   isPro: boolean;
   reminderSet: boolean;
+  notificationsEnabled: boolean;
 }

@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { View, AppState } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 import {
   useFonts,
@@ -18,8 +19,12 @@ import { useAuthStore } from '../lib/store/useAuthStore';
 import { purchasesService } from '../lib/services/purchases';
 import { Colors } from '../lib/design/colors';
 import AlignLoadingScreen from '../components/AlignLoadingScreen';
+import { configureNotificationHandler } from '../lib/notifications/notificationService';
+import { refreshNotifications } from '../lib/notifications/refresh';
 
 SplashScreen.preventAutoHideAsync();
+// Show notifications while the app is foregrounded, too.
+configureNotificationHandler();
 
 export default function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
@@ -61,11 +66,13 @@ export default function RootLayout() {
         await loadProfile();
         await loadProgress();
       }
-      // Sync subscription status from RevenueCat on every launch.
+      // Configure RevenueCat and sync subscription status on every launch.
       // isAvailable() is false in Expo Go, so this is a no-op during dev.
-      const userId = useAuthStore.getState().user?.id;
-      if (userId && purchasesService.isAvailable()) {
-        await purchasesService.initialize(userId);
+      // Configure unconditionally (not gated on auth) so the paywall can fetch
+      // offerings even before the user has an account; pass the auth id when we
+      // have one so purchases alias to the account.
+      if (purchasesService.isAvailable()) {
+        await purchasesService.initialize(useAuthStore.getState().user?.id ?? undefined);
         const isPro = await purchasesService.checkEntitlement();
         const currentProfile = useUserStore.getState().profile;
         if (currentProfile && isPro !== currentProfile.isPro) {
@@ -73,8 +80,30 @@ export default function RootLayout() {
         }
       }
       setDbReady(true);
+      // Build the initial notification schedule from current state.
+      refreshNotifications();
     }
     init();
+  }, []);
+
+  // Rebuild the schedule whenever the app returns to the foreground, so the
+  // rolling 7-day horizon stays fresh and "trained today" suppression applies.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refreshNotifications();
+    });
+    return () => sub.remove();
+  }, []);
+
+  // Deep-link when a user taps a notification.
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const route = response.notification.request.content.data?.route as string | undefined;
+      if (route === 'progress') router.push('/(tabs)/progress');
+      else if (route === 'paywall') router.push({ pathname: '/(onboarding)/paywall', params: { directToPlan: '1' } });
+      else router.push('/(tabs)');
+    });
+    return () => sub.remove();
   }, []);
 
   useEffect(() => {

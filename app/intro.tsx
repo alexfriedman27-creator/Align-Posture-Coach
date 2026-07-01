@@ -14,25 +14,25 @@ type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 const FEATURES: { icon: IoniconsName; iconColor: string; title: string; description: string }[] = [
   {
     icon: 'body',
-    iconColor: '#2F6BFF',
+    iconColor: Colors.accent,
     title: 'Daily Posture Reset',
     description: 'Complete a guided 5-minute session each day to build strong, lasting posture habits',
   },
   {
     icon: 'flame',
-    iconColor: '#FF7A33',
+    iconColor: Colors.streak,
     title: 'Earn XP & Level Up',
     description: 'Build streaks, earn achievements, and watch your level grow with every session',
   },
   {
     icon: 'layers',
-    iconColor: '#4EC97B',
+    iconColor: Colors.success,
     title: 'Targeted Programs',
     description: 'Follow programs built around your specific problem areas, like neck, shoulders, and core',
   },
   {
     icon: 'notifications',
-    iconColor: '#B57BFF',
+    iconColor: Colors.custom,
     title: 'Stay on Track',
     description: 'Set a daily reminder to keep your routine consistent and build a lasting habit',
   },

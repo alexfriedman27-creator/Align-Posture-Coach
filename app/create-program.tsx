@@ -22,10 +22,10 @@ import { customToExercise } from '../lib/utils/resolveExercises';
 const ALL_SLOTS: ExerciseSlot[] = ['neck', 'shoulder_scapula', 'thoracic_spine', 'core_pelvis', 'hip', 'integration'];
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
-  stretch:    '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility:   '#4EC97B',
-  awareness:  '#B57BFF',
+  stretch:    Colors.info,
+  strengthen: Colors.streak,
+  mobility:   Colors.success,
+  awareness:  Colors.custom,
 };
 
 function isCustomId(id: string) { return id.startsWith('custom_'); }
@@ -130,7 +130,7 @@ function DraggableExerciseList({ exercises, onReorder, onRemove }: DraggableList
                 <Text style={styles.exerciseName}>{ex.name}</Text>
                 <Text style={styles.exerciseMeta}>{SLOT_NAME[ex.slot]} · {ex.duration_seconds}s</Text>
               </View>
-              <TouchableOpacity onPress={() => onRemove(ex.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <TouchableOpacity onPress={() => onRemove(ex.id)} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
                 <Ionicons name="close-circle" size={22} color={Colors.tertiaryText} />
               </TouchableOpacity>
             </Animated.View>
@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
   categoryDot: { width: 8, height: 8, borderRadius: 4, flexShrink: 0, marginRight: Spacing.tight },
   exerciseInfo: { flex: 1 },
   exerciseName: { ...Typography.bodyMedium },
-  exerciseMeta: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  exerciseMeta: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
 
   customTag: {
     backgroundColor: Colors.cardElevated,
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent,
     borderColor: Colors.accent,
   },
-  filterChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  filterChipText: { ...Typography.captionLg, color: Colors.secondaryText },
   filterChipTextActive: { color: Colors.white, fontFamily: FontFamily.poppinsBold },
 
   noneText: { ...Typography.body, fontSize: 15, lineHeight: 22, color: Colors.tertiaryText, textAlign: 'center', paddingVertical: Spacing.inner },

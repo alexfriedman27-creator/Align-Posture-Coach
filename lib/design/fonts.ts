@@ -40,6 +40,14 @@ export const Typography: Record<string, TextStyle> = {
     color: Colors.primaryText,
     lineHeight: 21,
   },
+  // Emphasis body — same weight as `body`, one step up for hero meta,
+  // upgrade copy, and other places that read larger.
+  bodyLg: {
+    fontFamily: FontFamily.poppinsRegular,
+    fontSize: 17,
+    color: Colors.primaryText,
+    lineHeight: 24,
+  },
   bodyMedium: {
     fontFamily: FontFamily.poppinsMedium,
     fontSize: 15,
@@ -52,10 +60,25 @@ export const Typography: Record<string, TextStyle> = {
     color: Colors.primaryText,
     lineHeight: 16,
   },
+  // Emphasis label — bold eyebrow/chip text one step up from `label`.
+  labelLg: {
+    fontFamily: FontFamily.poppinsBold,
+    fontSize: 14,
+    color: Colors.primaryText,
+    lineHeight: 18,
+  },
   caption: {
     fontFamily: FontFamily.poppinsRegular,
     fontSize: 11,
     color: Colors.secondaryText,
     lineHeight: 15,
+  },
+  // Emphasis caption — the app's de-facto "small" size (meta rows,
+  // sublabels). Larger and more legible than the 11px `caption`.
+  captionLg: {
+    fontFamily: FontFamily.poppinsRegular,
+    fontSize: 13,
+    color: Colors.secondaryText,
+    lineHeight: 18,
   },
 };

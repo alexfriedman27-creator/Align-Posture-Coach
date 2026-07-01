@@ -25,6 +25,7 @@ export async function getProfile(): Promise<UserProfile | null> {
     onboardingCompleted: row.onboarding_completed === 1,
     isPro: row.is_pro === 1,
     reminderSet: row.reminder_set === 1,
+    notificationsEnabled: row.notifications_enabled !== 0,
   };
 }
 
@@ -32,13 +33,14 @@ export async function upsertProfile(p: UserProfile): Promise<void> {
   const db = await getDb();
   await db.runAsync(
     `INSERT OR REPLACE INTO user_profile
-     (id, name, username, goal, reminder_hour, reminder_minute, onboarding_completed, is_pro, reminder_set)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     (id, name, username, goal, reminder_hour, reminder_minute, onboarding_completed, is_pro, reminder_set, notifications_enabled)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     p.id, p.name, p.username, p.goal,
     p.reminderHour, p.reminderMinute,
     p.onboardingCompleted ? 1 : 0,
     p.isPro ? 1 : 0,
-    p.reminderSet ? 1 : 0
+    p.reminderSet ? 1 : 0,
+    p.notificationsEnabled ? 1 : 0
   );
 }
 

@@ -25,8 +25,8 @@ const SEG_FROM_X = [160, -180, 130, -100];
 
 const MARK_W = 100 * SCALE; // 90px
 const MARK_H = 140 * SCALE; // 126px
-const SEG_COLOR = '#2F6BFF';
-const HEAD_COLOR = '#A7CBFF';
+const SEG_COLOR = Colors.accent;
+const HEAD_COLOR = Colors.infoMuted;
 
 function AnimatedMark() {
   const opacity = useRef(new Animated.Value(0)).current;

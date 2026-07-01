@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { UserProfile, UserGoal } from '../../types/UserProfile';
 import { getProfile, upsertProfile, resetAllData } from '../db/queries';
 import { syncProfile } from '../sync/supabaseSync';
+import { refreshNotifications } from '../notifications/refresh';
 
 interface UserStore {
   profile: UserProfile | null;
@@ -17,6 +18,7 @@ interface UserStore {
   updatePro: (isPro: boolean) => void;
   completeOnboarding: () => Promise<void>;
   setReminderSet: (hour: number, minute: number) => Promise<void>;
+  setNotificationsEnabled: (enabled: boolean) => Promise<void>;
   clearIsNew: () => void;
   resetAll: () => Promise<void>;
 }
@@ -31,6 +33,7 @@ const DEFAULT_PROFILE: UserProfile = {
   onboardingCompleted: false,
   isPro: false,
   reminderSet: false,
+  notificationsEnabled: true,
 };
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -53,6 +56,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
     await upsertProfile(profile);
     set({ profile });
     syncProfile(profile);
+    refreshNotifications();
   },
 
   updateName: (name) => {
@@ -91,6 +95,17 @@ export const useUserStore = create<UserStore>((set, get) => ({
     await upsertProfile(updated);
     set({ profile: updated });
     syncProfile(updated);
+    refreshNotifications();
+  },
+
+  setNotificationsEnabled: async (enabled) => {
+    const p = get().profile;
+    if (!p) return;
+    const updated = { ...p, notificationsEnabled: enabled };
+    await upsertProfile(updated);
+    set({ profile: updated });
+    syncProfile(updated);
+    refreshNotifications();
   },
 
   clearIsNew: () => set({ isNew: false }),

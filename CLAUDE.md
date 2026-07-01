@@ -97,6 +97,16 @@ Four stores hydrated before navigation: `useUserStore` (profile, isPro, isNew, o
 
 Pro-gated. Reports section (after calendar): **Top Programs** leaderboard (module_sessions only, daily plans excluded, sorted by count, All Time / This Month toggle) + **Activity Insights** 2×2 grid (avg session, sessions this month, best day of week, XP this month).
 
+## Notifications (`lib/notifications/`)
+
+On-device **local** notifications only — no push backend (Supabase is sync-only). Needs a real device / dev build; won't reliably fire in Expo Go on simulator. Plugin config (icon + accent color) is in `app.json`.
+
+- `messages.ts` — copy banks per category (`motivational`, `streakActive`, `streakStart`, `photo`, `pro`), rotated by date seed. `pickMessage` / `pickStreakEvening` / `withStreakCount`.
+- `notificationService.ts` — the engine. `rescheduleAll(input)` cancels all, then schedules a rolling **7-day horizon** of concrete `DATE`-triggered notifications: morning reminder (user's time), midday motivational (Pro upsell every 3rd day for free users), **8 PM streak-saver** (only when `streakDays > 0`, suppressed today if trained), weekly photo nudge. Also `requestPermissions`, `cancelAll`, `getScheduledCount`, and `fireTestNotification(category)` (dev, fires ~3s out). `configureNotificationHandler()` is called at module scope in `_layout.tsx`.
+- `refresh.ts` — `refreshNotifications()` gathers state from the stores + `getPhotos()` and calls `rescheduleAll`. **Rebuild triggers**: app foreground (`AppState` in `_layout`), after `persistSessionCompletion` (`session.tsx`), and store actions `saveProfile` / `setReminderSet` / `setNotificationsEnabled`.
+
+`notificationsEnabled` lives on `user_profile` (default 1); it's pulled from Supabase but deliberately **not** pushed (remote column may not exist — would break profile upsert). Master toggle + a `__DEV__` "TEST NOTIFICATIONS" panel are in `profile.tsx`. Tap routing: notification `data.route` (`today`/`progress`/`paywall`) handled by a response listener in `_layout.tsx`.
+
 ## Design system
 
 All tokens from `lib/design/` — never hardcode. `Colors.background = #0A0E17`, `Colors.accent = #2F6BFF`. When overriding `fontSize` beyond a Typography preset, also set `lineHeight` to avoid clipping.

@@ -23,9 +23,9 @@ import { PostureModule, ModuleIntensity, MODULE_ICON } from '../../types/Module'
 import { CustomProgram } from '../../types/CustomProgram';
 
 const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
-  easy: '#4EC97B',
-  moderate: '#4EA8FF',
-  hard: '#FF7A33',
+  easy: Colors.success,
+  moderate: Colors.info,
+  hard: Colors.streak,
 };
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
@@ -54,7 +54,7 @@ function AlignMark() {
         width: _HEAD_R * 2 * _MS,
         height: _HEAD_R * 2 * _MS,
         borderRadius: _HEAD_R * _MS,
-        backgroundColor: '#A7CBFF',
+        backgroundColor: Colors.infoMuted,
       }} />
       {_WIDTHS.map((w, i) => {
         const cy = _firstCy + i * (_SEG_H + _SEG_GAP);
@@ -75,10 +75,10 @@ function AlignMark() {
 }
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
-  stretch:    '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility:   '#4EC97B',
-  awareness:  '#B57BFF',
+  stretch:    Colors.info,
+  strengthen: Colors.streak,
+  mobility:   Colors.success,
+  awareness:  Colors.custom,
 };
 
 function getGreeting() {
@@ -189,7 +189,7 @@ export default function TodayTab() {
               <TouchableOpacity
                 onPress={() => router.push('/(tabs)/profile')}
                 activeOpacity={0.6}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 style={styles.settingsBtn}
               >
                 <Ionicons name="settings-outline" size={20} color={Colors.tertiaryText} />
@@ -265,7 +265,7 @@ export default function TodayTab() {
 
                 {isCompleted ? (
                   <View style={styles.completedBadge}>
-                    <Ionicons name="checkmark-circle" size={16} color="#4EC97B" />
+                    <Ionicons name="checkmark-circle" size={16} color={Colors.success} />
                     <Text style={styles.completedText}>Done for today</Text>
                   </View>
                 ) : (
@@ -347,8 +347,8 @@ export default function TodayTab() {
                       onPress={() => router.push({ pathname: '/custom-program-detail', params: { programId: item.id } })}
                     >
                       <View style={styles.programStripe} />
-                      <View style={[styles.programIconCircle, { backgroundColor: '#B57BFF22' }]}>
-                        <Ionicons name="color-wand" size={16} color="#B57BFF" />
+                      <View style={[styles.programIconCircle, { backgroundColor: Colors.custom + '22' }]}>
+                        <Ionicons name="color-wand" size={16} color={Colors.custom} />
                       </View>
                       <View>
                         <Text style={styles.programCat}>CUSTOM</Text>
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
 
   // Greeting
   greetingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  greetingSub: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
+  greetingSub: { ...Typography.bodyLg, color: Colors.secondaryText },
   greetingName: { ...Typography.display },
   greetingRight: { alignItems: 'flex-end', marginTop: 4 },
   badgeSlotsRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.tight },
@@ -450,17 +450,13 @@ const styles = StyleSheet.create({
     gap: Spacing.tight + 2,
     overflow: 'hidden',
   },
-  heroCardDone: {
-    borderTopWidth: 3,
-    borderTopColor: '#4EC97B',
-  },
   heroTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  heroLabel: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.accent, letterSpacing: 1.5 },
-  heroDateStr: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText },
+  heroLabel: { ...Typography.labelLg, color: Colors.accent, letterSpacing: 1.5 },
+  heroDateStr: { ...Typography.captionLg, color: Colors.tertiaryText },
   heroDateBlock: { gap: 6 },
   heroDayName: {
     fontFamily: FontFamily.poppinsExtraBold,
@@ -477,7 +473,7 @@ const styles = StyleSheet.create({
   exerciseDot: { width: 6, height: 6, borderRadius: 3 },
   exerciseText: { flex: 1 },
   exerciseName: { ...Typography.label, fontSize: 15, lineHeight: 20, color: Colors.primaryText },
-  exerciseDur: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText },
+  exerciseDur: { ...Typography.captionLg, color: Colors.tertiaryText },
 
   heroFooter: {
     flexDirection: 'row',
@@ -485,7 +481,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: Spacing.micro,
   },
-  heroMeta: { ...Typography.body, fontSize: 17, lineHeight: 24, color: Colors.secondaryText },
+  heroMeta: { ...Typography.bodyLg, color: Colors.secondaryText },
   sessionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -497,17 +493,17 @@ const styles = StyleSheet.create({
   },
   sessionBtnText: { ...Typography.bodyMedium, color: Colors.white },
   completedBadge: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  completedText: { ...Typography.bodyMedium, color: '#4EC97B' },
-  tutorialHint: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.accent, textAlign: 'center', marginTop: -4 },
+  completedText: { ...Typography.bodyMedium, color: Colors.success },
+  tutorialHint: { ...Typography.captionLg, color: Colors.accent, textAlign: 'center', marginTop: -4 },
 
   // Stats
   statsRow: { flexDirection: 'row', gap: Spacing.tight },
   statCard: { flex: 1, gap: 4 },
   statLabelRow: { flexDirection: 'row', alignItems: 'center' },
-  statLabel: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, textTransform: 'uppercase', letterSpacing: 0.8 },
+  statLabel: { ...Typography.captionLg, color: Colors.secondaryText, textTransform: 'uppercase', letterSpacing: 0.8 },
   statValue: { ...Typography.title },
-  statSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
-  statRecord: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, marginTop: 2 },
+  statSub: { ...Typography.captionLg, color: Colors.secondaryText },
+  statRecord: { ...Typography.captionLg, color: Colors.tertiaryText, marginTop: 2 },
   xpBar: { height: 4, backgroundColor: Colors.cardElevated, borderRadius: 2, overflow: 'hidden', marginTop: 4 },
   xpFill: { height: '100%', backgroundColor: Colors.accent, borderRadius: 2 },
 
@@ -527,8 +523,8 @@ const styles = StyleSheet.create({
   },
   programStripe: { ...StyleSheet.absoluteFill, opacity: 0.15, backgroundColor: Colors.cardElevated },
   programIconCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  programCat: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.accent, textTransform: 'uppercase', letterSpacing: 0.8 },
-  programName: { ...Typography.label, fontSize: 14, lineHeight: 18, color: Colors.primaryText, marginTop: 2 },
+  programCat: { ...Typography.captionLg, color: Colors.accent, textTransform: 'uppercase', letterSpacing: 0.8 },
+  programName: { ...Typography.labelLg, color: Colors.primaryText, marginTop: 2 },
   // Upgrade card
   upgradeCard: {
     backgroundColor: Colors.card, borderRadius: Radii.card,
@@ -543,12 +539,12 @@ const styles = StyleSheet.create({
   },
   proBadgeText: { ...Typography.bodyMedium, color: Colors.white, fontFamily: FontFamily.poppinsBold, letterSpacing: 1 },
   upgradeHeadline: { ...Typography.title, lineHeight: 32, flex: 1 },
-  upgradeBody: { ...Typography.body, fontSize: 17, lineHeight: 26, color: Colors.secondaryText },
+  upgradeBody: { ...Typography.bodyLg, lineHeight: 26, color: Colors.secondaryText },
   upgradeCta: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: Spacing.tight, backgroundColor: Colors.accent,
     borderRadius: Radii.card, paddingVertical: 14, marginTop: Spacing.micro,
   },
   upgradeCtaText: { fontFamily: FontFamily.poppinsExtraBold, fontSize: 22, lineHeight: 28, color: Colors.white, letterSpacing: 0.3 },
-  upgradeFooter: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.tertiaryText, textAlign: 'center' },
+  upgradeFooter: { ...Typography.captionLg, color: Colors.tertiaryText, textAlign: 'center' },
 });

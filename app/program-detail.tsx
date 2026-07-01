@@ -20,9 +20,9 @@ import { Exercise, ExerciseCategory, SLOT_NAME } from '../types/Exercise';
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
 const INTENSITY_COLOR: Record<ModuleIntensity, string> = {
-  easy:     '#4EC97B',
-  moderate: '#4EA8FF',
-  hard:     '#FF7A33',
+  easy:     Colors.success,
+  moderate: Colors.info,
+  hard:     Colors.streak,
 };
 
 const INTENSITY_XP: Record<ModuleIntensity, number> = {
@@ -32,10 +32,10 @@ const INTENSITY_XP: Record<ModuleIntensity, number> = {
 };
 
 const CATEGORY_COLOR: Record<ExerciseCategory, string> = {
-  stretch:    '#4EA8FF',
-  strengthen: '#FF7A33',
-  mobility:   '#4EC97B',
-  awareness:  '#B57BFF',
+  stretch:    Colors.info,
+  strengthen: Colors.streak,
+  mobility:   Colors.success,
+  awareness:  Colors.custom,
 };
 
 function formatDuration(ex: Exercise): string {
@@ -95,7 +95,7 @@ export default function ProgramDetailScreen() {
             <Ionicons
               name={isFavorite ? 'star' : 'star-outline'}
               size={22}
-              color={isFavorite ? '#F5C518' : Colors.secondaryText}
+              color={isFavorite ? Colors.xp : Colors.secondaryText}
             />
           </TouchableOpacity>
         )}
@@ -210,12 +210,12 @@ const styles = StyleSheet.create({
     borderRadius: Radii.chip, borderWidth: 1,
     paddingHorizontal: Spacing.tight, paddingVertical: 3,
   },
-  intensityChipText: { ...Typography.caption, fontSize: 13, lineHeight: 18, fontFamily: FontFamily.poppinsBold, letterSpacing: 0.8 },
-  metaText: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  intensityChipText: { ...Typography.captionLg, fontFamily: FontFamily.poppinsBold, letterSpacing: 0.8 },
+  metaText: { ...Typography.captionLg, color: Colors.secondaryText },
 
   section: { gap: Spacing.tight },
   description: { ...Typography.subheadline, color: Colors.primaryText },
-  rationale: { ...Typography.body, fontSize: 17, lineHeight: 26, color: Colors.secondaryText },
+  rationale: { ...Typography.bodyLg, lineHeight: 26, color: Colors.secondaryText },
   sectionTitle: { ...Typography.subheadline, marginBottom: 4 },
 
   exerciseList: {
@@ -236,9 +236,9 @@ const styles = StyleSheet.create({
   categoryDot: { width: 8, height: 8, borderRadius: 4, flexShrink: 0 },
   exerciseInfo: { flex: 1 },
   exerciseName: { ...Typography.bodyMedium },
-  exerciseSlot: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  exerciseSlot: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
   exerciseRight: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 0 },
-  exerciseDuration: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText },
+  exerciseDuration: { ...Typography.captionLg, color: Colors.secondaryText },
 
   xpCard: {
     flexDirection: 'row',
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   xpAmount: { ...Typography.subheadline, color: Colors.primaryText },
-  xpSub: { ...Typography.caption, fontSize: 13, lineHeight: 18, color: Colors.secondaryText, marginTop: 1 },
+  xpSub: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
 
   footer: {
     paddingHorizontal: Spacing.card,
