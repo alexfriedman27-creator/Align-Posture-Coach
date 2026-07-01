@@ -2,6 +2,16 @@
   "name": "align-rn",
   "version": "1.0.0",
   "main": "index.ts",
+  "expo": {
+    "autolinking": {
+      "ios": {
+        "buildFromSource": ["react-native-reanimated", "react-native-worklets"]
+      },
+      "android": {
+        "buildFromSource": ["react-native-reanimated", "react-native-worklets"]
+      }
+    }
+  },
   "dependencies": {
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo-google-fonts/outfit": "^0.4.3",
@@ -11,6 +21,7 @@
     "@supabase/supabase-js": "^2.108.2",
     "expo": "~56.0.12",
     "expo-crypto": "~56.0.4",
+    "expo-dev-client": "~56.0.21",
     "expo-file-system": "~56.0.8",
     "expo-font": "~56.0.7",
     "expo-haptics": "~56.0.3",
