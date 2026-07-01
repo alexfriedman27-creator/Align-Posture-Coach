@@ -31,6 +31,15 @@ function emailFor(uuid: string): string {
   return `${uuid}@device.align.app`;
 }
 
+// Wipes the device identity from the Keychain. After this, the next launch
+// provisions a brand-new account instead of restoring the deleted one — used by
+// the "Delete account & data" flow so the old account can't be silently
+// re-synced from SecureStore.
+export async function clearDeviceIdentity(): Promise<void> {
+  await SecureStore.deleteItemAsync(DEVICE_UUID_KEY);
+  await SecureStore.deleteItemAsync(DEVICE_SECRET_KEY);
+}
+
 export type DeviceAuthOutcome =
   | { kind: 'session_restored'; userId: string; session: Session }
   | { kind: 'signed_in'; userId: string; session: Session }  // reinstall

@@ -124,11 +124,6 @@ export default function LibraryScreen() {
           <Text style={styles.title}>Library</Text>
           <Text style={styles.subtitle}>{total} exercises & stretches</Text>
         </View>
-        {profile?.isPro && (
-          <TouchableOpacity style={styles.addBtn} onPress={() => router.push('/create-exercise')}>
-            <Ionicons name="add" size={20} color={Colors.white} />
-          </TouchableOpacity>
-        )}
       </View>
 
       {/* Search */}
@@ -250,15 +245,6 @@ const styles = StyleSheet.create({
   },
   title: { ...Typography.headline },
   subtitle: { ...Typography.captionLg, color: Colors.secondaryText, marginTop: 1 },
-  addBtn: {
-    marginLeft: 'auto',
-    width: 36,
-    height: 36,
-    borderRadius: Radii.icon,
-    backgroundColor: Colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',

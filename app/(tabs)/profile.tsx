@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  Switch, TouchableOpacity, Modal, TextInput, Alert
+  Switch, TouchableOpacity, Modal, TextInput, Alert, Platform, Linking
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../lib/design/colors';
@@ -17,6 +17,9 @@ import { purchasesService } from '../../lib/services/purchases';
 import { useUserStore } from '../../lib/store/useUserStore';
 import { useProgressStore } from '../../lib/store/useProgressStore';
 import { usePlanStore } from '../../lib/store/usePlanStore';
+import { useAuthStore } from '../../lib/store/useAuthStore';
+import { deleteAllRemoteData } from '../../lib/sync/supabaseSync';
+import { clearDeviceIdentity } from '../../lib/auth/deviceAuth';
 import { getBadges, setPinnedBadge, unlockAllBadges } from '../../lib/db/queries';
 import {
   fireTestNotification, cancelAll, getScheduledCount, requestPermissions,
@@ -236,6 +239,49 @@ export default function ProfileTab() {
     } catch {}
   }
 
+  async function handleManageSubscription() {
+    const url = Platform.OS === 'ios'
+      ? 'https://apps.apple.com/account/subscriptions'
+      : 'https://play.google.com/store/account/subscriptions';
+    try {
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert('Unable to open', 'Manage your subscription from your device Settings under the App Store or Google Play account.');
+    }
+  }
+
+  async function performAccountDeletion() {
+    // Remove the cloud copy first (while still authenticated), then wipe the
+    // device identity so the next launch provisions a fresh account instead of
+    // restoring the deleted one, then clear local data and sign out.
+    try {
+      await deleteAllRemoteData();
+    } catch {
+      // Offline or remote error — proceed with local wipe regardless.
+    }
+    await clearDeviceIdentity();
+    await useAuthStore.getState().signOut();
+    await resetAll();
+    await loadProgress();
+    usePlanStore.setState({ plan: null, isLoaded: false });
+    router.replace('/(onboarding)/goal');
+  }
+
+  function handleDeleteAccount() {
+    Alert.alert(
+      'Delete account & data',
+      'This permanently deletes your profile, progress, streaks, badges, and history from this device and the cloud. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => { void performAccountDeletion(); },
+        },
+      ],
+    );
+  }
+
   async function handleTogglePro() {
     if (!profile) return;
     await saveProfile({ ...profile, isPro: !profile.isPro });
@@ -382,17 +428,23 @@ export default function ProfileTab() {
 
         {/* Account */}
         <Section title="ACCOUNT">
-          <SettingRow label="Privacy Policy" />
+          <SettingRow
+            label="Privacy Policy"
+            onPress={() => router.push({ pathname: '/legal', params: { doc: 'privacy' } })}
+          />
           <View style={styles.divider} />
-          <SettingRow label="Terms of Service" />
+          <SettingRow
+            label="Terms of Service"
+            onPress={() => router.push({ pathname: '/legal', params: { doc: 'terms' } })}
+          />
           <View style={styles.divider} />
-          <SettingRow label="Subscription & billing" />
+          <SettingRow label="Subscription & billing" onPress={handleManageSubscription} />
           <View style={styles.divider} />
           <SettingRow label="Restore purchases" onPress={handleRestorePurchases} />
           <View style={styles.divider} />
-          <TouchableOpacity style={styles.settingRow}>
+          <TouchableOpacity style={styles.settingRow} onPress={handleDeleteAccount} activeOpacity={0.7}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.settingLabel, { color: Colors.danger }]}>Sign out</Text>
+              <Text style={[styles.settingLabel, { color: Colors.danger }]}>Delete account & data</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color={Colors.tertiaryText} />
           </TouchableOpacity>
