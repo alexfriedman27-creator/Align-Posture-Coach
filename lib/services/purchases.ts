@@ -16,13 +16,22 @@
 
 import { Platform } from 'react-native';
 
-// TODO: Replace with your public SDK keys from app.revenuecat.com.
-// iOS keys start with "appl_", Android keys start with "goog_".
-const RC_API_KEY = Platform.select({
-  ios: 'appl_REPLACE_WITH_YOUR_IOS_KEY',
-  android: 'goog_REPLACE_WITH_YOUR_ANDROID_KEY',
+// Public SDK keys from app.revenuecat.com, supplied via .env.local:
+//   EXPO_PUBLIC_RC_IOS_KEY=appl_...    (iOS keys start with "appl_")
+//   EXPO_PUBLIC_RC_ANDROID_KEY=goog_... (Android keys start with "goog_")
+//   EXPO_PUBLIC_RC_TEST_KEY=test_...    (RevenueCat Test Store, dev builds only)
+const RC_PROD_KEY = Platform.select({
+  ios: process.env.EXPO_PUBLIC_RC_IOS_KEY,
+  android: process.env.EXPO_PUBLIC_RC_ANDROID_KEY,
   default: '',
 }) as string;
+
+// In dev builds (__DEV__), prefer the Test Store key so the purchase flow can be
+// exercised against RevenueCat's sandbox without real App Store / Play products.
+// Falls back to the platform key if no test key is set. Release builds (TestFlight,
+// App Store, Play) have __DEV__ === false and always use the real platform key.
+const RC_TEST_KEY = process.env.EXPO_PUBLIC_RC_TEST_KEY;
+const RC_API_KEY = (__DEV__ && RC_TEST_KEY ? RC_TEST_KEY : RC_PROD_KEY) as string;
 
 // TODO: Match these to your product identifiers in App Store Connect + RevenueCat
 export const RC_ANNUAL_PRODUCT_ID = 'com.align.pro.annual';
@@ -50,6 +59,15 @@ export const purchasesService = {
   // Call Purchases.logIn(userId) later to alias anonymous purchases to an account.
   async initialize(appUserId?: string): Promise<void> {
     if (!Purchases) return;
+    if (!RC_API_KEY) {
+      if (__DEV__) {
+        console.warn(
+          '[RevenueCat] No API key for this platform. Set EXPO_PUBLIC_RC_IOS_KEY / ' +
+            'EXPO_PUBLIC_RC_ANDROID_KEY in .env.local.'
+        );
+      }
+      return;
+    }
     try {
       Purchases.configure({ apiKey: RC_API_KEY, appUserID: appUserId });
     } catch (e) {

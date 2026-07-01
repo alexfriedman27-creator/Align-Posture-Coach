@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, TouchableOpacity,
 } from 'react-native';
@@ -86,6 +86,17 @@ export default function PaywallScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Never show the paywall to a user who already has Pro. This happens when they
+  // upgraded earlier via a locked-feature tap (directToPlan grants Pro but doesn't
+  // complete onboarding), so the post-session onboarding paywall would otherwise
+  // ask them to pay again. Dismiss / finish onboarding instead of rendering.
+  const alreadyPro = !!profile?.isPro;
+  useEffect(() => {
+    if (!alreadyPro) return;
+    if (directToPlan) router.back();
+    else finishOnboarding(true);
+  }, [alreadyPro]);
+
   async function finishOnboarding(isPro: boolean) {
     if (directToPlan) {
       await saveProfile({ ...profile!, isPro });
@@ -111,11 +122,16 @@ export default function PaywallScreen() {
 
       const offerings = await purchasesService.getOfferings();
       if (offerings?.current) {
+        // Match by RevenueCat package type first (store-independent: works with
+        // Test Store "monthly"/"yearly" products and real com.align.pro.* products),
+        // then fall back to product identifier, then to the first package.
+        const targetType = selectedPlan === 'annual' ? 'ANNUAL' : 'MONTHLY';
         const targetId = selectedPlan === 'annual' ? RC_ANNUAL_PRODUCT_ID : RC_MONTHLY_PRODUCT_ID;
+        const pkgs = offerings.current.availablePackages;
         const pkg =
-          offerings.current.availablePackages.find(
-            (p: any) => p.product.identifier === targetId
-          ) ?? offerings.current.availablePackages[0];
+          pkgs.find((p: any) => p.packageType === targetType) ??
+          pkgs.find((p: any) => p.product.identifier === targetId) ??
+          pkgs[0];
 
         if (pkg) {
           const result = await purchasesService.purchasePackage(pkg);
@@ -138,6 +154,10 @@ export default function PaywallScreen() {
     }
   }
 
+
+  // Already Pro: render nothing while the effect above redirects, so the paywall
+  // content never flashes on screen.
+  if (alreadyPro) return <View style={styles.safe} />;
 
   return (
     <SafeAreaView style={styles.safe}>
