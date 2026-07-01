@@ -26,6 +26,17 @@ SplashScreen.preventAutoHideAsync();
 // Show notifications while the app is foregrounded, too.
 configureNotificationHandler();
 
+// Pull the authoritative Pro entitlement from RevenueCat and reconcile the
+// locally persisted `isPro` flag. RevenueCat is the source of truth; the local
+// flag is only a cache. Caller must ensure purchasesService.isAvailable().
+async function syncEntitlement(): Promise<void> {
+  const isPro = await purchasesService.checkEntitlement();
+  const currentProfile = useUserStore.getState().profile;
+  if (currentProfile && isPro !== currentProfile.isPro) {
+    await useUserStore.getState().saveProfile({ ...currentProfile, isPro });
+  }
+}
+
 export default function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
@@ -73,11 +84,7 @@ export default function RootLayout() {
       // have one so purchases alias to the account.
       if (purchasesService.isAvailable()) {
         await purchasesService.initialize(useAuthStore.getState().user?.id ?? undefined);
-        const isPro = await purchasesService.checkEntitlement();
-        const currentProfile = useUserStore.getState().profile;
-        if (currentProfile && isPro !== currentProfile.isPro) {
-          await useUserStore.getState().saveProfile({ ...currentProfile, isPro });
-        }
+        await syncEntitlement();
       }
       setDbReady(true);
       // Build the initial notification schedule from current state.
@@ -90,7 +97,12 @@ export default function RootLayout() {
   // rolling 7-day horizon stays fresh and "trained today" suppression applies.
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') refreshNotifications();
+      if (state === 'active') {
+        refreshNotifications();
+        // Re-verify Pro entitlement against RevenueCat on resume, so a lapsed
+        // or refunded subscription is reflected without a full app restart.
+        if (purchasesService.isAvailable()) void syncEntitlement();
+      }
     });
     return () => sub.remove();
   }, []);

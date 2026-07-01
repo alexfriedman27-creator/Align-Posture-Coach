@@ -79,8 +79,11 @@ export const purchasesService = {
   // Returns { success, isPro }. Throws only on unexpected errors (not user cancellation).
   async purchasePackage(pkg: any): Promise<{ success: boolean; isPro: boolean }> {
     if (!Purchases) {
-      // Expo Go fallback — simulate a successful purchase for UI testing.
-      return { success: true, isPro: true };
+      // Expo Go / dev fallback — simulate a successful purchase for UI testing.
+      // Fail CLOSED in production: if the native module ever fails to link in a
+      // release build, we must not silently grant Pro for free.
+      if (__DEV__) return { success: true, isPro: true };
+      return { success: false, isPro: false };
     }
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
