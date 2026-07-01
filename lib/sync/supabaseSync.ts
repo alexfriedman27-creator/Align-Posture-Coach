@@ -347,3 +347,21 @@ export function deleteCustomExerciseSync(id: string): void {
   if (!userId) return;
   void supabase.from('custom_exercises').delete().eq('id', id).eq('user_id', userId);
 }
+
+// ─── Account deletion: remove every remote row this user owns ─────────────────
+// RLS permits a user to delete only their own rows. Awaited (not fire-and-forget)
+// so the caller can guarantee the cloud copy is gone before wiping local state.
+const REMOTE_TABLES = [
+  'user_profile', 'user_progress', 'daily_plans',
+  'module_sessions', 'badges', 'custom_exercises',
+] as const;
+
+export async function deleteAllRemoteData(): Promise<void> {
+  const userId = getUserId();
+  if (!userId) return;
+  await Promise.all(
+    REMOTE_TABLES.map((table) =>
+      supabase.from(table).delete().eq('user_id', userId)
+    )
+  );
+}

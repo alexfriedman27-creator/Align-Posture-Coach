@@ -168,7 +168,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="session" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="library" options={{ presentation: 'fullScreenModal' }} />
-        <Stack.Screen name="create-exercise" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="legal" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="set-reminder" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="exercise-detail" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="program-detail" options={{ presentation: 'fullScreenModal' }} />
